@@ -1,0 +1,220 @@
+$light-bgcolor: #fdf6e6;
+$light-bgcolor-t: #fdf6e699;
+$bgcolor: #fbf2dc;
+$bordercolor: #ccc;
+$dropshadow: drop-shadow(0 3px 4px #222);
+$dropshadow-dark: drop-shadow(0 2px 2px #000);
+body.night-style {
+    #saltNewPageHead {
+        --saltNewPageHeadbgcolor-l-t: rgba($color: #444444, $alpha: 0.5);
+        --saltNewPageHeadbgcolor-l: #444444;
+        --saltNewPageHeadbgcolor: #222222;
+        &,
+        a {
+            color: #f0f0f0;
+        }
+        a:hover {
+            color: #6cf;
+        }
+    }
+}
+#saltNewPageHead {
+    position: fixed;
+    width: 310px;
+    height: 100%;
+    top: 0;
+    left: -330px;
+    padding: 20px;
+    background-color: var(--saltNewPageHeadbgcolor-l-t, $light-bgcolor-t);
+    color: #111;
+    transition: 0.4s ease;
+    transition-delay: 0.4s;
+    opacity: 0.35;
+    z-index: 999999;
+    &:hover {
+        left: 0;
+        background-color: var(--saltNewPageHeadbgcolor-l, $light-bgcolor);
+        opacity: 1;
+        transition: 0.4s ease;
+    }
+    &::after {
+        content: "saltMCBBS脚本，开发语言: Typescript+SCSS";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        color: var(--saltNewPageHeadbgcolor, $bgcolor);
+    }
+    .userinfo,
+    .links,
+    .addons {
+        width: 100%;
+        margin-bottom: 0.75rem;
+        overflow: auto; // 触发BFC
+        border-bottom: #ccc;
+        font-size: 1rem;
+    }
+    .userinfo {
+        overflow-x: hidden;
+        > div,
+        > span {
+            margin-bottom: 0.5rem;
+        }
+        .username {
+            width: 100%;
+            height: 100px;
+
+            font-weight: bold;
+            position: relative;
+            a {
+                top: 2px;
+                position: absolute;
+                font-size: 1.75rem;
+            }
+            div {
+                top: calc(8px + 2rem);
+                width: 10.2em; // 自定义签名的默认长度
+                // display: block;
+                position: absolute;
+                color: #999;
+            }
+            img {
+                right: 7px;
+                top: 4px;
+                position: absolute;
+                // border: 2px solid $bgcolor;
+                // box-shadow: 0 0 0 4px $bordercolor;
+                border-radius: 10%;
+                -webkit-filter: $dropshadow;
+                filter: $dropshadow;
+            }
+            // &::after {
+            //     content: attr(grouptitle);
+            //     position: absolute;
+            //     bottom: 2px;
+            //     right: 1.5rem;
+            //     font-size: 1rem;
+            //     color: #666;
+            //     opacity: 0.75;
+            //     transition: 0.3s ease;
+            // }
+            // &:hover::after {
+            //     right: 0.5rem;
+            //     color: #222;
+            // }
+        }
+        .thread {
+            width: 100%;
+            display: flex;
+            font-size: 0.875rem;
+            text-align: center;
+            span,
+            a {
+                width: 100%;
+                display: inline-block;
+            }
+        }
+        .progress {
+            // 升级进度条
+            width: 95%;
+            height: 0.75rem;
+            margin-left: auto;
+            margin-right: auto;
+            outline: 1px solid #ccc;
+            background-color: var(--saltNewPageHeadbgcolor, $bgcolor);
+            position: relative;
+            display: block;
+            transition: 0.3s ease;
+            > span {
+                height: 100%;
+                background-color: var(--progresscolor, #6cf);
+                display: block;
+            }
+            &::after {
+                content: attr(tooltip);
+                display: block;
+                width: 140%;
+                left: -20%;
+                top: 0;
+                position: absolute;
+                font-size: 0.7rem;
+                color: transparent;
+                text-align: center;
+                transition: 0.3s ease;
+            }
+            &:hover {
+                // margin-top: 0.75rem;
+                // margin-bottom: 0.25rem;
+                transform: translateY(0.5rem);
+            }
+            &:hover::after {
+                top: -1rem;
+                color: inherit;
+            }
+        }
+        .credit {
+            position: relative;
+            font-size: 0.875rem;
+            span {
+                width: calc(50% - 4px);
+                display: inline-block;
+                height: 1.2rem;
+                line-height: 1.2rem;
+                padding-left: 1rem;
+                position: relative;
+                box-sizing: border-box;
+                img {
+                    left: 1px;
+                    top: 2px;
+                    position: absolute;
+                }
+            }
+        }
+    }
+    .links {
+        a {
+            width: 100%;
+            height: 1.75rem;
+            line-height: 1.75rem;
+            display: inline-block;
+            background-color: #fff0;
+            text-align: center;
+            font-size: 1rem;
+            border-bottom: 1px solid #eee;
+            &:hover {
+                background-color: var(--saltNewPageHeadbgcolor, $bgcolor);
+            }
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+        .showmenu {
+            padding-right: 0;
+            // background: none;
+            background-image: none;
+        }
+    }
+    .addons {
+        a {
+            width: calc(50% - 4px);
+            display: inline-block;
+            height: 1.6rem;
+            line-height: 1.6rem;
+            text-align: center;
+            font-size: 1rem;
+            background-color: #fff0;
+            border: 1px solid transparent;
+            &:hover {
+                background-color: var(--saltNewPageHeadbgcolor, $bgcolor);
+                border-color: #efefef;
+                // outline: 1px solid #eee;
+            }
+            img {
+                display: inline-block;
+                vertical-align: middle;
+                max-width: 1.5rem;
+                max-height: 1.5rem;
+                margin-right: 0.5rem;
+            }
+        }
+    }
+}
