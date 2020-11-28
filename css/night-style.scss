@@ -1,0 +1,676 @@
+$bodybg: #333;
+$bodybg-d: #222;
+$bodybg-l: #494949;
+$bodybg-l-l: #5f5f5f;
+$bodybg-l-l-l: #777;
+
+$fontcolor: #e8e8e8;
+$fontcolor-l: #f2f2f2;
+
+$a-highlight: #6cf;
+
+$table-border-color: #837c73;
+
+$droplight: drop-shadow(0 1px 4px #fff);
+
+// 大体更改
+body.night-style {
+    &,
+    input,
+    button,
+    select,
+    textarea,
+    ntc_body {
+        background-color: $bodybg;
+        border-color: $table-border-color;
+        color: $fontcolor;
+    }
+    & {
+        background-color: $bodybg-d;
+    }
+    .mc_map_wp {
+        box-shadow: 0 0 20px 1px #000;
+    }
+    .mc_map_border_right,
+    .mc_map_border_left,
+    .mc_map_border_top,
+    .mc_map_border_foot {
+        background-color: $bodybg;
+        background-image: none;
+        color: $fontcolor;
+    }
+    #body_fixed_bg {
+        opacity: 0;
+    }
+    .fl .forum_index_title,
+    .mn .bm_h {
+        background-color: $bodybg-l;
+        padding-left: 16px;
+    }
+    // 弹出菜单
+    .p_pop,
+    .p_pof,
+    .sllt {
+        background-color: $bodybg-l;
+        border-color: $table-border-color;
+        background-image: none;
+        a:hover {
+            background-color: $table-border-color;
+        }
+    }
+    // 面包屑
+    #pt .z a,
+    #pt .z em,
+    #pt .z span {
+        color: $fontcolor;
+    }
+    //右上角公告
+    #nv_right {
+        background-color: $bodybg-l;
+        background-image: none;
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+}
+// 门户、论坛、小组
+body.night-style {
+    #diy_chart {
+        // > div,
+        // .frame,
+        // .frame-tab {
+        //     // background-color: $bodybg-l;
+        //     border-color: $table-border-color;
+        // }
+        #frame48dS31 {
+            border-color: transparent !important;
+        }
+        .frame {
+            // 框架内的信息
+            background-color: $bodybg-l;
+            border-color: transparent;
+            .column {
+                color: $fontcolor;
+                a {
+                    color: $fontcolor;
+                    &:hover {
+                        color: $a-highlight;
+                    }
+                }
+                .tab-title.title {
+                    background-color: $bodybg !important;
+                    ul {
+                        background-color: $bodybg-l !important;
+                        li a {
+                            border-color: transparent !important;
+                        }
+                        li:not(.a) {
+                            a {
+                                background-color: $bodybg-l-l;
+                            }
+                        }
+                        li.a {
+                            a {
+                                background-color: $bodybg-l-l-l;
+                            }
+                        }
+                    }
+                }
+                .tb-c {
+                    > div {
+                        background-color: $bodybg-l;
+                    }
+                }
+            }
+        }
+        #tabVpFJkk {
+            background-color: $bodybg-l !important;
+            border-color: transparent !important;
+        }
+    }
+    // 论坛左侧
+    .mn > .bm {
+        > .bm {
+            background-color: $bodybg-l;
+            border-color: transparent;
+            .bm_h {
+                // 大区标题栏
+                background-color: $bodybg-d;
+                background-image: none;
+            }
+            .bm_c {
+                background-color: $bodybg-l;
+                border-color: transparent;
+            }
+        }
+    }
+    // 门户左侧
+    .portal_left_dev {
+        border: none;
+        .portal_left_title {
+            background-color: $bodybg-d;
+            background-image: none;
+        }
+        .portal_left_title[style*="background"] {
+            // 友情链接
+            background-color: $bodybg-d !important;
+            background-image: none !important;
+        }
+        .portal_left_content {
+            border-color: transparent;
+            background-color: $bodybg-l;
+        }
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+    // 小组左侧
+    #ct .mn,
+    #group_sd {
+        .bm {
+            border: none;
+            .bm_h {
+                // 标题栏
+                background-color: $bodybg-d;
+                background-image: none;
+            }
+            .area,
+            .bm_c {
+                background-color: $bodybg-l;
+                border-color: transparent;
+                .frame {
+                    background-color: transparent;
+                }
+            }
+        }
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+    // 右侧
+    #diy_right {
+        .frame {
+            background-color: transparent;
+        }
+        .block {
+            background-color: $bodybg-l !important;
+            border-color: transparent !important;
+            .title {
+                background-color: $bodybg-d;
+                background-image: none;
+            }
+            a {
+                color: $fontcolor;
+                &:hover {
+                    color: $a-highlight;
+                }
+            }
+        }
+        .portal_news,
+        .portal_game,
+        .modpack,
+        .portal_zb,
+        .portal_note {
+            border-color: transparent;
+        }
+    }
+    // 用户框
+    .special_user_info {
+        background-color: $bodybg-l;
+        background-image: none;
+        .special_info {
+            background-color: transparent;
+            background-image: none;
+            > div {
+                background-color: $bodybg-l-l;
+            }
+        }
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+    // 拓展社区
+    .portal_block_summary iframe {
+        filter: brightness(0.5);
+    }
+}
+// 看帖页面
+body.night-style {
+    .pgb a {
+        // 最近浏览
+        background-color: transparent;
+    }
+    .pgt,
+    .pgs {
+        // 切换页面
+        .pg {
+            a,
+            strong,
+            label {
+                color: $fontcolor;
+                background-color: transparent;
+            }
+            strong {
+                background-color: $bodybg-l;
+            }
+        }
+    }
+    // 下一页按钮
+    .pgbtn {
+        &,
+        a {
+            border: none;
+            box-shadow: none;
+        }
+        a {
+            background-color: $bodybg-l;
+            color: $fontcolor;
+            border: none;
+        }
+    }
+    #wp .wp {
+        background-color: $bodybg;
+        color: $fontcolor;
+        table,
+        tr,
+        td {
+            border-color: $table-border-color;
+            a {
+                color: $fontcolor;
+                &:hover {
+                    color: $a-highlight;
+                }
+            }
+        }
+    }
+    // 帖子列表
+    #postlist {
+        border: none;
+    }
+    #postlist>table, // 标题栏
+    .plhin, // 帖子
+    #f_pst // 底部的发帖框
+    {
+        & {
+            border: none;
+            box-shadow: none;
+        }
+        tr,
+        td,
+        div {
+            border-color: $table-border-color;
+        }
+        // 楼层之间的填充
+        .ad {
+            background-color: $bodybg-l;
+        }
+        // 左侧
+        td.pls {
+            background-color: $bodybg;
+            border: none;
+        }
+        // 右侧
+        td.plc {
+            background-color: $bodybg-l;
+            border: none;
+        }
+        .pls .avatar img {
+            //头像
+            background-color: $bodybg-l;
+            background-image: none;
+        }
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+    .plhin {
+        .quote {
+            background-color: $bodybg-l-l;
+            color: $fontcolor;
+        }
+    }
+    #vfastpost {
+        // 快速回复
+        background-color: $bodybg-l-l;
+        background-image: none;
+        #vf_l,
+        #vf_m,
+        #vf_r,
+        #vf_b {
+            background-color: $bodybg-d;
+            background-image: none;
+        }
+        #vf_m input {
+            border-color: transparent;
+            color: $fontcolor !important;
+        }
+        // button#vreplysubmit {
+        //     background-color: $bodybg-l;
+        //     background-image: none;
+        //     color: $fontcolor;
+        // }
+    }
+    #p_btn a {
+        // 四个1楼按钮
+        &,
+        i {
+            background-color: $bodybg-l-l;
+            background-image: none;
+        }
+    }
+    .psth {
+        // 评分区顶部的一条标记
+        background-color: $bodybg-l-l;
+        background-image: none;
+    }
+    #postlist.bm {
+        border-color: $table-border-color;
+    }
+    #mymodannouncement,// 版权声明
+    #myskinannouncement, // 皮肤提示
+    .cgtl caption {
+        background-color: $bodybg;
+        border: none;
+    }
+    //底部发帖框
+    #fastpostform {
+        .pls,
+        .plc {
+            border: none;
+        }
+    }
+    //底部发帖框主体
+    #fastposteditor {
+        &,
+        .bar,
+        .area,
+        .pt {
+            background-color: $bodybg;
+            border: none;
+        }
+
+        .fpd a {
+            filter: $droplight $droplight $droplight;
+        }
+    }
+    // 每一楼右上角楼层显示
+    .pi strong a {
+        border-color: transparent;
+    }
+    // 图章
+    #threadstamp img {
+        filter: $droplight $droplight $droplight;
+    }
+}
+// 版块页面
+body.night-style {
+    #ct {
+        .bm.bml.pbn,
+        .bm.bmw.fl {
+            .bm_c {
+                background-color: $bodybg-l !important;
+            }
+        }
+        #pgt,
+        #thread_types > li a,
+        #separatorline th,
+        #separatorline td,
+        #forumnewshow, // 新主题
+        #f_pst .bm_c {
+            background-color: $bodybg-l !important;
+        }
+        // 主题列表
+        // 改了鼠标移上去高亮
+        #threadlist .th,
+        #threadlisttableid {
+            background-color: transparent;
+            tr {
+                // background-color: transparent;
+                th,
+                td {
+                    background-color: transparent;
+                    border: none;
+                }
+                &:hover {
+                    th,
+                    td {
+                        background-color: $bodybg-l-l;
+                    }
+                }
+            }
+        }
+        // 下一页按钮
+        .mn a.bm_h {
+            background-color: $bodybg-l !important;
+            border: none;
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+}
+// home.php misc.php
+body.night-style {
+    #ct {
+        // 左侧
+        .appl {
+            border-color: transparent !important;
+            .tbn {
+                h2 {
+                    background-color: $bodybg-d;
+                    background-image: none;
+                }
+                ul {
+                    border: none;
+                    li:hover {
+                        background-color: $bodybg-l;
+                    }
+                }
+                a {
+                    color: $fontcolor;
+                    &:hover {
+                        color: $a-highlight;
+                    }
+                }
+            }
+        }
+        // 右侧
+        .mn {
+            .bm {
+                background-color: transparent;
+                .tb.cl,
+                .bm_h {
+                    background-color: $bodybg-d;
+                    background-image: none;
+                    h3 {
+                        color: $fontcolor !important; // 好友页
+                    }
+                }
+                .bm.mtm,
+                .bm_c {
+                    background-color: $bodybg-l;
+                    border-color: transparent;
+                }
+                ul li {
+                    color: $fontcolor;
+                }
+                ul.buddy li {
+                    // 好友页
+                    background-color: $bodybg-l;
+                    border: none;
+                }
+                a {
+                    color: $fontcolor;
+                    &:hover {
+                        color: $a-highlight;
+                    }
+                }
+                .bm.bmn.mtm.cl {
+                    // 黑名单页面的一个大白块
+                    background-color: transparent !important;
+                }
+            }
+        }
+    }
+}
+// 顶部5个按钮
+body.night-style {
+    #nv > ul {
+        background-color: $bodybg;
+        background-image: none;
+        border: none;
+        li {
+            &:first-child > a {
+                &,
+                &:hover {
+                    border-left: none;
+                }
+            }
+            &:last-child > a {
+                &,
+                &:hover {
+                    border-right: none;
+                }
+            }
+            > a {
+                background-color: $bodybg-l;
+                &,
+                &:hover {
+                    border-color: $bodybg-l;
+                }
+                &:hover {
+                    background-color: $bodybg-l-l;
+                }
+            }
+        }
+    }
+}
+// 用户页
+body.night-style {
+    #uhd {
+        background-color: $bodybg-l;
+        border-color: $bodybg;
+        ul.tb.cl {
+            border-bottom-color: $bodybg;
+            li a {
+                background-color: $bodybg;
+                border: none;
+                color: $fontcolor;
+                &:hover {
+                    color: $a-highlight;
+                }
+            }
+        }
+    }
+    #ct {
+        border-color: $bodybg;
+    }
+
+    .tl {
+        background-color: transparent;
+        tr {
+            background-color: transparent;
+            th,
+            td {
+                background-color: transparent;
+                border: none;
+            }
+            &:hover {
+                th,
+                td {
+                    background-color: $bodybg-l-l;
+                }
+            }
+        }
+    }
+}
+// 处理各色的a/font
+body.night-style {
+    .xl label,
+    .xl label a {
+        // 论坛页 最新求助 里面的(+??)
+        color: #f99;
+    }
+    a,
+    font {
+        &[style*="color"] {
+            &[style*="#333333"] {
+                color: #e0e0e0 !important;
+            }
+            &[style*="#663399"],
+            &[style*="#8F2A90"] {
+                color: #de90df !important;
+            }
+            &[style*="#660099"] {
+                // 大区版主色
+                color: #bf8cd9 !important;
+            }
+            &[style*="#660000"], // 版主色
+            &[style*="#993333"],
+            &[style*="#EE1B2E"], // 红色主题
+            &[style*="#FF0000"] {
+                color: #f99 !important;
+            }
+            &[style*="#EE5023"], // 橙色主题
+            &[style*="#663300"] {
+                color: #d97f26 !important;
+            }
+            &[style*="#006666"] {
+                color: #6cc !important;
+            }
+            &[style*="#009900"] {
+                color: #9f9 !important;
+            }
+            &[style*="#3366FF"],
+            &[style*="#003399"] {
+                color: #6af !important;
+            }
+            &[style*="#330066"] {
+                color: #b28cd9 !important;
+            }
+        }
+    }
+    font {
+        &[color="#660000"], // 版主色
+        &[color="red"],
+        &[color="Red"] {
+            color: #f99 !important;
+        }
+        &[color="#3366FF"],
+        &[color="#003399"],
+        &[color="blue"],
+        &[color="Blue"] {
+            color: #99f !important;
+        }
+        &[color="#339933"],
+        &[color="#009900"],
+        &[color="green"],
+        &[color="Green"] {
+            color: #9f9 !important;
+        }
+        &[color="black"],
+        &[color="Black"] {
+            color: #fff !important;
+        }
+        &[color="#660099"] {
+            // 大区版主色
+            color: #bf8cd9 !important;
+        }
+    }
+}
