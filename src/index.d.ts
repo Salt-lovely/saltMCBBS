@@ -5,6 +5,10 @@ interface Window {
     jQuery: any,
     discuz_uid: string,
 }
+interface saltQueryCallback {
+    (index: number, el: Element): void
+}
+/**saltMCBBSCSS接口 */
 interface saltMCBBScss {
     setStyle(css: string, key: string): boolean,
     getStyle(key: string): string,
