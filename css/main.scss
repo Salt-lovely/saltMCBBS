@@ -1,0 +1,64 @@
+body {
+    > .mc_map_wp {
+        padding-top: 0;
+        margin-top: 0;
+        > .new_wp {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            h2 img {
+                max-height: 74px;
+            }
+        }
+    }
+}
+.pmwarn {
+    width: auto !important;
+    background-size: 16px !important;
+}
+ul.xl.xl2.o.cl .pmwarn {
+    background: url(template/mcbbs/image/warning.gif) no-repeat 0px 2px;
+}
+#uhd > .mn > ul .pmwarn a {
+    background: url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;
+    background-size: 16px !important;
+}
+// 警告的帖子
+.warned {
+    opacity: 0.2;
+    &:hover {
+        opacity: 0.9;
+    }
+}
+#scrolltop {
+    visibility: visible !important;
+    opacity: 1;
+    transition: 0.3s ease;
+    :not([style]) {
+        display: none;
+    }
+    &[style*="hidden"] {
+        margin-left: -10px;
+        opacity: 0;
+    }
+}
+.pl .blockcode {
+    > em {
+        top: 2px;
+        right: 2px;
+        position: absolute;
+        margin: 0 0 0 0;
+        &:hover {
+            outline: 1px dashed;
+        }
+    }
+    ol {
+        overflow-x: scroll;
+        li {
+            color: #444;
+            margin-left: 29px;
+            line-height: 1.8em;
+            height: 1.8em;
+            white-space: pre;
+        }
+    }
+}

@@ -6,9 +6,9 @@ $dropshadow: drop-shadow(0 3px 4px #222);
 $dropshadow-dark: drop-shadow(0 2px 2px #000);
 body.night-style {
     #saltNewPageHead {
-        --saltNewPageHeadbgcolor-l-t: rgba($color: #444444, $alpha: 0.5);
-        --saltNewPageHeadbgcolor-l: #444444;
-        --saltNewPageHeadbgcolor: #222222;
+        --saltNewPageHeadbgcolor-l-t: rgba($color: #444, $alpha: 0.5);
+        --saltNewPageHeadbgcolor-l: #444;
+        --saltNewPageHeadbgcolor: #333;
         &,
         a {
             color: #f0f0f0;
@@ -18,13 +18,17 @@ body.night-style {
         }
     }
 }
+// 隐藏顶栏
+#toptb {
+    display: none;
+}
 #saltNewPageHead {
     position: fixed;
     width: 310px;
-    height: 100%;
+    height: 100vh;
     top: 0;
-    left: -330px;
-    padding: 20px;
+    left: -340px;
+    padding: 30px;
     background-color: var(--saltNewPageHeadbgcolor-l-t, $light-bgcolor-t);
     color: #111;
     transition: 0.4s ease;
@@ -38,9 +42,9 @@ body.night-style {
         transition: 0.4s ease;
     }
     &::after {
-        content: "saltMCBBS脚本，开发语言: Typescript+SCSS";
+        content: "saltMCBBS脚本，开发语言: Typescript + SCSS";
         position: absolute;
-        bottom: 0;
+        top: 90vh;
         right: 0;
         color: var(--saltNewPageHeadbgcolor, $bgcolor);
     }

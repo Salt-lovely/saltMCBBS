@@ -1,18 +1,32 @@
-$bodybg: #333;
 $bodybg-d: #222;
-$bodybg-l: #494949;
-$bodybg-l-l: #5f5f5f;
-$bodybg-l-l-l: #777;
+$bodybg: lighten($bodybg-d, 6%);
+$bodybg-l: lighten($bodybg, 7%);
+$bodybg-l-l: lighten($bodybg-l, 8%);
+$bodybg-l-l-l: lighten($bodybg-l-l, 8%);
 
-$fontcolor: #e8e8e8;
-$fontcolor-l: #f2f2f2;
+$fontcolor-d: #e0e0e0;
+$fontcolor: lighten($fontcolor-d, 5%);
+$fontcolor-l: lighten($fontcolor, 10%);
 
 $a-highlight: #6cf;
 
 $table-border-color: #837c73;
 
-$droplight: drop-shadow(0 1px 4px #fff);
+$droplight: drop-shadow(0 0 4px #fff);
 
+@mixin noborder {
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-width: 0px;
+}
+@mixin glow {
+    filter: $droplight $droplight $droplight;
+}
+@mixin whiteTextStroke {
+    text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff;
+}
 // 大体更改
 body.night-style {
     &,
@@ -74,6 +88,44 @@ body.night-style {
                 color: $a-highlight;
             }
         }
+    }
+    // 弹出的对话框
+    .m_c,
+    .tm_c {
+        background-color: $bodybg;
+        color: $fontcolor;
+        // th
+        .dt th {
+            background-color: $bodybg;
+        }
+        .px,
+        .pt,
+        .ps,
+        select {
+            background-color: $bodybg;
+            @include noborder();
+        }
+        // 对话框的淡蓝色栏
+        .o {
+            background-color: $bodybg-l;
+        }
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+    // 蓝色字
+    .xi2,
+    .xi2 a,
+    .xi3 a {
+        color: #69f;
+    }
+    // 提示页
+    .nfl .f_c {
+        background-color: #444;
+        border: none;
     }
 }
 // 门户、论坛、小组
@@ -297,6 +349,7 @@ body.night-style {
     }
     // 帖子列表
     #postlist {
+        background-color: transparent;
         border: none;
     }
     #postlist>table, // 标题栏
@@ -338,32 +391,74 @@ body.night-style {
             }
         }
     }
+    // 帖子
     .plhin {
         .quote {
             background-color: $bodybg-l-l;
             color: $fontcolor;
         }
+        // 帖子正文
+        .pcb .t_fsz > table {
+            // 正文里的table
+            table {
+                color: #444;
+                @include whiteTextStroke();
+            }
+            //
+            .spoilerbutton {
+                border: 1px solid $bodybg-l;
+            }
+            .spoilerbody > table {
+                color: $fontcolor;
+                text-shadow: none;
+            }
+        }
+        // 受到警告
+        &.warned {
+            opacity: 0.1;
+            &:hover {
+                opacity: 0.9;
+            }
+        }
     }
+    // 快速回复
     #vfastpost {
-        // 快速回复
-        background-color: $bodybg-l-l;
+        background-color: transparent;
         background-image: none;
+        // border-radius: 15px;
         #vf_l,
         #vf_m,
         #vf_r,
         #vf_b {
-            background-color: $bodybg-d;
+            background-color: $bodybg;
             background-image: none;
         }
         #vf_m input {
             border-color: transparent;
             color: $fontcolor !important;
         }
-        // button#vreplysubmit {
-        //     background-color: $bodybg-l;
-        //     background-image: none;
-        //     color: $fontcolor;
-        // }
+        #vf_l {
+            border-radius: 5px 0 0 5px;
+        }
+        #vf_r {
+            border-radius: 0 5px 5px 0;
+        }
+        #vreplysubmit {
+            background-color: $bodybg;
+            background-image: none;
+            box-shadow: none;
+            position: relative;
+            &:after {
+                content: "快速回复";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 38px;
+                line-height: 38px;
+                font-size: 1rem;
+            }
+        }
     }
     #p_btn a {
         // 四个1楼按钮
@@ -383,7 +478,10 @@ body.night-style {
     }
     #mymodannouncement,// 版权声明
     #myskinannouncement, // 皮肤提示
-    .cgtl caption {
+    #mytextureannouncement, // 材质提示
+    #my16modannouncement, // 软件提示
+    .cgtl caption,
+    .locked {
         background-color: $bodybg;
         border: none;
     }
@@ -405,7 +503,7 @@ body.night-style {
         }
 
         .fpd a {
-            filter: $droplight $droplight $droplight;
+            @include glow();
         }
     }
     // 每一楼右上角楼层显示
@@ -414,7 +512,14 @@ body.night-style {
     }
     // 图章
     #threadstamp img {
-        filter: $droplight $droplight $droplight;
+        @include glow();
+    }
+    // 代码块
+    .blockcode {
+        filter: invert(0.8) hue-rotate(170deg); // 阴间滤镜
+        ol li {
+            color: #222;
+        }
     }
 }
 // 版块页面
@@ -461,6 +566,21 @@ body.night-style {
             color: $fontcolor;
             &:hover {
                 color: $a-highlight;
+            }
+        }
+        // 瀑布流的版块
+        #waterfall {
+            li {
+                background-image: none;
+                background-color: $bodybg-l;
+                transition: 0.3 ease;
+                &:hover {
+                    background-color: $bodybg-l-l;
+                }
+                > * {
+                    background-image: none;
+                    background-color: transparent;
+                }
             }
         }
     }
@@ -524,6 +644,13 @@ body.night-style {
                 .bm.bmn.mtm.cl {
                     // 黑名单页面的一个大白块
                     background-color: transparent !important;
+                }
+                input,
+                select,
+                option {
+                    background-color: $bodybg-l;
+                    background-image: none;
+                    @include noborder();
                 }
             }
         }
@@ -601,6 +728,47 @@ body.night-style {
     }
 }
 // 处理各色的a/font
+$colormap: (
+    "#333333": #e0e0e0,
+    "#663399": #de90df,
+    "#8f2a90": #de90df,
+    /*大区版主色*/ "#660099": #bf8cd9,
+    /*版主色*/ "#660000": #c66,
+    "#993333": #f99,
+    /*红色主题*/ "#EE1B2E": #f99,
+    "#ff0000": #f99,
+    "#FF0000": #f99,
+    /*橙色主题*/ "#EE5023": #d97f26,
+    /*褐色主题*/ "#996600": #e6a219,
+    "#663300": #d97f26,
+    "#006666": #6cc,
+    /*绿色主题*/ "#3C9D40": #8f8,
+    "#009900": #9f9,
+    "#3366ff": #6af,
+    "#2b65b7": #6af,
+    "#003399": #6af,
+    "#2B65B7": #6af,
+    "#330066": #b28cd9,
+    /*紫色主题*/ "#8F2A90": #cf61d1,
+);
+$fontcolormap: (
+    /*版主色*/ "#660000": #c66,
+    "red": #f99,
+    "Red": #f99,
+    "#000080": #8af,
+    "#3366ff": #8af,
+    "#003399": #8af,
+    "blue": #8af,
+    "Blue": #8af,
+    "#339933": #9f9,
+    "#009900": #9f9,
+    "green": #9f9,
+    "Green": #9f9,
+    "black": #fff,
+    "Black": #fff,
+    /*大区版主色*/ "#660099": #bf8cd9
+);
+$backcolormap: ("#FFFFFF");
 body.night-style {
     .xl label,
     .xl label a {
@@ -610,67 +778,25 @@ body.night-style {
     a,
     font {
         &[style*="color"] {
-            &[style*="#333333"] {
-                color: #e0e0e0 !important;
+            @each $key, $color in $colormap {
+                &[style*="#{$key}"] {
+                    color: $color !important;
+                }
             }
-            &[style*="#663399"],
-            &[style*="#8F2A90"] {
-                color: #de90df !important;
-            }
-            &[style*="#660099"] {
-                // 大区版主色
-                color: #bf8cd9 !important;
-            }
-            &[style*="#660000"], // 版主色
-            &[style*="#993333"],
-            &[style*="#EE1B2E"], // 红色主题
-            &[style*="#FF0000"] {
-                color: #f99 !important;
-            }
-            &[style*="#EE5023"], // 橙色主题
-            &[style*="#663300"] {
-                color: #d97f26 !important;
-            }
-            &[style*="#006666"] {
-                color: #6cc !important;
-            }
-            &[style*="#009900"] {
-                color: #9f9 !important;
-            }
-            &[style*="#3366FF"],
-            &[style*="#003399"] {
-                color: #6af !important;
-            }
-            &[style*="#330066"] {
-                color: #b28cd9 !important;
+        }
+        &[style*="background-color"] {
+            @each $key in $backcolormap {
+                &[style*="#{$key}"] {
+                    background-color: transparent !important;
+                }
             }
         }
     }
     font {
-        &[color="#660000"], // 版主色
-        &[color="red"],
-        &[color="Red"] {
-            color: #f99 !important;
-        }
-        &[color="#3366FF"],
-        &[color="#003399"],
-        &[color="blue"],
-        &[color="Blue"] {
-            color: #99f !important;
-        }
-        &[color="#339933"],
-        &[color="#009900"],
-        &[color="green"],
-        &[color="Green"] {
-            color: #9f9 !important;
-        }
-        &[color="black"],
-        &[color="Black"] {
-            color: #fff !important;
-        }
-        &[color="#660099"] {
-            // 大区版主色
-            color: #bf8cd9 !important;
+        @each $key, $color in $fontcolormap {
+            &[color*="#{$key}"] {
+                color: $color !important;
+            }
         }
     }
 }
