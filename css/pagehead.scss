@@ -8,13 +8,36 @@ body.night-style {
     #saltNewPageHead {
         --saltNewPageHeadbgcolor-l-t: rgba($color: #444, $alpha: 0.5);
         --saltNewPageHeadbgcolor-l: #444;
-        --saltNewPageHeadbgcolor: #333;
+        --saltNewPageHeadbgcolor: #363636;
         &,
         a {
             color: #f0f0f0;
         }
         a:hover {
             color: #6cf;
+        }
+        .y_search,
+        #scbar_type_menu {
+            background-image: none;
+            background-color: #444;
+        }
+        .y_search {
+            outline: none;
+            .y_search_btn button {
+                box-shadow: none;
+                filter: invert(0.8) hue-rotate(170deg);
+            }
+            .y_search_inp {
+                background-color: #555;
+                background-image: none;
+                input {
+                    background-color: #666;
+                }
+            }
+            .scbar_type_td {
+                background-color: #555;
+                background-image: none;
+            }
         }
     }
 }
@@ -28,11 +51,13 @@ body.night-style {
     height: 100vh;
     top: 0;
     left: -340px;
-    padding: 30px;
+    padding: 10px 30px;
     background-color: var(--saltNewPageHeadbgcolor-l-t, $light-bgcolor-t);
     color: #111;
     transition: 0.4s ease;
     transition-delay: 0.4s;
+    overflow-x: hidden;
+    // overflow-y: auto;
     opacity: 0.35;
     z-index: 999999;
     &:hover {
@@ -47,15 +72,51 @@ body.night-style {
         top: 90vh;
         right: 0;
         color: var(--saltNewPageHeadbgcolor, $bgcolor);
+        z-index: -1;
     }
+    .y_search,
     .userinfo,
     .links,
     .addons {
         width: 100%;
+        margin: 0;
         margin-bottom: 0.75rem;
         overflow: auto; // 触发BFC
         border-bottom: #ccc;
         font-size: 1rem;
+    }
+    // 移动过来的搜索框
+    .y_search {
+        // margin-top: -1.25rem;
+        // margin-bottom: 0.1rem;
+        background-color: transparent;
+        outline: 1px solid #ccc;
+        overflow-y: hidden;
+        &,
+        table {
+            width: 100%;
+        }
+        .y_search_btn {
+            opacity: 0.5;
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+        .y_search_inp {
+            width: calc(100% - 42px);
+            background-image: none;
+            input {
+                width: calc(100% - 10px);
+            }
+        }
+        .scbar_type_td {
+            width: 48px;
+            background-image: none;
+        }
+    }
+    // 配套的搜索类型框
+    #scbar_type_menu {
+        top: 322px !important;
     }
     .userinfo {
         overflow-x: hidden;

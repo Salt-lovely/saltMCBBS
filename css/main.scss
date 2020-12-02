@@ -1,3 +1,4 @@
+$bgcolor: #fbf2db;
 body {
     > .mc_map_wp {
         padding-top: 0;
@@ -11,6 +12,7 @@ body {
         }
     }
 }
+// 查看警告记录按钮
 .pmwarn {
     width: auto !important;
     background-size: 16px !important;
@@ -29,11 +31,12 @@ ul.xl.xl2.o.cl .pmwarn {
         opacity: 0.9;
     }
 }
+// 回到顶部按钮
 #scrolltop {
     visibility: visible !important;
     opacity: 1;
     transition: 0.3s ease;
-    :not([style]) {
+    &:not([style]) {
         display: none;
     }
     &[style*="hidden"] {
@@ -41,7 +44,9 @@ ul.xl.xl2.o.cl .pmwarn {
         opacity: 0;
     }
 }
+// 代码块
 .pl .blockcode {
+    position: relative;
     > em {
         top: 2px;
         right: 2px;
@@ -60,5 +65,44 @@ ul.xl.xl2.o.cl .pmwarn {
             height: 1.8em;
             white-space: pre;
         }
+    }
+}
+// 设置面板
+.settingPanel {
+    width: 50%;
+    min-width: 360px;
+    right: 25%;
+    max-height: 90vh;
+    top: 10vh;
+    position: fixed;
+    background-color: $bgcolor;
+    background-clip: padding-box;
+    padding: 0 8px 8px 8px;
+    border: 8px solid;
+    border-radius: 8px;
+    border-color: rgba($color: #000000, $alpha: 0.2);
+    box-sizing: border-box;
+    overflow-y: auto;
+    transition: 0.3s ease, opacity 0.2s ease;
+    z-index: 999999;
+    &.visible {
+        opacity: 1;
+        top: 10vh;
+    }
+    &.hidden {
+        opacity: 0;
+        top: -90vh;
+        transition-timing-function: ease-in;
+    }
+    > * {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    textarea {
+        resize: vertical;
+        height: 4em;
+        min-height: 2em;
+        max-height: 20em;
+        width: 98%;
     }
 }

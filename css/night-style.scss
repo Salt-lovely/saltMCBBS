@@ -29,18 +29,18 @@ $droplight: drop-shadow(0 0 4px #fff);
 }
 // 大体更改
 body.night-style {
-    &,
     input,
     button,
     select,
-    textarea,
-    ntc_body {
-        background-color: $bodybg;
+    textarea {
+        background-color: $bodybg-l;
+        background-image: none;
         border-color: $table-border-color;
         color: $fontcolor;
     }
     & {
-        background-color: $bodybg-d;
+        background-color: $bodybg-d !important;
+        color: $fontcolor;
     }
     .mc_map_wp {
         box-shadow: 0 0 20px 1px #000;
@@ -57,6 +57,7 @@ body.night-style {
         opacity: 0;
     }
     .fl .forum_index_title,
+    .sttl, // 一些页面的（搜索页）的顶部提示
     .mn .bm_h {
         background-color: $bodybg-l;
         padding-left: 16px;
@@ -102,7 +103,7 @@ body.night-style {
         .pt,
         .ps,
         select {
-            background-color: $bodybg;
+            background-color: $bodybg-l;
             @include noborder();
         }
         // 对话框的淡蓝色栏
@@ -652,6 +653,12 @@ body.night-style {
                     background-image: none;
                     @include noborder();
                 }
+                .nts {
+                    background-color: $bodybg-l;
+                    .ntc_body[style*="color"] {
+                        color: $fontcolor !important;
+                    }
+                }
             }
         }
     }
@@ -797,6 +804,19 @@ body.night-style {
             &[color*="#{$key}"] {
                 color: $color !important;
             }
+        }
+    }
+    .t_f[style*="background-color"][style*="#FBF2DB"] {
+        background-color: transparent !important;
+    }
+}
+body.night-style {
+    .settingPanel {
+        background-color: $bodybg;
+        color: $fontcolor;
+        textarea {
+            background-color: $bodybg-l;
+            border: none;
         }
     }
 }

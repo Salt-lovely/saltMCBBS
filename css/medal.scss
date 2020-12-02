@@ -1,0 +1,574 @@
+// 勋章
+p.md_ctrl {
+    max-height: calc(64px * 4.5); /*限制为5行*/
+    overflow: auto;
+    // padding: 5px;
+    margin-left: 15px;
+    /*scrollbar-width: none; 也许要等到CSS4才会有统一的标准*/
+    overflow: -moz-scrollbars-none; /*网传的兼容火狐的隐藏滚动条的方法*/
+    -ms-overflow-style: none; /*兼容IE*/
+    &::-webkit-scrollbar {
+        width: 0 !important; /*兼容谷歌（经测试可用）*/
+    }
+    .-o-scrollbar {
+        -moz-appearance: none !important; /*兼容opera*/
+    }
+    > a {
+        width: 100%;
+        > img {
+            animation: dropdown 0.5s ease;
+            position: relative;
+            width: 35px;
+            height: 55px;
+            -webkit-filter: drop-shadow(0 2px 1px #000);
+            filter: drop-shadow(0 2px 1px #000);
+            margin: 4.5px;
+            transition: filter 0.5s ease;
+            &:hover {
+                animation: pickup 0.5s ease;
+                -webkit-transform: matrix3d(
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    -0.001,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    -1.6,
+                    0,
+                    0.92
+                );
+                transform: matrix3d(
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    -0.001,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    -1.6,
+                    0,
+                    0.92
+                );
+                -webkit-filter: drop-shadow(
+                    0 3px 2px rgba($color: #000000, $alpha: 0.5)
+                );
+                filter: drop-shadow(
+                    0 3px 2px rgba($color: #000000, $alpha: 0.5)
+                );
+                // color: rgba($color: #000000, $alpha: 0.5);
+            }
+        }
+    }
+}
+body {
+    #append_parent>.tip_4,
+    .tip_4.aimg_tip,
+    .pls .tip_4, //移动到等级条上出现的框框
+    .tip_4[id*="attach"],
+    dd>.tip_4 {
+        background-color: #e3c99eee !important;
+        max-height: 90px !important;
+        width: 140px;
+        margin-top: 35px;
+    }
+    .tip_4.aimg_tip, //移动到图片上出现的框框
+    .tip_4[id*="attach"] {
+        width: 200px !important;
+        padding: 5px !important;
+        background-image: none !important;
+    }
+    .tip_4[id*="attach"] .tip_c {
+        padding: 5px !important;
+        background-image: none !important;
+    }
+
+    .tip_4.aimg_tip p {
+        pointer-events: auto !important;
+    }
+    #append_parent > .tip_4 {
+        margin-top: 40px;
+        margin-left: -10px;
+    }
+
+    .tip_3,
+    .tip_4 {
+        /*鼠标移上去时出现的说明窗口*/
+        transition: opacity 0.4s ease !important;
+        width: 105px;
+        height: 165px;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        margin-top: 85px;
+        margin-left: 44px;
+        pointer-events: none !important;
+        overflow: hidden;
+        background-color: rgba($color: #222, $alpha: 0.75);
+        box-shadow: 0px 10px 25px -4px #000;
+        image-rendering: pixelated; /*用临近插值法放大图像*/
+        &::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: -7px;
+            left: -7px;
+            width: 119px;
+            height: 187px;
+            background-size: 119px 187px !important;
+            -webkit-filter: saturate(140%); /* Chrome, Safari, Opera */
+            filter: saturate(140%);
+        }
+    }
+
+    .tip {
+        .tip_horn {
+            /*说明窗口下面的小尖尖*/
+            display: none;
+        }
+        .tip_c {
+            background-image: linear-gradient(
+                142deg,
+                #fff0 0%,
+                #fff7 5%,
+                #fff5 28%,
+                #fff0 29%,
+                #fff0 70%,
+                #fff5 70.5%,
+                #fff5 73%,
+                #fff0 74%,
+                #fff7 75%,
+                #fff7 85%,
+                #fff0 85.1%
+            ); /*诡异的光*/
+            padding: 20px 15px 0 15px;
+            height: 165px;
+            color: #222;
+            > p,
+            > h4 {
+                color: #222;
+                text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
+                    0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff,
+                    0 0 3px #fff, 0 0 3px #fff !important;
+            }
+            h4 {
+                /*说明窗口的标题栏*/
+                border-bottom: 1px solid #fff;
+            }
+        }
+    }
+}
+// CSS是有极限的
+body {
+    $medalmap: (
+        101: "m_a2.png",
+        102: "m_a3.png",
+        103: "m_a6.png",
+        11: "m_d1.png",
+        12: "m_d2.png",
+        104: "m_b1.png",
+        105: "m_b3.png",
+        106: "m_b4.png",
+        234: "m_b5.gif",
+        107: "m_rc1.png",
+        108: "m_rc3.png",
+        109: "m_rc5.png",
+        250: "m_c_10years.png",
+        76: "m_g5.png",
+        58: "m_g3.png",
+        59: "m_g4.png",
+        21: "m_noob.png",
+        9: "m_c2.png",
+        2: "m_c3.png",
+        38: "m_c1.png",
+        112: "m_c4.png",
+        251: "m_c_piglin.png",
+        155: "m_cape_mc2011.png",
+        156: "m_cape_mc2012.png",
+        157: "m_cape_mc2013.png",
+        158: "m_cape_mc2015.png",
+        159: "m_cape_Tr.png",
+        180: "m_cape_cobalt.png",
+        181: "m_cape_maper.png",
+        196: "m_cape_mc2016.png",
+        247: "m_cape_Mojira.png",
+        45: "m_s1.png",
+        127: "m_s2.png",
+        78: "m_p_pc.png",
+        113: "m_p_and.png",
+        114: "m_p_ios.png",
+        141: "m_p_wp.png",
+        160: "m_p_w10.png",
+        115: "m_p_box360.png",
+        116: "m_p_boxone.png",
+        117: "m_p_ps3.png",
+        118: "m_p_ps4.png",
+        119: "m_p_psv.png",
+        170: "m_p_wiiu.png",
+        209: "m_p_switch.png",
+        227: "m_p_3ds.png",
+        56: "m_g1.png",
+        57: "m_g2.png",
+        61: "m_p1.png",
+        62: "m_p2.png",
+        63: "m_p3.png",
+        46: "m_p4.png",
+        64: "m_p5.png",
+        65: "m_p6.png",
+        66: "m_p7.png",
+        75: "m_p8.png",
+        85: "m_p9.png",
+        86: "m_p10.png",
+        100: "m_p11.png",
+        175: "m_p12.png",
+        182: "m_p13.png",
+        91: "m_h1.png",
+        93: "m_h2.png",
+        92: "m_h3.png",
+        94: "m_h4.png",
+        95: "m_h5.png",
+        96: "m_h6.png",
+        152: "m_h7.png",
+        183: "m_h8.png",
+        200: "m_h9.png",
+        210: "m_h10.png",
+        70: "m_arena_v1.png",
+        72: "m_arena_v2.png",
+        88: "m_arena_v3.png",
+        111: "m_arena_v4.png",
+        69: "m_arena_w1.png",
+        68: "m_arena_w2.png",
+        73: "m_arena_w3.png",
+        74: "m_arena_w4.png",
+        89: "m_arena_w5.png",
+        90: "m_arena_w6.png",
+        98: "m_arena_w8.png",
+        99: "m_arena_w7.png",
+        120: "m_arena_v5.png",
+        121: "m_arena_w9.png",
+        122: "m_arena_w10.png",
+        123: "m_arena_i1.png",
+        129: "m_arena_v6.png",
+        130: "m_arena_w11.png",
+        131: "m_arena_w12.png",
+        132: "m_arena_i2.png",
+        143: "m_arena_v7.png",
+        144: "m_arena_v7f.png",
+        145: "m_arena_w13.png",
+        146: "m_arena_w14.png",
+        164: "m_arena_v8.png",
+        165: "m_arena_w15.png",
+        166: "m_arena_w16.png",
+        176: "m_arena_v9.png",
+        177: "m_arena_w17.png",
+        178: "m_arena_w18.png",
+        184: "m_arena_v10.png",
+        185: "m_arena_w19.png",
+        186: "m_arena_w20.png",
+        204: "m_arena_v11.png",
+        205: "m_arena_w21.png",
+        206: "m_arena_w22.png",
+        211: "m_arena_v12.png",
+        212: "m_arena_w23.png",
+        213: "m_arena_w24.png",
+        224: "m_arena_v13.png",
+        225: "m_arena_w25.png",
+        226: "m_arena_w26.png",
+        237: "m_arena14_1.png",
+        238: "m_arena14_2.png",
+        239: "m_arena14_3.png",
+        136: "m_s_v1.png",
+        167: "m_s_bili.png",
+        174: "m_s_v2.png",
+        195: "m_s_v3.png",
+        218: "m_s_bili2.png",
+        240: "m_s_v4.png",
+        253: "m_s_wiki.png",
+        254: "m_s_mcwiki.png",
+        124: "m_pearena_v1.png",
+        125: "m_pearena_w2.png",
+        126: "m_pearena_w1.png",
+        133: "m_pearena_v2.png",
+        134: "m_pearena_w4.png",
+        135: "m_pearena_w3.png",
+        147: "m_pearena_v3.png",
+        148: "m_pearena_w6.png",
+        149: "m_pearena_w5.png",
+        161: "m_pearena_v4.png",
+        162: "m_pearena_w8.png",
+        163: "m_pearena_w7.png",
+        171: "m_pearena_v5.png",
+        172: "m_pearena_w10.png",
+        173: "m_pearena_w9.png",
+        190: "m_pearena_w13.png",
+        192: "m_pearena_v6.png",
+        193: "m_pearena_w11.png",
+        194: "m_pearena_w12.png",
+        201: "m_pearena_v7.png",
+        202: "m_pearena_w16.png",
+        203: "m_pearena_w15.png",
+        214: "m_pearena_v8.png",
+        215: "m_pearena_w18.png",
+        216: "m_pearena_w17.png",
+        221: "m_pearena_v9.png",
+        222: "m_pearena_w20.png",
+        223: "m_pearena_w19.png",
+        229: "m_pearena_v10.png",
+        230: "m_pearena_w22.png",
+        231: "m_pearena_w21.png",
+        241: "m_pearena_v11.png",
+        242: "m_pearena_w24.png",
+        243: "m_pearena_w23.png",
+        197: "m_pofg_v1.png",
+        198: "m_pofg_v2.png",
+        199: "m_pofg_v3.png",
+        137: "m_g_cw.png",
+        138: "m_g_trp.png",
+        139: "m_g_tas.png",
+        140: "m_g_sc.png",
+        142: "m_g_sl.png",
+        150: "m_g_hayo.png",
+        151: "m_g_aa.png",
+        153: "m_g_is.png",
+        154: "m_g_cbl.png",
+        168: "m_g_ntl.png",
+        169: "m_g_tcp.png",
+        179: "m_g_mpw.png",
+        207: "m_g_ud.png",
+        217: "m_g_bs.png",
+        219: "m_g_pcd.png",
+        220: "m_g_gwnw.png",
+        228: "m_g_lw.png",
+        232: "m_g_uel.png",
+        233: "m_g_tgc.png",
+        235: "m_g_nf.png",
+        236: "m_g_mcbk.png",
+        244: "m_g_pos.png",
+        245: "m_g_stc.png",
+        246: "m_g_cps.png",
+        248: "m_g_wiki.png",
+        249: "m_g_rmg.png",
+        252: "m_g_tml.png",
+    );
+    div[id*="_menu"]:before {
+        background-repeat: no-repeat;
+    }
+    @each $key, $name in $medalmap {
+        #md_#{$key}_menu:before,
+        #medal_#{$key}_menu:before {
+            background: url(static/image/common/#{$name});
+        }
+    }
+}
+// 勋章抬起动画
+@keyframes pickup {
+    0% {
+        -webkit-transform: matrix3d(
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+        );
+        transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+    50% {
+        -webkit-transform: matrix3d(
+            1,
+            0,
+            0,
+            -0.002,
+            0,
+            1,
+            0,
+            -0.002,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            0.95
+        );
+        transform: matrix3d(
+            1,
+            0,
+            0,
+            -0.002,
+            0,
+            1,
+            0,
+            -0.002,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            0.95
+        );
+    }
+    100% {
+        -webkit-transform: matrix3d(
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -0.001,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1.6,
+            0,
+            0.92
+        );
+        transform: matrix3d(
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -0.001,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1.6,
+            0,
+            0.92
+        );
+    }
+}
+// 勋章放下动画
+@keyframes dropdown {
+    0% {
+        -webkit-transform: matrix3d(
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -0.001,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1.6,
+            0,
+            0.92
+        );
+        transform: matrix3d(
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -0.001,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1.6,
+            0,
+            0.92
+        );
+    }
+    50% {
+        -webkit-transform: matrix3d(
+            1,
+            0,
+            0,
+            -0.001,
+            0,
+            1,
+            0,
+            -0.002,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1.1,
+            0,
+            0.95
+        );
+        transform: matrix3d(
+            1,
+            0,
+            0,
+            -0.001,
+            0,
+            1,
+            0,
+            -0.002,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1.1,
+            0,
+            0.95
+        );
+    }
+    100% {
+        -webkit-transform: matrix3d(
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+        );
+        transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+}
