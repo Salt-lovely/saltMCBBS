@@ -8,6 +8,108 @@ interface Window {
 interface saltQueryCallback {
     (index: number, el: Element): void
 }
+interface saltMCBBSOriginClass {
+    new(): saltMCBBSOriginClassInstance
+}
+interface saltMCBBSOriginClassInstance {
+    /**
+     * 根据选择器遍历元素
+     * @param selector 字符串，选择器
+     * @param callback 回调函数(index: number, el: Element): void
+     */
+    saltQuery(selector: string, callback: saltQueryCallback)
+    /**
+     * 封装了MutationObserver的少许操作，自动开始监视
+     * @param id 要监听的元素ID
+     * @param callback 回调函数
+     * @returns 成果则返回一个已经开始监听的MutationObserver对象，否则返回null
+     */
+    saltObserver(id: string, callback: MutationCallback, watchAttr: boolean = false, watchChildList: boolean = true): MutationObserver | null,
+    /**
+     * 根据key存入本地存储
+     * @param key 键值
+     * @param value 要存放的值
+     */
+    write(key: string, value: any),
+    /**
+     * 根据key读取本地数据
+     * @param key 键值
+     */
+    read<T>(key: string): T,
+    /**
+     * 根据key读取本地数据，若没有则写入默认数据
+     * @param key 键值
+     *  */
+    readWithDefault<T>(key: string, defaultValue: T): T,
+    /**
+     * 断言
+     * @param condition 为假时报错
+     * @param msg 报错语句，默认为“发生错误”
+     */
+    assert(condition: any, msg: string = '发生错误'): void,
+    /**
+     * 带前缀打印
+     * @param msg 要打印的内容
+     */
+    log(msg: any): void,
+    /**
+     * sleep 返回一个延迟一定ms的promise
+     * @param time 单位毫秒
+     */
+    sleep(time: number)
+}
+/**saltMCBBS接口 */
+interface saltMCBBS {
+    /**
+     * 夜间模式
+     * @param night boolean切换为夜晚还是白天；
+     * @param log 是否记录进本地存储
+     *  */
+    nightStyle(night: boolean, log: boolean): void,
+    /**转换夜间模式 */
+    toggleNightStyle(): void,
+    /**显示设置面板 */
+    showSettingPanel(): void,
+    /**隐藏设置面板 */
+    hideSettingPanel(): void,
+    /**
+     * 添加配置项
+     * @param div 一个元素，里面的东西自己写
+     * @param id 元素的名字，删除的时候用
+     */
+    addSetting(div: Element, id?: string),
+    /**
+     * 删除配置项
+     * @param id 元素的名字
+     */
+    delSetting(id: string),
+    /**将格式正确的obj变成a元素 */
+    obj2a(obj: AnchorObj[], targetDefault = '_self'): HTMLAnchorElement[],
+    /**批量添加子节点 */
+    addChildren(parent: Element, children: NodeListOf<Element> | Element[]): void,
+    /**
+     * 根据UID获取信息
+     * @param uid 用户的UID
+     * @param callback 回调函数
+     * @param retry 失败后重试次数
+     * @param retryTime 重试时间间隔
+     */
+    fetchUID(uid: number | string, callback: fetchUIDcallback, retry = 2, retryTime = 1500),
+    /**获取当前用户的UID*/
+    getUID(): number,
+    /**
+     * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
+     * @param str 要分割的字符串
+     * @param spliter 按什么划分，默认按换行划分
+     */
+    formatToStringArray(str: string, spliter: '\n'): string[],
+    /**删除字符串两侧的空格 */
+    Trim(x: string): string,
+}
+/**fetchUID的回调函数 */
+interface fetchUIDcallback {
+    (data: BBSAPIResponceData): void
+}
 /**saltMCBBSCSS接口 */
 interface saltMCBBScss {
     setStyle(css: string, key: string): boolean,
@@ -20,36 +122,31 @@ interface saltMCBBScss {
 interface styleMap {
     [index: string]: string,
 }
-/**
- * 可以转换为<a>的obj
- */
+/**可以转换为<a>的obj */
 interface AnchorObj {
     url: string,
     text: string,
     img?: string,
     target?: string,
     class?: string,
+    title?: string,
 }
-/**
- * MCBBS的API返回中.data.Variables的部分内容
- */
+/**MCBBS的API返回中.data的部分内容 */
+interface BBSAPIResponceData { Variables: BBSAPIResponceDataVariables; }
+/**MCBBS的API返回中.data.Variables的部分内容 */
 interface BBSAPIResponceDataVariables {
     extcredits: BBSAPIResponceDataVariablesExtcredits,
     space: BBSAPIResponceDataVariablesSpace,
     notice: BBSAPIResponceDataVariablesNotice,
 }
-/**
- * MCBBS的API返回中.data.Variables.notice的内容
- */
+/**MCBBS的API返回中.data.Variables.notice的内容 */
 interface BBSAPIResponceDataVariablesNotice {
     newmypost: string,
     newpm: string,
     newprompt: string,
     newpush: string,
 }
-/**
- * MCBBS的API返回中.data.Variables.extcredits的内容
- */
+/**MCBBS的API返回中.data.Variables.extcredits的内容 */
 interface BBSAPIResponceDataVariablesExtcredits {
     1: BBSAPIResponceDataVariablesExtcreditsInside,
     2: BBSAPIResponceDataVariablesExtcreditsInside,
@@ -73,9 +170,7 @@ interface BBSAPIResponceDataVariablesExtcreditsInside {
     /**积分单位 */
     unit: string,
 }
-/**
- * MCBBS的API返回中.data.Variables.space的部分内容
- */
+/**MCBBS的API返回中.data.Variables.space的部分内容 */
 interface BBSAPIResponceDataVariablesSpace {
     birthcity: string,
     birthcommunity: string,
