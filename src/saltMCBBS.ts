@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 // ==UserScript==
 // @name         saltMCBBS
 // @namespace    http://salt.is.lovely/
@@ -8,11 +8,9 @@
 // @grant        none
 // @license      CC BY-NC-SA 4.0
 // ==/UserScript==
-// var __window = window;
-// window.a = 123;
 (function () {
     /**版本 */
-    let myversion = '0.1.1'
+    let myversion = '0.1.3'
     /**历史 */
     let myhistory = ``
     /**前缀 */
@@ -42,7 +40,7 @@
          * @param selector 字符串，选择器
          * @param callback 回调函数(index: number, el: Element): void
          */
-        saltQuery(selector: string, callback: saltQueryCallback) {
+        saltQuery(selector: string, callback: (index: number, el: Element) => void) {
             let elems = document.querySelectorAll(selector)
             for (let i = 0; i < elems.length; i++) {
                 callback(i, elems[i])
@@ -50,13 +48,18 @@
         }
         /**
          * 封装了MutationObserver的少许操作，自动开始监视
-         * @param id 要监听的元素ID
+         * @param id 要监听的元素ID(字符串)或一个元素(Element)
          * @param callback 回调函数
          * @returns 成果则返回一个已经开始监听的MutationObserver对象，否则返回null
          */
-        saltObserver(id: string, callback: MutationCallback, watchAttr: boolean = false, watchChildList: boolean = true): MutationObserver | null {
+        saltObserver(id: string | Element, callback: MutationCallback, watchAttr: boolean = false, watchChildList: boolean = true): MutationObserver | null {
             if (!watchAttr && !watchChildList) { return null }
-            let targetNode = document.getElementById(id);
+            let targetNode: Element | null = null
+            if (typeof id == 'string') {
+                targetNode = document.getElementById(id)
+            } else if (id instanceof Element) {
+                targetNode = id
+            }
             if (!targetNode) { return null }
             let x = new MutationObserver(callback)
             let json: MutationObserverInit = { attributes: watchAttr, childList: watchChildList, subtree: true, }
@@ -88,7 +91,7 @@
         /**
          * 根据key读取本地数据，若没有则写入默认数据
          * @param key 键值
-         *  */
+         */
         readWithDefault<T>(key: string, defaultValue: T): T {
             let value: string | null = localStorage.getItem(techprefix + key);
             if (value && value != "undefined" && value != "null") {
@@ -155,12 +158,14 @@
                 , 'night-style'
             )
             window.saltMCBBSCSS.setStyle( // 勋章样式
-                `p.md_ctrl{max-height:calc(64px * 4.5);overflow:auto;margin-left:15px;overflow:-moz-scrollbars-none;-ms-overflow-style:none}p.md_ctrl::-webkit-scrollbar{width:0 !important}p.md_ctrl .-o-scrollbar{-moz-appearance:none !important}p.md_ctrl>a{width:100%}p.md_ctrl>a>img{animation:dropdown 0.5s ease;position:relative;width:35px;height:55px;-webkit-filter:drop-shadow(0 2px 1px #000);filter:drop-shadow(0 2px 1px #000);margin:4.5px;transition:filter 0.5s ease}p.md_ctrl>a>img:hover{animation:pickup 0.5s ease;-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);-webkit-filter:drop-shadow(0 3px 2px rgba(0,0,0,0.5));filter:drop-shadow(0 3px 2px rgba(0,0,0,0.5))}body #append_parent>.tip_4,body .tip_4.aimg_tip,body .pls .tip_4,body .tip_4[id*="attach"],body dd>.tip_4{background-color:#e3c99eee !important;max-height:90px !important;width:140px;margin-top:35px}body .tip_4.aimg_tip,body .tip_4[id*="attach"]{width:200px !important;padding:5px !important;background-image:none !important}body .tip_4[id*="attach"] .tip_c{padding:5px !important;background-image:none !important}body .tip_4.aimg_tip p{pointer-events:auto !important}body #append_parent>.tip_4{margin-top:40px;margin-left:-10px}body .tip_3,body .tip_4{transition:opacity 0.4s ease !important;width:105px;height:165px;padding:0;border:none;border-radius:5px;margin-top:85px;margin-left:44px;pointer-events:none !important;overflow:hidden;background-color:rgba(34,34,34,0.75);box-shadow:0px 10px 25px -4px #000;image-rendering:pixelated}body .tip_3::before,body .tip_4::before{content:"";position:absolute;z-index:-1;top:-7px;left:-7px;width:119px;height:187px;background-size:119px 187px !important;-webkit-filter:saturate(140%);filter:saturate(140%)}body .tip .tip_horn{display:none}body .tip .tip_c{background-image:linear-gradient(142deg, #fff0 0%, #fff7 5%, #fff5 28%, #fff0 29%, #fff0 70%, #fff5 70.5%, #fff5 73%, #fff0 74%, #fff7 75%, #fff7 85%, #fff0 85.1%);padding:20px 15px 0 15px;height:165px;color:#222}body .tip .tip_c>p,body .tip .tip_c>h4{color:#222;text-shadow:0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
+                `p.md_ctrl{overflow:auto;margin-left:15px;overflow:-moz-scrollbars-none;-ms-overflow-style:none}p.md_ctrl::-webkit-scrollbar{width:0 !important}p.md_ctrl .-o-scrollbar{-moz-appearance:none !important}p.md_ctrl>a{width:100%}p.md_ctrl>a>img{animation:dropdown 0.5s ease;position:relative;width:35px;height:55px;-webkit-filter:drop-shadow(0 2px 1px #000);filter:drop-shadow(0 2px 1px #000);margin:4.5px;transition:filter 0.5s ease}p.md_ctrl>a>img:hover{animation:pickup 0.5s ease;-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);-webkit-filter:drop-shadow(0 3px 2px rgba(0,0,0,0.5));filter:drop-shadow(0 3px 2px rgba(0,0,0,0.5))}body #append_parent>.tip_4,body .tip_4.aimg_tip,body .pls .tip_4,body .tip_4[id*="attach"],body dd>.tip_4{background-color:#e3c99eee !important;max-height:90px !important;width:140px;margin-top:35px}body .tip_4.aimg_tip,body .tip_4[id*="attach"]{width:200px !important;padding:5px !important;background-image:none !important}body .tip_4[id*="attach"] .tip_c{padding:5px !important;background-image:none !important}body .tip_4.aimg_tip p{pointer-events:auto !important}body #append_parent>.tip_4{margin-top:40px;margin-left:-10px}body .tip_3,body .tip_4{transition:opacity 0.4s ease !important;width:105px;height:165px;padding:0;border:none;border-radius:5px;margin-top:85px;margin-left:44px;pointer-events:none !important;overflow:hidden;background-color:rgba(34,34,34,0.75);box-shadow:0px 10px 25px -4px #000;image-rendering:pixelated}body .tip_3::before,body .tip_4::before{content:"";position:absolute;z-index:-1;top:-7px;left:-7px;width:119px;height:187px;background-size:119px 187px !important;-webkit-filter:saturate(140%);filter:saturate(140%)}body .tip .tip_horn{display:none}body .tip .tip_c{background-image:linear-gradient(142deg, #fff0 0%, #fff7 5%, #fff5 28%, #fff0 29%, #fff0 70%, #fff5 70.5%, #fff5 73%, #fff0 74%, #fff7 75%, #fff7 85%, #fff0 85.1%);padding:20px 15px 0 15px;height:165px;color:#222}body .tip .tip_c>p,body .tip .tip_c>h4{color:#222;text-shadow:0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
  0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff,
  0 0 3px #fff, 0 0 3px #fff !important}body .tip .tip_c h4{border-bottom:1px solid #fff}body div[id*="_menu"]:before{background-repeat:no-repeat}body #md_101_menu:before,body #medal_101_menu:before{background:url(static/image/common/m_a2.png)}body #md_102_menu:before,body #medal_102_menu:before{background:url(static/image/common/m_a3.png)}body #md_103_menu:before,body #medal_103_menu:before{background:url(static/image/common/m_a6.png)}body #md_11_menu:before,body #medal_11_menu:before{background:url(static/image/common/m_d1.png)}body #md_12_menu:before,body #medal_12_menu:before{background:url(static/image/common/m_d2.png)}body #md_104_menu:before,body #medal_104_menu:before{background:url(static/image/common/m_b1.png)}body #md_105_menu:before,body #medal_105_menu:before{background:url(static/image/common/m_b3.png)}body #md_106_menu:before,body #medal_106_menu:before{background:url(static/image/common/m_b4.png)}body #md_234_menu:before,body #medal_234_menu:before{background:url(static/image/common/m_b5.gif)}body #md_107_menu:before,body #medal_107_menu:before{background:url(static/image/common/m_rc1.png)}body #md_108_menu:before,body #medal_108_menu:before{background:url(static/image/common/m_rc3.png)}body #md_109_menu:before,body #medal_109_menu:before{background:url(static/image/common/m_rc5.png)}body #md_250_menu:before,body #medal_250_menu:before{background:url(static/image/common/m_c_10years.png)}body #md_76_menu:before,body #medal_76_menu:before{background:url(static/image/common/m_g5.png)}body #md_58_menu:before,body #medal_58_menu:before{background:url(static/image/common/m_g3.png)}body #md_59_menu:before,body #medal_59_menu:before{background:url(static/image/common/m_g4.png)}body #md_21_menu:before,body #medal_21_menu:before{background:url(static/image/common/m_noob.png)}body #md_9_menu:before,body #medal_9_menu:before{background:url(static/image/common/m_c2.png)}body #md_2_menu:before,body #medal_2_menu:before{background:url(static/image/common/m_c3.png)}body #md_38_menu:before,body #medal_38_menu:before{background:url(static/image/common/m_c1.png)}body #md_112_menu:before,body #medal_112_menu:before{background:url(static/image/common/m_c4.png)}body #md_251_menu:before,body #medal_251_menu:before{background:url(static/image/common/m_c_piglin.png)}body #md_155_menu:before,body #medal_155_menu:before{background:url(static/image/common/m_cape_mc2011.png)}body #md_156_menu:before,body #medal_156_menu:before{background:url(static/image/common/m_cape_mc2012.png)}body #md_157_menu:before,body #medal_157_menu:before{background:url(static/image/common/m_cape_mc2013.png)}body #md_158_menu:before,body #medal_158_menu:before{background:url(static/image/common/m_cape_mc2015.png)}body #md_159_menu:before,body #medal_159_menu:before{background:url(static/image/common/m_cape_Tr.png)}body #md_180_menu:before,body #medal_180_menu:before{background:url(static/image/common/m_cape_cobalt.png)}body #md_181_menu:before,body #medal_181_menu:before{background:url(static/image/common/m_cape_maper.png)}body #md_196_menu:before,body #medal_196_menu:before{background:url(static/image/common/m_cape_mc2016.png)}body #md_247_menu:before,body #medal_247_menu:before{background:url(static/image/common/m_cape_Mojira.png)}body #md_45_menu:before,body #medal_45_menu:before{background:url(static/image/common/m_s1.png)}body #md_127_menu:before,body #medal_127_menu:before{background:url(static/image/common/m_s2.png)}body #md_78_menu:before,body #medal_78_menu:before{background:url(static/image/common/m_p_pc.png)}body #md_113_menu:before,body #medal_113_menu:before{background:url(static/image/common/m_p_and.png)}body #md_114_menu:before,body #medal_114_menu:before{background:url(static/image/common/m_p_ios.png)}body #md_141_menu:before,body #medal_141_menu:before{background:url(static/image/common/m_p_wp.png)}body #md_160_menu:before,body #medal_160_menu:before{background:url(static/image/common/m_p_w10.png)}body #md_115_menu:before,body #medal_115_menu:before{background:url(static/image/common/m_p_box360.png)}body #md_116_menu:before,body #medal_116_menu:before{background:url(static/image/common/m_p_boxone.png)}body #md_117_menu:before,body #medal_117_menu:before{background:url(static/image/common/m_p_ps3.png)}body #md_118_menu:before,body #medal_118_menu:before{background:url(static/image/common/m_p_ps4.png)}body #md_119_menu:before,body #medal_119_menu:before{background:url(static/image/common/m_p_psv.png)}body #md_170_menu:before,body #medal_170_menu:before{background:url(static/image/common/m_p_wiiu.png)}body #md_209_menu:before,body #medal_209_menu:before{background:url(static/image/common/m_p_switch.png)}body #md_227_menu:before,body #medal_227_menu:before{background:url(static/image/common/m_p_3ds.png)}body #md_56_menu:before,body #medal_56_menu:before{background:url(static/image/common/m_g1.png)}body #md_57_menu:before,body #medal_57_menu:before{background:url(static/image/common/m_g2.png)}body #md_61_menu:before,body #medal_61_menu:before{background:url(static/image/common/m_p1.png)}body #md_62_menu:before,body #medal_62_menu:before{background:url(static/image/common/m_p2.png)}body #md_63_menu:before,body #medal_63_menu:before{background:url(static/image/common/m_p3.png)}body #md_46_menu:before,body #medal_46_menu:before{background:url(static/image/common/m_p4.png)}body #md_64_menu:before,body #medal_64_menu:before{background:url(static/image/common/m_p5.png)}body #md_65_menu:before,body #medal_65_menu:before{background:url(static/image/common/m_p6.png)}body #md_66_menu:before,body #medal_66_menu:before{background:url(static/image/common/m_p7.png)}body #md_75_menu:before,body #medal_75_menu:before{background:url(static/image/common/m_p8.png)}body #md_85_menu:before,body #medal_85_menu:before{background:url(static/image/common/m_p9.png)}body #md_86_menu:before,body #medal_86_menu:before{background:url(static/image/common/m_p10.png)}body #md_100_menu:before,body #medal_100_menu:before{background:url(static/image/common/m_p11.png)}body #md_175_menu:before,body #medal_175_menu:before{background:url(static/image/common/m_p12.png)}body #md_182_menu:before,body #medal_182_menu:before{background:url(static/image/common/m_p13.png)}body #md_91_menu:before,body #medal_91_menu:before{background:url(static/image/common/m_h1.png)}body #md_93_menu:before,body #medal_93_menu:before{background:url(static/image/common/m_h2.png)}body #md_92_menu:before,body #medal_92_menu:before{background:url(static/image/common/m_h3.png)}body #md_94_menu:before,body #medal_94_menu:before{background:url(static/image/common/m_h4.png)}body #md_95_menu:before,body #medal_95_menu:before{background:url(static/image/common/m_h5.png)}body #md_96_menu:before,body #medal_96_menu:before{background:url(static/image/common/m_h6.png)}body #md_152_menu:before,body #medal_152_menu:before{background:url(static/image/common/m_h7.png)}body #md_183_menu:before,body #medal_183_menu:before{background:url(static/image/common/m_h8.png)}body #md_200_menu:before,body #medal_200_menu:before{background:url(static/image/common/m_h9.png)}body #md_210_menu:before,body #medal_210_menu:before{background:url(static/image/common/m_h10.png)}body #md_70_menu:before,body #medal_70_menu:before{background:url(static/image/common/m_arena_v1.png)}body #md_72_menu:before,body #medal_72_menu:before{background:url(static/image/common/m_arena_v2.png)}body #md_88_menu:before,body #medal_88_menu:before{background:url(static/image/common/m_arena_v3.png)}body #md_111_menu:before,body #medal_111_menu:before{background:url(static/image/common/m_arena_v4.png)}body #md_69_menu:before,body #medal_69_menu:before{background:url(static/image/common/m_arena_w1.png)}body #md_68_menu:before,body #medal_68_menu:before{background:url(static/image/common/m_arena_w2.png)}body #md_73_menu:before,body #medal_73_menu:before{background:url(static/image/common/m_arena_w3.png)}body #md_74_menu:before,body #medal_74_menu:before{background:url(static/image/common/m_arena_w4.png)}body #md_89_menu:before,body #medal_89_menu:before{background:url(static/image/common/m_arena_w5.png)}body #md_90_menu:before,body #medal_90_menu:before{background:url(static/image/common/m_arena_w6.png)}body #md_98_menu:before,body #medal_98_menu:before{background:url(static/image/common/m_arena_w8.png)}body #md_99_menu:before,body #medal_99_menu:before{background:url(static/image/common/m_arena_w7.png)}body #md_120_menu:before,body #medal_120_menu:before{background:url(static/image/common/m_arena_v5.png)}body #md_121_menu:before,body #medal_121_menu:before{background:url(static/image/common/m_arena_w9.png)}body #md_122_menu:before,body #medal_122_menu:before{background:url(static/image/common/m_arena_w10.png)}body #md_123_menu:before,body #medal_123_menu:before{background:url(static/image/common/m_arena_i1.png)}body #md_129_menu:before,body #medal_129_menu:before{background:url(static/image/common/m_arena_v6.png)}body #md_130_menu:before,body #medal_130_menu:before{background:url(static/image/common/m_arena_w11.png)}body #md_131_menu:before,body #medal_131_menu:before{background:url(static/image/common/m_arena_w12.png)}body #md_132_menu:before,body #medal_132_menu:before{background:url(static/image/common/m_arena_i2.png)}body #md_143_menu:before,body #medal_143_menu:before{background:url(static/image/common/m_arena_v7.png)}body #md_144_menu:before,body #medal_144_menu:before{background:url(static/image/common/m_arena_v7f.png)}body #md_145_menu:before,body #medal_145_menu:before{background:url(static/image/common/m_arena_w13.png)}body #md_146_menu:before,body #medal_146_menu:before{background:url(static/image/common/m_arena_w14.png)}body #md_164_menu:before,body #medal_164_menu:before{background:url(static/image/common/m_arena_v8.png)}body #md_165_menu:before,body #medal_165_menu:before{background:url(static/image/common/m_arena_w15.png)}body #md_166_menu:before,body #medal_166_menu:before{background:url(static/image/common/m_arena_w16.png)}body #md_176_menu:before,body #medal_176_menu:before{background:url(static/image/common/m_arena_v9.png)}body #md_177_menu:before,body #medal_177_menu:before{background:url(static/image/common/m_arena_w17.png)}body #md_178_menu:before,body #medal_178_menu:before{background:url(static/image/common/m_arena_w18.png)}body #md_184_menu:before,body #medal_184_menu:before{background:url(static/image/common/m_arena_v10.png)}body #md_185_menu:before,body #medal_185_menu:before{background:url(static/image/common/m_arena_w19.png)}body #md_186_menu:before,body #medal_186_menu:before{background:url(static/image/common/m_arena_w20.png)}body #md_204_menu:before,body #medal_204_menu:before{background:url(static/image/common/m_arena_v11.png)}body #md_205_menu:before,body #medal_205_menu:before{background:url(static/image/common/m_arena_w21.png)}body #md_206_menu:before,body #medal_206_menu:before{background:url(static/image/common/m_arena_w22.png)}body #md_211_menu:before,body #medal_211_menu:before{background:url(static/image/common/m_arena_v12.png)}body #md_212_menu:before,body #medal_212_menu:before{background:url(static/image/common/m_arena_w23.png)}body #md_213_menu:before,body #medal_213_menu:before{background:url(static/image/common/m_arena_w24.png)}body #md_224_menu:before,body #medal_224_menu:before{background:url(static/image/common/m_arena_v13.png)}body #md_225_menu:before,body #medal_225_menu:before{background:url(static/image/common/m_arena_w25.png)}body #md_226_menu:before,body #medal_226_menu:before{background:url(static/image/common/m_arena_w26.png)}body #md_237_menu:before,body #medal_237_menu:before{background:url(static/image/common/m_arena14_1.png)}body #md_238_menu:before,body #medal_238_menu:before{background:url(static/image/common/m_arena14_2.png)}body #md_239_menu:before,body #medal_239_menu:before{background:url(static/image/common/m_arena14_3.png)}body #md_136_menu:before,body #medal_136_menu:before{background:url(static/image/common/m_s_v1.png)}body #md_167_menu:before,body #medal_167_menu:before{background:url(static/image/common/m_s_bili.png)}body #md_174_menu:before,body #medal_174_menu:before{background:url(static/image/common/m_s_v2.png)}body #md_195_menu:before,body #medal_195_menu:before{background:url(static/image/common/m_s_v3.png)}body #md_218_menu:before,body #medal_218_menu:before{background:url(static/image/common/m_s_bili2.png)}body #md_240_menu:before,body #medal_240_menu:before{background:url(static/image/common/m_s_v4.png)}body #md_253_menu:before,body #medal_253_menu:before{background:url(static/image/common/m_s_wiki.png)}body #md_254_menu:before,body #medal_254_menu:before{background:url(static/image/common/m_s_mcwiki.png)}body #md_124_menu:before,body #medal_124_menu:before{background:url(static/image/common/m_pearena_v1.png)}body #md_125_menu:before,body #medal_125_menu:before{background:url(static/image/common/m_pearena_w2.png)}body #md_126_menu:before,body #medal_126_menu:before{background:url(static/image/common/m_pearena_w1.png)}body #md_133_menu:before,body #medal_133_menu:before{background:url(static/image/common/m_pearena_v2.png)}body #md_134_menu:before,body #medal_134_menu:before{background:url(static/image/common/m_pearena_w4.png)}body #md_135_menu:before,body #medal_135_menu:before{background:url(static/image/common/m_pearena_w3.png)}body #md_147_menu:before,body #medal_147_menu:before{background:url(static/image/common/m_pearena_v3.png)}body #md_148_menu:before,body #medal_148_menu:before{background:url(static/image/common/m_pearena_w6.png)}body #md_149_menu:before,body #medal_149_menu:before{background:url(static/image/common/m_pearena_w5.png)}body #md_161_menu:before,body #medal_161_menu:before{background:url(static/image/common/m_pearena_v4.png)}body #md_162_menu:before,body #medal_162_menu:before{background:url(static/image/common/m_pearena_w8.png)}body #md_163_menu:before,body #medal_163_menu:before{background:url(static/image/common/m_pearena_w7.png)}body #md_171_menu:before,body #medal_171_menu:before{background:url(static/image/common/m_pearena_v5.png)}body #md_172_menu:before,body #medal_172_menu:before{background:url(static/image/common/m_pearena_w10.png)}body #md_173_menu:before,body #medal_173_menu:before{background:url(static/image/common/m_pearena_w9.png)}body #md_190_menu:before,body #medal_190_menu:before{background:url(static/image/common/m_pearena_w13.png)}body #md_192_menu:before,body #medal_192_menu:before{background:url(static/image/common/m_pearena_v6.png)}body #md_193_menu:before,body #medal_193_menu:before{background:url(static/image/common/m_pearena_w11.png)}body #md_194_menu:before,body #medal_194_menu:before{background:url(static/image/common/m_pearena_w12.png)}body #md_201_menu:before,body #medal_201_menu:before{background:url(static/image/common/m_pearena_v7.png)}body #md_202_menu:before,body #medal_202_menu:before{background:url(static/image/common/m_pearena_w16.png)}body #md_203_menu:before,body #medal_203_menu:before{background:url(static/image/common/m_pearena_w15.png)}body #md_214_menu:before,body #medal_214_menu:before{background:url(static/image/common/m_pearena_v8.png)}body #md_215_menu:before,body #medal_215_menu:before{background:url(static/image/common/m_pearena_w18.png)}body #md_216_menu:before,body #medal_216_menu:before{background:url(static/image/common/m_pearena_w17.png)}body #md_221_menu:before,body #medal_221_menu:before{background:url(static/image/common/m_pearena_v9.png)}body #md_222_menu:before,body #medal_222_menu:before{background:url(static/image/common/m_pearena_w20.png)}body #md_223_menu:before,body #medal_223_menu:before{background:url(static/image/common/m_pearena_w19.png)}body #md_229_menu:before,body #medal_229_menu:before{background:url(static/image/common/m_pearena_v10.png)}body #md_230_menu:before,body #medal_230_menu:before{background:url(static/image/common/m_pearena_w22.png)}body #md_231_menu:before,body #medal_231_menu:before{background:url(static/image/common/m_pearena_w21.png)}body #md_241_menu:before,body #medal_241_menu:before{background:url(static/image/common/m_pearena_v11.png)}body #md_242_menu:before,body #medal_242_menu:before{background:url(static/image/common/m_pearena_w24.png)}body #md_243_menu:before,body #medal_243_menu:before{background:url(static/image/common/m_pearena_w23.png)}body #md_197_menu:before,body #medal_197_menu:before{background:url(static/image/common/m_pofg_v1.png)}body #md_198_menu:before,body #medal_198_menu:before{background:url(static/image/common/m_pofg_v2.png)}body #md_199_menu:before,body #medal_199_menu:before{background:url(static/image/common/m_pofg_v3.png)}body #md_137_menu:before,body #medal_137_menu:before{background:url(static/image/common/m_g_cw.png)}body #md_138_menu:before,body #medal_138_menu:before{background:url(static/image/common/m_g_trp.png)}body #md_139_menu:before,body #medal_139_menu:before{background:url(static/image/common/m_g_tas.png)}body #md_140_menu:before,body #medal_140_menu:before{background:url(static/image/common/m_g_sc.png)}body #md_142_menu:before,body #medal_142_menu:before{background:url(static/image/common/m_g_sl.png)}body #md_150_menu:before,body #medal_150_menu:before{background:url(static/image/common/m_g_hayo.png)}body #md_151_menu:before,body #medal_151_menu:before{background:url(static/image/common/m_g_aa.png)}body #md_153_menu:before,body #medal_153_menu:before{background:url(static/image/common/m_g_is.png)}body #md_154_menu:before,body #medal_154_menu:before{background:url(static/image/common/m_g_cbl.png)}body #md_168_menu:before,body #medal_168_menu:before{background:url(static/image/common/m_g_ntl.png)}body #md_169_menu:before,body #medal_169_menu:before{background:url(static/image/common/m_g_tcp.png)}body #md_179_menu:before,body #medal_179_menu:before{background:url(static/image/common/m_g_mpw.png)}body #md_207_menu:before,body #medal_207_menu:before{background:url(static/image/common/m_g_ud.png)}body #md_217_menu:before,body #medal_217_menu:before{background:url(static/image/common/m_g_bs.png)}body #md_219_menu:before,body #medal_219_menu:before{background:url(static/image/common/m_g_pcd.png)}body #md_220_menu:before,body #medal_220_menu:before{background:url(static/image/common/m_g_gwnw.png)}body #md_228_menu:before,body #medal_228_menu:before{background:url(static/image/common/m_g_lw.png)}body #md_232_menu:before,body #medal_232_menu:before{background:url(static/image/common/m_g_uel.png)}body #md_233_menu:before,body #medal_233_menu:before{background:url(static/image/common/m_g_tgc.png)}body #md_235_menu:before,body #medal_235_menu:before{background:url(static/image/common/m_g_nf.png)}body #md_236_menu:before,body #medal_236_menu:before{background:url(static/image/common/m_g_mcbk.png)}body #md_244_menu:before,body #medal_244_menu:before{background:url(static/image/common/m_g_pos.png)}body #md_245_menu:before,body #medal_245_menu:before{background:url(static/image/common/m_g_stc.png)}body #md_246_menu:before,body #medal_246_menu:before{background:url(static/image/common/m_g_cps.png)}body #md_248_menu:before,body #medal_248_menu:before{background:url(static/image/common/m_g_wiki.png)}body #md_249_menu:before,body #medal_249_menu:before{background:url(static/image/common/m_g_rmg.png)}body #md_252_menu:before,body #medal_252_menu:before{background:url(static/image/common/m_g_tml.png)}@keyframes pickup{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.95);transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.95)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92)}}@keyframes dropdown{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.95);transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.95)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}}
 `, 'medal')
             if (autorun) {
                 this.log('运行saltMCBBS主过程')
+                // 创建事件
+                let ev = new CustomEvent('saltMCBBSload', { detail: { name: 'saltMCBBS', version: myversion } })
                 // 初始化
                 this.init()
                 // 显示版本与更新历史
@@ -177,6 +182,12 @@
                 this.warnOP()
                 // 添加自定义评分/举报理由
                 this.reasonListOP()
+                // 勋章相关
+                this.medalOP()
+                // 论坛特性修复
+                this.bugFixOP()
+                // 触发事件
+                window.dispatchEvent(ev)
             }
         }
         /**初始化 */
@@ -445,32 +456,49 @@
                     if (qitabr) { reportUl.appendChild(qitabr) }
                 }
             })
-            // console.log(obs)
-            // if (obs) { obs.observe() }
             // 评分理由设置项
             /**评分理由列表 */
             let rateReasonList = this.readWithDefault<string[]>('rateReasonList', [])
-            let rateSetting = document.createElement('div')
-            rateSetting.innerHTML = `<h3>自定义评分理由</h3>`
-            let rateTextarea = document.createElement('textarea')
-            rateTextarea.value = rateReasonList.join('\n')
-            rateTextarea.addEventListener('change', () => {
-                this.write('rateReasonList', this.formatToStringArray(rateTextarea.value))
+            this.addTextareaSetting('自定义评分理由', rateReasonList.join('\n'), (el: HTMLTextAreaElement, e: Event) => {
+                this.write('rateReasonList', this.formatToStringArray(el.value))
             })
-            rateSetting.appendChild(rateTextarea)
-            this.addSetting(rateSetting)
             // 举报理由设置项
             /**举报理由列表 */
             let reportReasonList = this.readWithDefault<string[]>('reportReasonList', [])
-            let reportSetting = document.createElement('div')
-            reportSetting.innerHTML = `<h3>自定义评分理由</h3>`
-            let reportTextarea = document.createElement('textarea')
-            reportTextarea.value = reportReasonList.join('\n')
-            reportTextarea.addEventListener('change', () => {
-                this.write('reportReasonList', this.formatToStringArray(reportTextarea.value))
+            this.addTextareaSetting('自定义举报理由', reportReasonList.join('\n'), (el: HTMLTextAreaElement, e: Event) => {
+                this.write('reportReasonList', this.formatToStringArray(el.value))
             })
-            reportSetting.appendChild(reportTextarea)
-            this.addSetting(reportSetting)
+        }
+        /**论坛特性修复 */
+        bugFixOP() {
+            // 版块页面帖子列表的错位问题
+            // let threadList = document.querySelector('#moderate table tbody')
+            // if (threadList) {
+            //     // 有公告存在时，作者栏向上错位1px
+            //     let threadListBy = threadList?.querySelector('td.by')
+            //     if (threadListBy && threadListBy.innerHTML.length < 2) { threadListBy.innerHTML = '&nbsp;' }
+            // }
+            window.saltMCBBSCSS.putStyle(
+                `#threadlist table{border-collapse:collapse}#threadlist table td,#threadlist table th{border-bottom:0px;}#threadlist table tr{border-bottom:1px solid #CFB78E;}`
+                , 'threadListBugFix')
+
+        }
+        /**勋章相关 */
+        medalOP() {
+            this.medalLineOP()
+            this.addInputSetting('勋章栏高度', this.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
+                let line = parseInt(el.value)
+                if (isNaN(line)) { return }
+                if (line < 1) { line = 1 }
+                if (line > 15) { line = 15 }
+                this.write('medalLine', el.value)
+                this.medalLineOP()
+            })
+        }
+        medalLineOP() {
+            let line = this.readWithDefault<number>('medalLine', 3)
+            let style = 'p.md_ctrl {max-height: calc(64px * ' + line + ');}'
+            window.saltMCBBSCSS.putStyle(style, 'medalLine')
         }
         /**
          * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
@@ -513,6 +541,38 @@
                 div.setAttribute('name', id)
             }
             this.settingPanel.appendChild(div)
+        }
+        /**
+         * 一种快速生成配置项的预设，结构是一个 h3 加一个 textarea
+         * @param h3 配置项标题
+         * @param textarea 默认配置
+         * @param callback textarea触发change事件的回调函数，参数：el: textarea元素, ev: 事件
+         * @param id 配置项的id，不填则默认为h3
+         */
+        addTextareaSetting(h3: string, textarea: string, callback: (el: HTMLTextAreaElement, ev: Event) => void, id?: string) {
+            let newsetting = document.createElement('div')
+            newsetting.innerHTML = '<h3>' + h3 + '</h3>'
+            let textareaEl = document.createElement('textarea')
+            textareaEl.value = textarea
+            textareaEl.addEventListener('change', function (this: HTMLTextAreaElement, e: Event) { callback(this, e) })
+            newsetting.appendChild(textareaEl)
+            this.addSetting(newsetting, id || h3)
+        }
+        /**
+         * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
+         * @param h3 配置项标题
+         * @param text 默认配置
+         * @param callback textarea触发change事件的回调函数，参数：el: textarea元素, ev: 事件
+         * @param id 配置项的id，不填则默认为h3
+         */
+        addInputSetting(h3: string, text: string, callback: (el: HTMLInputElement, ev: Event) => void, id?: string) {
+            let newsetting = document.createElement('div')
+            newsetting.innerHTML = '<h3>' + h3 + '</h3>'
+            let inputEl = document.createElement('input')
+            inputEl.value = text
+            inputEl.addEventListener('change', function (this: HTMLInputElement, e: Event) { callback(this, e) })
+            newsetting.appendChild(inputEl)
+            this.addSetting(newsetting, id || h3)
         }
         /**
          * 删除配置项
@@ -621,11 +681,20 @@
         }
         private styles: styleMap = {}
         // key: 标记style
+        /**
+         * 将css代码存入内存，成功则返回true
+         * @param css css代码
+         * @param key css标记
+         */
         setStyle(css: string, key: string): boolean {
             if (typeof css != 'string' || typeof key != 'string') { return false }
             this.styles[key] = css
             return true
         }
+        /**
+         * 返回内存中的css代码，没找到则返回空字符串
+         * @param key css标记
+         */
         getStyle(key: string): string {
             if (typeof key != 'string') { return '' }
             if (this.styles[key])
@@ -633,6 +702,14 @@
             else
                 return ''
         }
+        /**
+         * 启用css
+         * 有代码无标记：创建style直接放代码
+         * 有标记无代码：寻找内存中的css代码
+         * 有代码有标记：更新已有style或创建style，同时更新内存中的css代码
+         * @param css css代码
+         * @param key css标记
+         */
         putStyle(css: string, key: string): boolean {
             /**0-不合法 1-有css无key 2-有key无css 3-有css有key */
             let status = 0
@@ -682,57 +759,12 @@
                     }
                     break
             }
-            /**
-            if (typeof css == 'string' && css.length > 2) { // 两个字节的css能干嘛
-                // css 和 key 均有参数
-                if (typeof key == 'string' && key.length > 0) {
-                    let x = this.getStyleElement(key)
-                    // 若style不存在
-                    if (!x) {
-                        this.styles[key] = css
-                        let s = document.createElement('style')
-                        s.textContent = css
-                        this.setStyleElement(key, s)
-                        document.head.appendChild(s)
-                    }
-                    // 若已有style元素
-                    else {
-                        this.styles[key] = css
-                        x.textContent = css
-                    }
-                }
-                // css 有 key 无
-                else {
-                    let s = document.createElement('style')
-                    s.textContent = css
-                    document.head.appendChild(s)
-                }
-            }
-            // 如果css参数没有输入 
-            else if (typeof key == 'string' && key.length > 0) {
-                let c = this.getStyle(key)
-                if (c.length > 0) {
-                    let x = this.getStyleElement(key)
-                    // 若style不存在
-                    if (!x) {
-                        let s = document.createElement('style')
-                        s.textContent = c
-                        this.setStyleElement(key, s)
-                        document.head.appendChild(s)
-                    } else {
-                        x.textContent = c
-                    }
-                } else { return false }
-            }
-            // 如果没有有效输入
-            else {
-                return false
-            }
-            // 默认返回true
-            */
             return true
         }
-        /**根据key删除已有的css */
+        /**
+         * 根据key删除对应的style
+         * @param key css标记
+         */
         delStyle(key: string): boolean {
             if (typeof key != 'string') { return false }
             let el = this.getStyleElement(key)
@@ -744,12 +776,10 @@
             }
         }
         /**
-         * 根据key替换已有的style
-         * 
-         * 替换成功返回true
-         * 
-         * 非法输入/没有此元素返回false
-         *  */
+         * 根据key替换已有的style, 替换成功返回true, 非法输入/没有此元素返回false
+         * @param css css代码
+         * @param key css标记
+         */
         replaceStyle(css: string, key: string): boolean {
             if (typeof css != 'string' || typeof key != 'string') { return false }
             let el = this.getStyleElement(key)
@@ -761,11 +791,7 @@
             }
             return true
         }
-        /**
-         * 根据key获取style元素
-         * 
-         * 没找到的话返回null
-         */
+        /**根据key获取style元素, 没找到的话返回null */
         getStyleElement(key: string): Element | null {
             if (typeof key != 'string') { return null }
             return document.querySelector(`style[${techprefix + key}]`)
@@ -775,6 +801,51 @@
             if (typeof key != 'string' || !(el instanceof Element)) { return false }
             el.setAttribute(techprefix + key, '')
             return true
+        }
+    }
+    // 开始给HTMLElement添加奇怪的方法
+    if (!HTMLElement.prototype.addClass) {
+        HTMLElement.prototype.addClass = function (classes: string): void {
+            let cls = String(classes).replace(/\s+/gm, ',').split(',');
+            for (let c of cls) {
+                this.classList.add(c)
+            }
+        }
+    }
+    if (!HTMLElement.prototype.toggleClass) {
+        HTMLElement.prototype.toggleClass = function (classes: string): void {
+            var cls = String(classes).replace(/\s+/gm, ',').split(',');
+            for (var c of cls) {
+                if (this.classList.contains(c))
+                    this.classList.remove(c);
+                else
+                    this.classList.add(c);
+            }
+        }
+    }
+    if (!HTMLElement.prototype.hasClass) {
+        HTMLElement.prototype.hasClass = function (OneClass: string): boolean {
+            return this.classList.contains(OneClass);
+        }
+    }
+    if (!HTMLElement.prototype.removeClass) {
+        HTMLElement.prototype.removeClass = function (classes: string): void {
+            var cls = String(classes).replace(/\s+/gm, ',').split(',');
+            for (var c of cls) {
+                this.classList.remove(c);
+            }
+        }
+    }
+    if (!HTMLElement.prototype.offset) {
+        HTMLElement.prototype.offset = function () {
+            if (!this.getClientRects().length)
+                return { top: 0, left: 0 };
+            var rect = this.getBoundingClientRect();
+            var win = this.ownerDocument.defaultView || { pageYOffset: 0, pageXOffset: 0 };
+            return {
+                top: rect.top + win.pageYOffset,
+                left: rect.left + win.pageXOffset
+            }
         }
     }
     // ??????
