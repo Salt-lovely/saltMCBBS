@@ -29,6 +29,9 @@ $droplight: drop-shadow(0 0 4px #fff);
 }
 // 大体更改
 body.night-style {
+    --bodybg: $bodybg;
+    --bodybg-l: $bodybg;
+    --bodybg-l-t: rgba($color: $bodybg, $alpha: 0);
     input,
     button,
     select,
@@ -775,7 +778,7 @@ $fontcolormap: (
     "Black": #fff,
     /*大区版主色*/ "#660099": #bf8cd9
 );
-$backcolormap: ("#FFFFFF");
+$backcolormap: ("#FFFFFF", "Wheat");
 body.night-style {
     .xl label,
     .xl label a {
@@ -817,6 +820,10 @@ body.night-style {
         textarea {
             background-color: $bodybg-l;
             border: none;
+        }
+        input {
+            border: none;
+            border-width: 0px;
         }
     }
 }

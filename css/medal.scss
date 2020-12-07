@@ -1,18 +1,62 @@
 // 勋章
 p.md_ctrl {
     // max-height: calc(64px * 4.5); /*限制为5行*/
-    overflow: auto;
-    // padding: 5px;
+    position: relative;
+    overflow: hidden;
     margin-left: 15px;
+    &,
+    &:hover {
+        max-height: var(--maxHeight, 96px);
+    }
+    &.salt-expand,
+    &.salt-expand:hover {
+        max-height: var(--expandHeight, 960px);
+    }
+    &.expandable {
+        // 如果有点击展开按钮的话
+        padding-bottom: 32px;
+    }
+    .saltExpandHandler {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 32px;
+        color: rgb(56, 130, 167);
+        background-image: linear-gradient(
+            0deg,
+            #e3c99e,
+            rgba($color: #e3c99e, $alpha: 0)
+        );
+        cursor: pointer;
+        &:after {
+            content: "点击展开";
+            display: block;
+            width: 100%;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+        }
+    }
+    &.salt-expand {
+        .saltExpandHandler:after {
+            content: "点击收起";
+        }
+    }
+    &:not(.expandable) {
+        .saltExpandHandler {
+            display: none;
+        }
+    }
     /*scrollbar-width: none; 也许要等到CSS4才会有统一的标准*/
-    overflow: -moz-scrollbars-none; /*网传的兼容火狐的隐藏滚动条的方法*/
-    -ms-overflow-style: none; /*兼容IE*/
-    &::-webkit-scrollbar {
-        width: 0 !important; /*兼容谷歌（经测试可用）*/
-    }
-    .-o-scrollbar {
-        -moz-appearance: none !important; /*兼容opera*/
-    }
+    // overflow: -moz-scrollbars-none; /*网传的兼容火狐的隐藏滚动条的方法*/
+    // -ms-overflow-style: none; /*兼容IE*/
+    // &::-webkit-scrollbar {
+    //     width: 0 !important; /*兼容谷歌（经测试可用）*/
+    // }
+    // .-o-scrollbar {
+    //     -moz-appearance: none !important; /*兼容opera*/
+    // }
     > a {
         width: 100%;
         > img {
@@ -70,6 +114,18 @@ p.md_ctrl {
                 );
                 // color: rgba($color: #000000, $alpha: 0.5);
             }
+        }
+    }
+}
+body.night-style {
+    p.md_ctrl {
+        .saltExpandHandler {
+            color: #6cf;
+            background-image: linear-gradient(
+                0deg,
+                var(--bodybg-l, #313131),
+                var(--bodybg-l-t, #313131)
+            );
         }
     }
 }

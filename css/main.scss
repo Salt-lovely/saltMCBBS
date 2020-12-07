@@ -1,8 +1,15 @@
 $bgcolor: #fbf2db;
 body {
+    > div[style]:not([id]):not([class]) {
+        float: left;
+    }
     > .mc_map_wp {
         padding-top: 0;
         margin-top: 0;
+        overflow: visible;
+        // float: unset;
+        display: inline-block;
+        margin-left: calc(50% - 565px);
         > .new_wp {
             padding-top: 0 !important;
             padding-bottom: 0 !important;
@@ -69,9 +76,9 @@ ul.xl.xl2.o.cl .pmwarn {
 }
 // 设置面板
 .settingPanel {
-    width: 50%;
+    width: 40vw;
     min-width: 360px;
-    right: 25%;
+    right: 30vw;
     max-height: 90vh;
     top: 10vh;
     position: fixed;
@@ -97,12 +104,32 @@ ul.xl.xl2.o.cl .pmwarn {
     > * {
         width: 100%;
         box-sizing: border-box;
+        margin-bottom: 8px;
+        float: left;
+    }
+    h3 {
+        font-size: 0.875rem;
+        small {
+            font-size: 0.5em;
+            color: grey;
+        }
+    }
+    h3.half-h3 {
+        width: calc(50% - 14px);
+        padding: 0 10px 0 0;
+        float: left;
+        text-align: right;
     }
     textarea {
         resize: vertical;
         height: 4em;
         min-height: 2em;
         max-height: 20em;
-        width: 98%;
+        width: calc(100% - 8px);
+    }
+    input {
+        width: calc(50% - 4px);
+        float: left;
+        text-align: center;
     }
 }
