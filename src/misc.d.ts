@@ -152,4 +152,84 @@ interface BBSAPIResponceDataVariablesSpace {
     /**生肖 */
     zodiac: string,
 }
-// export = AnchorObj
+
+/**MCBBS的TIDAPI返回中.data的部分内容 */
+interface TIDAPIResponceData { Variables: TIDAPIResponceDataVariables, }
+/**MCBBS的TIDAPI返回中.data.Variables的部分内容 */
+interface TIDAPIResponceDataVariables {
+    auth: string,
+    /**版块ID */
+    fid: string,
+    /**帖子列表 */
+    postlist: TIDAPIResponceDataVariablesPost[],
+    thread: TIDAPIResponceDataVariablesThread,
+}
+/**MCBBS的TIDAPI返回中.data.Variables.postlist列表的单项 */
+interface TIDAPIResponceDataVariablesPost {
+    /**用户名 “匿名”代表匿名 */
+    author: string,
+    /**用户UID */
+    authorid: string,
+    /**附件数 */
+    attachment: string,
+    /**附件列表 */
+    attachments: TIDAPIResponceDataVariablesPostAttachment[],
+    /**时间戳 年-月-日 时:分:秒*/
+    dateline: string,
+    /**时间戳 毫秒制 */
+    dbdateline: string,
+    /**论坛图床的图片 */
+    imagelist?: string[]
+    /**内容 HTML文本 */
+    message: string,
+    /**楼层数 一楼为1 二楼为2 ... */
+    number: string,
+    /**PID */
+    pid: string,
+    /**楼层位置 可能不按实际楼层数来 ... */
+    position: string,
+    /**帖子TID 不知道为啥会在这里*/
+    tid: string,
+    /**用户名 “匿名”代表匿名 */
+    username: string,
+}
+/**MCBBS的TIDAPI返回中.data.Variables.postlist[].attachments列表的单项 */
+interface TIDAPIResponceDataVariablesPostAttachment {
+    aid: string,
+    tid: string,
+    /**是否是图片 */
+    isimage: '0' | '1',
+    /**是否付款 */
+    payed: '0' | '1',
+    pid: string,
+    /**附件售价 */
+    price: string,
+    uid: string,
+    /**URL前缀 */
+    url: string,
+}
+/**MCBBS的TIDAPI返回中.data.Variables.thread */
+interface TIDAPIResponceDataVariablesThread {
+    /**共计回复数 */
+    allreplies: string,
+    /**是否关闭 */
+    closed: '0' | '1',
+    /**热度 */
+    heats: string,
+    /**是否神隐 */
+    hidden: string,
+    /**高亮类型 */
+    highlight: string,
+    /**最后回复 */
+    lastpost: string,
+    /**最后回复者 */
+    lastposter: string,
+    /**总楼层数 */
+    maxposition: string,
+    /**短标题 */
+    short_subject: string,
+    /**标题 */
+    subject: string,
+    /**标题转码 */
+    subjectenc: string,
+}

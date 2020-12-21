@@ -10,7 +10,11 @@ interface Window {
     /**切换编辑器模式( 0纯文本 1所见即所得 )仅在编辑器页面启用*/
     switchEditor?: (type: 0 | 1) => void,
     /**帖子的tid，仅在浏览帖子的页面存在 */
-    tid?: string
+    tid?: string,
+    /**切换页面主题 冬季、默认、下界 */
+    extstyle: (
+        styleType: './template/mcbbs/style/winter' | './template/mcbbs/style/default' | './template/mcbbs/style/nether'
+    ) => void,
 }
 interface HTMLElement {
     /**

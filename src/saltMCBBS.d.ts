@@ -87,7 +87,7 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      */
     addInputSetting(h3: string, text: string, callback: (el: HTMLInputElement, ev: Event) => void, id?: string): void,
     /**
-     * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
+     * 一种快速生成配置项的预设，结构是一个 h3 加一个勾选框 input
      * @param h3 配置项标题
      * @param text 默认配置
      * @param callback input触发click事件的回调函数，参数：ck: 勾选与否, ev: 事件
@@ -95,10 +95,26 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      */
     addCheckSetting(h3: string, checked: boolean, callback: (ck: boolean, ev: Event) => void, id?: string): void,
     /**
+     * 一种快速生成配置项的预设，结构是一个 h3 加一个滑动条 input
+     * @param h3 配置项标题
+     * @param value 默认值
+     * @param range [最小值,最大值,步长]或{min:最小值,max:最大值,step:步长}
+     * @param callback input触发change事件的回调函数，参数：vl: 数字, ev: 事件
+     * @param id 配置项的id，不填则默认为h3
+     */
+    addRangeSetting(h3: string, value: number, range: [number, number, number] | { max: number, min: number, step: number },
+        callback: (vl: number, ev: Event) => void, id?: string),
+    /**
      * 删除配置项
-     * @param id 元素的名字
+     * @param id 配置项的名字
      */
     delSetting(id: string): void,
+    /**
+     * 更改配置项的&lt;h3>标签
+     * @param id 元素的名字
+     * @param html 替换h3标签里面的HTML
+     */
+    changeSettingH3(id: string, html: string),
     /**
      * 输入一个元素或一段文字，在左侧栏底部添加新的链接按钮
      * @param a 一个HTMLElement，或者一段文字（如果是一段文字，那么callback参数生效）
@@ -110,19 +126,36 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
     /**批量添加子节点 */
     addChildren(parent: Element, children: NodeListOf<Element> | Element[]): void,
     /**
-     * 根据UID获取信息
+     * 根据UID获取用户信息
      * @param uid 用户的UID
      * @param callback 回调函数
      * @param retry 失败后重试次数
      * @param retryTime 重试时间间隔
      */
-    fetchUID(uid: number | string, callback: (data: BBSAPIResponceData) => void, retry?: number, retryTime?: number),
+    fetchUID(uid: number | string, callback: (data: BBSAPIResponceData) => void, retry?: number, retryTime?: number): void,
+    /**
+     * 根据TID获取帖子信息
+     * @param tid 帖子的TID
+     * @param callback 回调函数
+     * @param page 页码，每页5楼
+     * @param retry 失败后重试次数
+     * @param retryTime 重试时间间隔
+     */
+    fetchTID(tid: number | string, callback: fetchTIDcallback, page?: number, retry?: number, retryTime?: number): void,
+    /**更新背景 */
+    updateBackground(): void,
     /**
      * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
      * @param str 要分割的字符串
      * @param spliter 按什么划分，默认按换行划分
      */
     formatToStringArray(str: string, spliter?: string): string[],
+    /**
+     * 去除字符串数组中匹配的字符串
+     * @param arr 要处理的字符串
+     * @param test 用于测试的正则表达式，默认为两个斜杠开头
+     */
+    cleanStringArray(arr: string[], test?: RegExp): string[]
     /**删除字符串两侧的空格 */
     Trim(x: string): string,
     /**获取当前用户的UID*/
@@ -175,4 +208,8 @@ interface styleMap {
 /**fetchUID的回调函数 */
 interface fetchUIDcallback {
     (data: BBSAPIResponceData): void
+}
+/**fetchTID的回调函数 */
+interface fetchTIDcallback {
+    (data: TIDAPIResponceData): void
 }
