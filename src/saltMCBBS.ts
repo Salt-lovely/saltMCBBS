@@ -110,6 +110,138 @@
             return arr[Math.floor(Math.random() * arr.length)]
         }
         /**
+         * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
+         * @param str 要分割的字符串
+         * @param spliter 按什么划分，默认按换行划分
+         */
+        formatToStringArray(str: string, spliter: string = '\n'): string[] {
+            let arr: string[] = []
+            let temparr = str.split(spliter)
+            for (let x of temparr) {
+                let s = this.Trim(x)
+                if (s.length > 0) {
+                    arr.push(s)
+                }
+            }
+            return arr
+        }
+        /**
+         * 去除字符串数组中匹配的字符串
+         * @param arr 要处理的字符串
+         * @param test 用于测试的正则表达式
+         */
+        cleanStringArray(arr: string[], test: RegExp = /^\/\//): string[] {
+            let fin = []
+            for (let s of arr) {
+                if (!(test.test(s)))
+                    fin.push(s)
+            }
+            return fin
+        }
+        /**删除字符串两侧的空格 */
+        Trim(x: string) {
+            return x.replace(/^\s+|\s+$/gm, '');
+        }
+        /**将格式正确的obj变成a元素 */
+        obj2a(obj: AnchorObj[], targetDefault = '_self'): HTMLAnchorElement[] {
+            let as: HTMLAnchorElement[] = []
+            if (['_self', '_parent', '_blank', '_top'].indexOf(targetDefault) != -1) {
+                targetDefault = '_self'
+            }
+            for (let x of obj) {
+                let a = document.createElement('a')
+                a.href = x.url
+                if (typeof x.img == 'string' && x.img.length > 2) {
+                    a.innerHTML = `<img src="${x.img}">`
+                }
+                a.innerHTML += x.text
+                if (typeof x.target == 'string' && ['_self', '_parent', '_blank', '_top'].indexOf(x.target) != -1) {
+                    a.target = x.target
+                } else {
+                    a.target = targetDefault
+                }
+                if (typeof x.class == 'string' && x.class.length > 0) {
+                    a.className = x.class
+                }
+                if (typeof x.title == 'string' && x.title.length > 0) {
+                    a.title = x.title
+                }
+                as.push(a)
+            }
+            return as
+        }
+        /**批量添加子节点 */
+        addChildren(parent: Element, children: NodeListOf<Element> | Element[]) {
+            for (let i = 0; i < children.length; i++) {
+                parent.appendChild(children[i])
+            }
+        }
+        /**
+         * 根据UID获取信息
+         * @param uid 用户的UID
+         * @param callback 回调函数
+         * @param retry 失败后重试次数
+         * @param retryTime 重试时间间隔
+         */
+        fetchUID(uid: number | string, callback: fetchUIDcallback, retry = 2, retryTime = 1500) {
+            // this.log(uid)
+            if (typeof uid == 'string') { uid = parseInt(uid) }
+            if (uid < 1 || isNaN(uid)) { return } // 为零则说明没有登录
+            let obj = this
+            fetch('https://www.mcbbs.net/api/mobile/index.php?module=profile&uid=' + uid)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        return Promise.reject(Object.assign({}, response.json(), {
+                            status: response.status,
+                            statusText: response.statusText
+                        }))
+                    }
+                })
+                .then((data) => { callback(data) })
+                .catch((error) => {
+                    console.log(error)
+                    if (retry > 0) { setTimeout(() => { obj.fetchUID(uid, callback, retry - 1, retryTime) }, retryTime); }
+                });
+        }
+        /**
+         * 根据TID获取帖子信息
+         * @param tid 帖子的TID
+         * @param callback 回调函数
+         * @param page 页码，每页5楼
+         * @param retry 重试次数
+         * @param retryTime 重试时间间隔
+         */
+        fetchTID(tid: number | string, callback: fetchTIDcallback, page = 1, retry = 2, retryTime = 1500) {
+            if (typeof tid == 'string') { tid = parseInt(tid) }
+            if (tid < 1 || isNaN(tid)) { return } // 为零则说明没有帖子
+            let obj = this
+            fetch('https://www.mcbbs.net/api/mobile/index.php?version=4&module=viewthread&tid=' + tid + '&page=' + page)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        return Promise.reject(Object.assign({}, response.json(), {
+                            status: response.status,
+                            statusText: response.statusText
+                        }))
+                    }
+                })
+                .then((data) => { callback(data) })
+                .catch((error) => {
+                    if (retry > 0) { setTimeout(() => { obj.fetchTID(tid, callback, page, retry - 1, retryTime) }, retryTime); }
+                });
+        }
+        /**获取当前用户的UID，没有则返回0*/
+        getUID() {
+            return typeof window.discuz_uid ? parseInt(window.discuz_uid) : 0
+        }
+        /**获取当前页面的TID，没有则返回0*/
+        getTID() {
+            return parseInt((window.tid ? window.tid + '' : null) || (window.location.href.match(/thread-([\d]+)/) || window.location.href.match(/tid\=([\d]+)/) || ['0', '0'])[1])
+        }
+        /**
          * 断言
          * @param condition 为假时报错
          * @param msg 报错语句，默认为“发生错误”
@@ -277,7 +409,7 @@
                 { text: '收藏', url: 'home.php?mod=space&do=favorite&view=me', img: 'https://patchwiki.biligame.com/images/mc/d/dd/hnrqjfj0x2wl46284js23m26fgl3q8l.png' },
                 { text: '挖矿', url: 'plugin.php?id=mcbbs_lucky_card:prize_pool', img: 'https://www.mcbbs.net/source/plugin/mcbbs_lucky_card/magic/magic_lucky_card.gif' },
                 { text: '宣传', url: 'plugin.php?id=mcbbs_ad:ad_manage', img: 'https://patchwiki.biligame.com/images/mc/4/43/pfmuw066q7ugi0wv4eyfjbeu3sxd3a4.png' },
-                { text: '设置', url: 'home.php?mod=spacecp', title: '点击头像配置saltMCBBS', img: 'https://patchwiki.biligame.com/images/mc/9/90/dr8rvwsbxfgr79liq91icuxkj6nprve.png' },
+                { text: '设置', url: 'home.php?mod=spacecp', title: 'SaltMCBBS设置在下面', img: 'https://patchwiki.biligame.com/images/mc/9/90/dr8rvwsbxfgr79liq91icuxkj6nprve.png' },
             ]
             this.addChildren(addons, this.obj2a(myaddon))
             addons.className = 'addons'
@@ -661,39 +793,6 @@
                 }
             }
         }
-        /**
-         * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
-         * @param str 要分割的字符串
-         * @param spliter 按什么划分，默认按换行划分
-         */
-        formatToStringArray(str: string, spliter: string = '\n'): string[] {
-            let arr: string[] = []
-            let temparr = str.split(spliter)
-            for (let x of temparr) {
-                let s = this.Trim(x)
-                if (s.length > 0) {
-                    arr.push(s)
-                }
-            }
-            return arr
-        }
-        /**
-         * 去除字符串数组中匹配的字符串
-         * @param arr 要处理的字符串
-         * @param test 用于测试的正则表达式
-         */
-        cleanStringArray(arr: string[], test: RegExp = /^\/\//): string[] {
-            let fin = []
-            for (let s of arr) {
-                if (!(test.test(s)))
-                    fin.push(s)
-            }
-            return fin
-        }
-        /**删除字符串两侧的空格 */
-        Trim(x: string) {
-            return x.replace(/^\s+|\s+$/gm, '');
-        }
         // 设置面板相关操作
         /**隐藏设置面板 */
         hideSettingPanel() {
@@ -885,105 +984,6 @@
         toggleNightStyle() {
             let isnight: boolean = this.readWithDefault<boolean>('isNightStyle', false)
             this.nightStyle(!isnight, true)
-        }
-        /**将格式正确的obj变成a元素 */
-        obj2a(obj: AnchorObj[], targetDefault = '_self'): HTMLAnchorElement[] {
-            let as: HTMLAnchorElement[] = []
-            if (['_self', '_parent', '_blank', '_top'].indexOf(targetDefault) != -1) {
-                targetDefault = '_self'
-            }
-            for (let x of obj) {
-                let a = document.createElement('a')
-                a.href = x.url
-                if (typeof x.img == 'string' && x.img.length > 2) {
-                    a.innerHTML = `<img src="${x.img}">`
-                }
-                a.innerHTML += x.text
-                if (typeof x.target == 'string' && ['_self', '_parent', '_blank', '_top'].indexOf(x.target) != -1) {
-                    a.target = x.target
-                } else {
-                    a.target = targetDefault
-                }
-                if (typeof x.class == 'string' && x.class.length > 0) {
-                    a.className = x.class
-                }
-                if (typeof x.title == 'string' && x.title.length > 0) {
-                    a.title = x.title
-                }
-                as.push(a)
-            }
-            return as
-        }
-        /**批量添加子节点 */
-        addChildren(parent: Element, children: NodeListOf<Element> | Element[]) {
-            for (let i = 0; i < children.length; i++) {
-                parent.appendChild(children[i])
-            }
-        }
-        /**
-         * 根据UID获取信息
-         * @param uid 用户的UID
-         * @param callback 回调函数
-         * @param retry 失败后重试次数
-         * @param retryTime 重试时间间隔
-         */
-        fetchUID(uid: number | string, callback: fetchUIDcallback, retry = 2, retryTime = 1500) {
-            // this.log(uid)
-            if (typeof uid == 'string') { uid = parseInt(uid) }
-            if (uid < 1 || isNaN(uid)) { return } // 为零则说明没有登录
-            let obj = this
-            fetch('https://www.mcbbs.net/api/mobile/index.php?module=profile&uid=' + uid)
-                .then(response => {
-                    if (response.ok) {
-                        return response.json()
-                    } else {
-                        return Promise.reject(Object.assign({}, response.json(), {
-                            status: response.status,
-                            statusText: response.statusText
-                        }))
-                    }
-                })
-                .then((data) => { callback(data) })
-                .catch((error) => {
-                    console.log(error)
-                    if (retry > 0) { setTimeout(() => { obj.fetchUID(uid, callback, retry - 1, retryTime) }, retryTime); }
-                });
-        }
-        /**
-         * 根据TID获取帖子信息
-         * @param tid 帖子的TID
-         * @param callback 回调函数
-         * @param page 页码，每页5楼
-         * @param retry 重试次数
-         * @param retryTime 重试时间间隔
-         */
-        fetchTID(tid: number | string, callback: fetchTIDcallback, page = 1, retry = 2, retryTime = 1500) {
-            if (typeof tid == 'string') { tid = parseInt(tid) }
-            if (tid < 1 || isNaN(tid)) { return } // 为零则说明没有帖子
-            let obj = this
-            fetch('https://www.mcbbs.net/api/mobile/index.php?version=4&module=viewthread&tid=' + tid + '&page=' + page)
-                .then(response => {
-                    if (response.ok) {
-                        return response.json()
-                    } else {
-                        return Promise.reject(Object.assign({}, response.json(), {
-                            status: response.status,
-                            statusText: response.statusText
-                        }))
-                    }
-                })
-                .then((data) => { callback(data) })
-                .catch((error) => {
-                    if (retry > 0) { setTimeout(() => { obj.fetchTID(tid, callback, page, retry - 1, retryTime) }, retryTime); }
-                });
-        }
-        /**获取当前用户的UID，没有则返回0*/
-        getUID() {
-            return typeof window.discuz_uid ? parseInt(window.discuz_uid) : 0
-        }
-        /**获取当前页面的TID，没有则返回0*/
-        getTID() {
-            return parseInt((window.tid ? window.tid + '' : null) || (window.location.href.match(/thread-([\d]+)/) || window.location.href.match(/tid\=([\d]+)/) || ['0', '0'])[1])
         }
     }
     /**CSS相关操作的类*/

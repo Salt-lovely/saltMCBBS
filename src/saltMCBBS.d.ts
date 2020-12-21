@@ -34,6 +34,45 @@ interface saltMCBBSOriginClassNew {
      *  */
     readWithDefault<T>(key: string, defaultValue: T): T,
     /**
+     * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
+     * @param str 要分割的字符串
+     * @param spliter 按什么划分，默认按换行划分
+     */
+    formatToStringArray(str: string, spliter?: string): string[],
+    /**
+     * 去除字符串数组中匹配的字符串
+     * @param arr 要处理的字符串
+     * @param test 用于测试的正则表达式，默认为两个斜杠开头
+     */
+    cleanStringArray(arr: string[], test?: RegExp): string[],
+    /**删除字符串两侧的空格 */
+    Trim(x: string): string,
+    /**将格式正确的obj变成a元素 */
+    obj2a(obj: AnchorObj[], targetDefault?: string): HTMLAnchorElement[],
+    /**批量添加子节点 */
+    addChildren(parent: Element, children: NodeListOf<Element> | Element[]): void,
+    /**
+     * 根据UID获取用户信息
+     * @param uid 用户的UID
+     * @param callback 回调函数
+     * @param retry 失败后重试次数
+     * @param retryTime 重试时间间隔
+     */
+    fetchUID(uid: number | string, callback: (data: BBSAPIResponceData) => void, retry?: number, retryTime?: number): void,
+    /**
+     * 根据TID获取帖子信息
+     * @param tid 帖子的TID
+     * @param callback 回调函数
+     * @param page 页码，每页5楼
+     * @param retry 失败后重试次数
+     * @param retryTime 重试时间间隔
+     */
+    fetchTID(tid: number | string, callback: fetchTIDcallback, page?: number, retry?: number, retryTime?: number): void,
+    /**获取当前用户的UID*/
+    getUID(): number,
+    /**获取当前页面的TID，没有则返回0*/
+    getTID(): number,
+    /**
      * 断言
      * @param condition 为假时报错
      * @param msg 报错语句，默认为“发生错误”
@@ -121,47 +160,8 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      * @param callback 点击后执行的回调函数或点击前往的链接
      */
     addSideBarLink(a: HTMLElement | string, callback?: (ev: MouseEvent) => void | string): void,
-    /**将格式正确的obj变成a元素 */
-    obj2a(obj: AnchorObj[], targetDefault?: string): HTMLAnchorElement[],
-    /**批量添加子节点 */
-    addChildren(parent: Element, children: NodeListOf<Element> | Element[]): void,
-    /**
-     * 根据UID获取用户信息
-     * @param uid 用户的UID
-     * @param callback 回调函数
-     * @param retry 失败后重试次数
-     * @param retryTime 重试时间间隔
-     */
-    fetchUID(uid: number | string, callback: (data: BBSAPIResponceData) => void, retry?: number, retryTime?: number): void,
-    /**
-     * 根据TID获取帖子信息
-     * @param tid 帖子的TID
-     * @param callback 回调函数
-     * @param page 页码，每页5楼
-     * @param retry 失败后重试次数
-     * @param retryTime 重试时间间隔
-     */
-    fetchTID(tid: number | string, callback: fetchTIDcallback, page?: number, retry?: number, retryTime?: number): void,
     /**更新背景 */
     updateBackground(): void,
-    /**
-     * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
-     * @param str 要分割的字符串
-     * @param spliter 按什么划分，默认按换行划分
-     */
-    formatToStringArray(str: string, spliter?: string): string[],
-    /**
-     * 去除字符串数组中匹配的字符串
-     * @param arr 要处理的字符串
-     * @param test 用于测试的正则表达式，默认为两个斜杠开头
-     */
-    cleanStringArray(arr: string[], test?: RegExp): string[]
-    /**删除字符串两侧的空格 */
-    Trim(x: string): string,
-    /**获取当前用户的UID*/
-    getUID(): number,
-    /**获取当前页面的TID，没有则返回0*/
-    getTID(): number,
 }
 /**saltMCBBSCSS接口 */
 interface saltMCBBScss {
