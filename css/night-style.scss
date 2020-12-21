@@ -1,10 +1,10 @@
-$bodybg-d: #222;
+$bodybg-d: #1c1c1c;
 $bodybg: lighten($bodybg-d, 6%);
 $bodybg-l: lighten($bodybg, 7%);
 $bodybg-l-l: lighten($bodybg-l, 8%);
 $bodybg-l-l-l: lighten($bodybg-l-l, 8%);
 
-$fontcolor-d: #e0e0e0;
+$fontcolor-d: #ddd;
 $fontcolor: lighten($fontcolor-d, 5%);
 $fontcolor-l: lighten($fontcolor, 10%);
 
@@ -43,6 +43,7 @@ body.night-style {
     }
     & {
         background-color: $bodybg-d !important;
+        background-image: var(--bodyimg-night);
         color: $fontcolor;
     }
     .mc_map_wp {
@@ -737,6 +738,85 @@ body.night-style {
         }
     }
 }
+// 编辑器
+body.night-style {
+    // 选择主题分类的弹出菜单
+    #typeid_ctrl_menu {
+        background-color: $bodybg-l;
+        border-color: $table-border-color;
+        li {
+            color: $fontcolor;
+        }
+    }
+    #editorbox {
+        background-color: $bodybg-l;
+        > * {
+            background-color: transparent;
+        }
+        .tb .a a,
+        .tb .current a {
+            background-color: $bodybg-l-l;
+        }
+        .ftid a {
+            background-color: $bodybg-l-l;
+            color: $fontcolor !important; // MCBBS的CSS里有一个important导致我也不得不写一个
+        }
+        // 顶部小工具栏
+        #e_controls {
+            background-color: $bodybg-l-l;
+            .b1r a,
+            .b2r a {
+                border: none;
+                border-width: 0px;
+                &:not(.dp) {
+                    @include glow();
+                }
+                &.dp {
+                    background-color: $bodybg-l-l;
+                    color: $fontcolor;
+                }
+            }
+        }
+        // 纯文本模式
+        #e_textarea {
+            background-color: $bodybg;
+        }
+        // 编辑器边框
+        #rstnotice, // 这个是提示
+        #e_bbar,
+        .area {
+            background-color: $bodybg-l;
+            border-color: $table-border-color;
+        }
+        .area {
+            background-color: $bodybg;
+        }
+        // 底部提示栏
+        .exfm {
+            background-color: $bodybg-l-l;
+        }
+    }
+}
+// 网站地图
+body.night-style {
+    #nav,
+    #content > *,
+    li,
+    #end,
+    #footer strong {
+        > a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+            }
+        }
+    }
+    #content {
+        p.author {
+            background-color: $bodybg-l;
+        }
+    }
+}
 // 处理各色的a/font
 $colormap: (
     "#333333": #e0e0e0,
@@ -776,7 +856,8 @@ $fontcolormap: (
     "Green": #9f9,
     "black": #fff,
     "Black": #fff,
-    /*大区版主色*/ "#660099": #bf8cd9
+    /*大区版主色*/ "#660099": #bf8cd9,
+    "#2d76c4": #5c97d6
 );
 $backcolormap: ("#FFFFFF", "Wheat");
 body.night-style {
@@ -813,6 +894,7 @@ body.night-style {
         background-color: transparent !important;
     }
 }
+// 设置面板夜间模式
 body.night-style {
     .settingPanel {
         background-color: $bodybg;

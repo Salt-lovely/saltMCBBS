@@ -1,7 +1,13 @@
 $bgcolor: #fbf2db;
 body {
+    background-image: var(--bodyimg-day);
+    background-attachment: fixed;
+    background-size: cover;
     > div[style]:not([id]):not([class]) {
         float: left;
+    }
+    &:hover > .mc_map_wp {
+        transition-delay: 0s;
     }
     > .mc_map_wp {
         padding-top: 0;
@@ -10,6 +16,11 @@ body {
         // float: unset;
         display: inline-block;
         margin-left: calc(50% - 565px);
+        transition: 0.3s ease;
+        transition-delay: 0.5s;
+        &:hover {
+            transition-delay: 0s;
+        }
         > .new_wp {
             padding-top: 0 !important;
             padding-bottom: 0 !important;
@@ -48,7 +59,7 @@ ul.xl.xl2.o.cl .pmwarn {
     }
     &[style*="hidden"] {
         margin-left: -10px;
-        opacity: 0;
+        opacity: 0 !important;
     }
 }
 // 代码块
@@ -64,7 +75,8 @@ ul.xl.xl2.o.cl .pmwarn {
         }
     }
     ol {
-        overflow-x: scroll;
+        overflow: scroll;
+        max-width: 45em;
         li {
             color: #444;
             margin-left: 29px;
@@ -78,8 +90,8 @@ ul.xl.xl2.o.cl .pmwarn {
 .settingPanel {
     width: 40vw;
     min-width: 360px;
-    right: 30vw;
-    max-height: 90vh;
+    left: 30vw;
+    max-height: 85vh;
     top: 10vh;
     position: fixed;
     background-color: $bgcolor;
@@ -107,6 +119,14 @@ ul.xl.xl2.o.cl .pmwarn {
         margin-bottom: 8px;
         float: left;
     }
+    .flb {
+        span > a {
+            color: rgb(58, 116, 173);
+            &:hover {
+                color: #6cf;
+            }
+        }
+    }
     h3 {
         font-size: 0.875rem;
         small {
@@ -131,5 +151,8 @@ ul.xl.xl2.o.cl .pmwarn {
         width: calc(50% - 4px);
         float: left;
         text-align: center;
+        &[type="range"] {
+            width: calc(100% - 8px);
+        }
     }
 }
