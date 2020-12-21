@@ -132,6 +132,34 @@ body.night-style {
         background-color: #444;
         border: none;
     }
+    // 表格的隔行颜色区分
+    .alt {
+        > th,
+        > td {
+            background-color: $bodybg-l;
+        }
+    }
+    .dt {
+        td,
+        th {
+            background-color: $bodybg-l;
+            a {
+                color: $fontcolor;
+                &:hover {
+                    color: $a-highlight;
+                }
+            }
+        }
+        tr:not(.alt) {
+            td,
+            th {
+                background-color: $bodybg;
+            }
+        }
+    }
+    .bm {
+        background-color: transparent;
+    }
 }
 // 门户、论坛、小组
 body.night-style {
@@ -411,7 +439,7 @@ body.night-style {
             }
             //
             .spoilerbutton {
-                border: 1px solid $bodybg-l;
+                border: 1px solid $bodybg-l-l;
             }
             .spoilerbody > table {
                 color: $fontcolor;
@@ -423,6 +451,16 @@ body.night-style {
             opacity: 0.1;
             &:hover {
                 opacity: 0.9;
+            }
+        }
+        // 协同作者
+        .tbn {
+            .mt.bbda {
+                background-image: none;
+                background-color: $bodybg-l;
+            }
+            ul {
+                @include noborder();
             }
         }
     }
@@ -663,6 +701,18 @@ body.night-style {
                         color: $fontcolor !important;
                     }
                 }
+                // 切换页面
+                .pg {
+                    a,
+                    strong,
+                    label {
+                        color: $fontcolor;
+                        background-color: transparent;
+                    }
+                    strong {
+                        background-color: $bodybg-l;
+                    }
+                }
             }
         }
     }
@@ -843,21 +893,32 @@ $colormap: (
 );
 $fontcolormap: (
     /*版主色*/ "#660000": #c66,
+    "#8b0000": #c66,
+    "#ff0000": #f99,
     "red": #f99,
     "Red": #f99,
     "#000080": #8af,
+    "#0000ff": #8af,
     "#3366ff": #8af,
     "#003399": #8af,
     "blue": #8af,
     "Blue": #8af,
     "#339933": #9f9,
     "#009900": #9f9,
+    "#008000": #9f9,
+    "#006400": #9f9,
     "green": #9f9,
     "Green": #9f9,
+    "#000000": #fff,
     "black": #fff,
     "Black": #fff,
     /*大区版主色*/ "#660099": #bf8cd9,
-    "#2d76c4": #5c97d6
+    "#4b0082": #b54dff,
+    "Indigo": #b54dff,
+    "DarkOrchid": #c57ce9,
+    "Purple": #ff4dff,
+    "#2d76c4": #5c97d6,
+    "Olive": #ffff33
 );
 $backcolormap: ("#FFFFFF", "Wheat");
 body.night-style {
