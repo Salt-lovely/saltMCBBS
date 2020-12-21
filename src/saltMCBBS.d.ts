@@ -148,6 +148,8 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      * @param id 配置项的名字
      */
     delSetting(id: string): void,
+    /**根据优先级整理配置项 */
+    sortSetting(): void,
     /**
      * 更改配置项的&lt;h3>标签
      * @param id 元素的名字
