@@ -2,7 +2,8 @@
 p.md_ctrl {
     // max-height: calc(64px * 4.5); /*限制为5行*/
     position: relative;
-    overflow: hidden;
+    float: left;
+    overflow: visible;
     margin-left: 15px;
     &,
     &:hover {
@@ -15,6 +16,7 @@ p.md_ctrl {
     &.expandable {
         // 如果有点击展开按钮的话
         padding-bottom: 32px;
+        overflow: hidden;
     }
     .saltExpandHandler {
         position: absolute;
@@ -25,6 +27,7 @@ p.md_ctrl {
         color: rgb(56, 130, 167);
         background-image: linear-gradient(
             0deg,
+            #e3c99e,
             #e3c99e,
             rgba($color: #e3c99e, $alpha: 0)
         );
@@ -124,7 +127,8 @@ body.night-style {
             background-image: linear-gradient(
                 0deg,
                 var(--bodybg-l, #313131),
-                var(--bodybg-l-t, #313131)
+                var(--bodybg-l, #313131),
+                var(--bodybg-l-t, rgba($color: #313131, $alpha: 0))
             );
         }
     }

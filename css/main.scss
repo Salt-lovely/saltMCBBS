@@ -29,6 +29,9 @@ body {
             }
         }
     }
+    #toptb {
+        opacity: 0;
+    }
 }
 // 查看警告记录按钮
 .pmwarn {
@@ -75,8 +78,8 @@ ul.xl.xl2.o.cl .pmwarn {
         }
     }
     ol {
-        overflow: scroll;
-        max-width: 45em;
+        overflow: auto;
+        max-height: 45em;
         li {
             color: #444;
             margin-left: 29px;
@@ -91,7 +94,7 @@ ul.xl.xl2.o.cl .pmwarn {
     width: 40vw;
     min-width: 360px;
     left: 30vw;
-    max-height: 85vh;
+    max-height: 80vh;
     top: 10vh;
     position: fixed;
     background-color: $bgcolor;
@@ -153,6 +156,65 @@ ul.xl.xl2.o.cl .pmwarn {
         text-align: center;
         &[type="range"] {
             width: calc(100% - 8px);
+        }
+    }
+}
+// 消息框
+.messagePanel {
+    position: fixed;
+    width: calc(15rem + 16px);
+    padding: 8px;
+    max-height: 100vh;
+    bottom: 0;
+    right: 0;
+    font-size: 1rem;
+    box-sizing: content-box;
+    > div {
+        width: 100%;
+        min-height: 16px;
+        bottom: 0;
+        padding: 8px;
+        margin: 4px 0;
+        border-radius: 4px;
+        opacity: 0.75;
+        box-sizing: border-box;
+        float: left;
+        transition: 0.3s ease;
+        position: relative;
+        z-index: 99999;
+        &.normal,
+        &.info {
+            background-color: #efefef;
+        }
+        &.warn {
+            background-color: rgb(255, 248, 183);
+        }
+        &.success {
+            background-color: rgb(183, 255, 187);
+        }
+        &.error {
+            background-color: rgb(255, 194, 183);
+        }
+        &:hover {
+            opacity: 1;
+        }
+        > .close-button {
+            width: 16px;
+            height: 16px;
+            top: 0;
+            right: 0;
+            position: absolute;
+            transition: 0.3s ease;
+            transform-origin: 50% 50%;
+            &::after {
+                content: "×";
+                font-size: 16px;
+                line-height: 16px;
+                color: #000000;
+            }
+            &:hover {
+                transform: scale(1.2);
+            }
         }
     }
 }

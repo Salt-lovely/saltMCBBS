@@ -574,7 +574,9 @@ body.night-style {
                 background-color: $bodybg-l !important;
             }
         }
-        #pgt,
+        #pgt {
+            background-color: transparent !important;
+        }
         #thread_types > li a,
         #separatorline th,
         #separatorline td,
@@ -595,8 +597,8 @@ body.night-style {
                     border: none;
                 }
                 &:hover {
-                    th,
-                    td {
+                    > th,
+                    > td {
                         background-color: $bodybg-l-l;
                     }
                 }
@@ -623,6 +625,14 @@ body.night-style {
                 > * {
                     background-image: none;
                     background-color: transparent;
+                }
+            }
+        }
+        .fastpreview {
+            .bm_c {
+                background-color: $bodybg !important;
+                .pcb {
+                    background-color: $bodybg;
                 }
             }
         }
