@@ -4,8 +4,9 @@
 (function () {
     Trigger()
     async function Trigger() {
-        while (!window.saltMCBBSOriginClass)
-            await new Promise((resolve) => setTimeout(resolve, 100));
+        let safe = 0
+        while (!window.saltMCBBSOriginClass && safe++ < 2000)
+            await new Promise((resolve) => setTimeout(resolve, 50));
         myMod()
     }
     function myMod() {

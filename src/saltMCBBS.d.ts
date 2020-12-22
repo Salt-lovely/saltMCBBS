@@ -5,6 +5,17 @@ interface saltMCBBSOriginClass {
 }
 interface saltMCBBSOriginClassNew {
     /**
+     * 将页面平滑地滚动到某个位置
+     * @param targetY 目标高度
+     * @param step 每一步 20ms, 默认25步, 即 500ms
+     */
+    scrollTo(targetY: number, step: number),
+    /**
+     * 在文档加载完毕之后执行代码，类似于jQuery的$(function)
+     * @param callback 要执行的代码
+     */
+    docReady(callback: () => void),
+    /**
      * 根据选择器遍历元素
      * @param selector 字符串，选择器
      * @param callback 回调函数(index: number, el: Element): void
@@ -108,31 +119,34 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      * @param div 一个元素，里面的东西自己写
      * @param id 元素的名字，删除的时候用
      */
-    addSetting(div: Element, id?: string): void,
+    addSetting(div: Element, id?: string, priority?: number): void,
     /**
      * 一种快速生成配置项的预设，结构是一个 h3 加一个 textarea
      * @param h3 配置项标题(可以是HTML代码)
      * @param textarea 默认配置
      * @param callback textarea触发change事件的回调函数，参数：el: textarea元素, ev: 事件
      * @param id 配置项的id，不填则默认为h3
+     * @param priority 配置项排序优先级
      */
-    addTextareaSetting(h3: string, textarea: string, callback: (el: HTMLTextAreaElement, ev: Event) => void, id?: string): void,
+    addTextareaSetting(h3: string, textarea: string, callback: (el: HTMLTextAreaElement, ev: Event) => void, id?: string, priority?: number): void,
     /**
      * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
      * @param h3 配置项标题(可以是HTML代码)
      * @param text 默认配置
      * @param callback input触发change事件的回调函数，参数：el: textarea元素, ev: 事件
      * @param id 配置项的id，不填则默认为h3
+     * @param priority 配置项排序优先级
      */
-    addInputSetting(h3: string, text: string, callback: (el: HTMLInputElement, ev: Event) => void, id?: string): void,
+    addInputSetting(h3: string, text: string, callback: (el: HTMLInputElement, ev: Event) => void, id?: string, priority?: number): void,
     /**
      * 一种快速生成配置项的预设，结构是一个 h3 加一个勾选框 input
      * @param h3 配置项标题
      * @param text 默认配置
      * @param callback input触发click事件的回调函数，参数：ck: 勾选与否, ev: 事件
      * @param id 配置项的id，不填则默认为h3
+     * @param priority 配置项排序优先级
      */
-    addCheckSetting(h3: string, checked: boolean, callback: (ck: boolean, ev: Event) => void, id?: string): void,
+    addCheckSetting(h3: string, checked: boolean, callback: (ck: boolean, ev: Event) => void, id?: string, priority?: number): void,
     /**
      * 一种快速生成配置项的预设，结构是一个 h3 加一个滑动条 input
      * @param h3 配置项标题
@@ -140,9 +154,10 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      * @param range [最小值,最大值,步长]或{min:最小值,max:最大值,step:步长}
      * @param callback input触发change事件的回调函数，参数：vl: 数字, ev: 事件
      * @param id 配置项的id，不填则默认为h3
+     * @param priority 配置项排序优先级
      */
     addRangeSetting(h3: string, value: number, range: [number, number, number] | { max: number, min: number, step: number },
-        callback: (vl: number, ev: Event) => void, id?: string),
+        callback: (vl: number, ev: Event) => void, id?: string, priority?: number),
     /**
      * 删除配置项
      * @param id 配置项的名字
@@ -164,6 +179,13 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
     addSideBarLink(a: HTMLElement | string, callback?: (ev: MouseEvent) => void | string): void,
     /**更新背景 */
     updateBackground(): void,
+    /**
+     * 在屏幕右下角输出提示信息
+     * @param info 要显示的信息, HTML
+     * @param callback 点击后的回调函数, 如果用户点击关闭则不会触发, 回调函数可以接受一个销毁这个消息的函数作为参数
+     * @param type 类型 0-默认 1-信息(其实就是默认) 2-成功 3-警告 4-出错 默认为0
+     */
+    message(html: string, callback?: (() => void) | ((removeDiv: () => void) => void), type?: number)
 }
 /**saltMCBBSCSS接口 */
 interface saltMCBBScss {
