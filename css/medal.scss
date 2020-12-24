@@ -2,9 +2,11 @@
 p.md_ctrl {
     // max-height: calc(64px * 4.5); /*限制为5行*/
     position: relative;
-    float: left;
+    float: left; // 触发BFC
+    min-width: 120px;
     overflow: visible;
-    margin-left: 15px;
+    margin-left: 5px;
+    padding-left: 10px;
     &,
     &:hover {
         max-height: var(--maxHeight, 96px);
@@ -51,15 +53,6 @@ p.md_ctrl {
             display: none;
         }
     }
-    /*scrollbar-width: none; 也许要等到CSS4才会有统一的标准*/
-    // overflow: -moz-scrollbars-none; /*网传的兼容火狐的隐藏滚动条的方法*/
-    // -ms-overflow-style: none; /*兼容IE*/
-    // &::-webkit-scrollbar {
-    //     width: 0 !important; /*兼容谷歌（经测试可用）*/
-    // }
-    // .-o-scrollbar {
-    //     -moz-appearance: none !important; /*兼容opera*/
-    // }
     > a {
         width: 100%;
         > img {
@@ -67,8 +60,8 @@ p.md_ctrl {
             position: relative;
             width: 35px;
             height: 55px;
-            -webkit-filter: drop-shadow(0 2px 1px #000);
-            filter: drop-shadow(0 2px 1px #000);
+            -webkit-filter: drop-shadow(0 3px 2px #000);
+            filter: drop-shadow(0 3px 2px #000);
             margin: 4.5px;
             transition: filter 0.5s ease;
             &:hover {
@@ -89,7 +82,7 @@ p.md_ctrl {
                     0,
                     -1.6,
                     0,
-                    0.92
+                    0.85
                 );
                 transform: matrix3d(
                     1,
@@ -107,13 +100,13 @@ p.md_ctrl {
                     0,
                     -1.6,
                     0,
-                    0.92
+                    0.85
                 );
                 -webkit-filter: drop-shadow(
-                    0 3px 2px rgba($color: #000000, $alpha: 0.5)
+                    0 5px 4px rgba($color: #000000, $alpha: 0.75)
                 );
                 filter: drop-shadow(
-                    0 3px 2px rgba($color: #000000, $alpha: 0.5)
+                    0 5px 4px rgba($color: #000000, $alpha: 0.75)
                 );
                 // color: rgba($color: #000000, $alpha: 0.5);
             }
@@ -472,7 +465,7 @@ body {
             0,
             -1,
             0,
-            0.95
+            0.92
         );
         transform: matrix3d(
             1,
@@ -490,7 +483,7 @@ body {
             0,
             -1,
             0,
-            0.95
+            0.92
         );
     }
     100% {
@@ -510,7 +503,7 @@ body {
             0,
             -1.6,
             0,
-            0.92
+            0.85
         );
         transform: matrix3d(
             1,
@@ -528,7 +521,7 @@ body {
             0,
             -1.6,
             0,
-            0.92
+            0.85
         );
     }
 }
@@ -551,7 +544,7 @@ body {
             0,
             -1.6,
             0,
-            0.92
+            0.85
         );
         transform: matrix3d(
             1,
@@ -569,7 +562,7 @@ body {
             0,
             -1.6,
             0,
-            0.92
+            0.85
         );
     }
     50% {
@@ -589,7 +582,7 @@ body {
             0,
             -1.1,
             0,
-            0.95
+            0.92
         );
         transform: matrix3d(
             1,
@@ -607,7 +600,7 @@ body {
             0,
             -1.1,
             0,
-            0.95
+            0.92
         );
     }
     100% {
