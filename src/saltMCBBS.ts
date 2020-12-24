@@ -6,6 +6,7 @@
 // @author       salt
 // @match        https://*.mcbbs.net/*
 // @grant        none
+// @version      0.1.6pre3
 // @license      CC BY-NC-SA 4.0
 // @run-at       document-body
 // ==/UserScript==
@@ -15,27 +16,30 @@
 昼间模式下的背景图片 210
 夜间模式下的背景图片 211
 主体部分的透明度 212
+启用勋章栏功能 300
 勋章栏高度 301
 冲突修复功能 401
 左侧用户信息跟随 402
+回到顶部按钮动画 403
+举报记录功能 404
 反嗅探措施 411
 水帖检测机制 421
 */
 (function () {
     /**版本 */
-    let myversion = '0.1.6'
+    const myversion = '0.1.6'
     /**历史 */
-    let myhistory = ``
+    const myhistory = ``
     /**前缀 */
-    let myprefix = '[SaltMCBBS]'
+    const myprefix = '[SaltMCBBS]'
     /**勋章文件地址前缀 */
-    let medalLinkPrefix = 'https://www.mcbbs.net/static/image/common/'
+    const medalLinkPrefix = 'https://www.mcbbs.net/static/image/common/'
     /**占位用的，一个字符 */
-    let placeholderSpan = '<span style="color:transparent;display:inline">无</span>'
+    const placeholderSpan = '<span style="color:transparent;display:inline">无</span>'
     /**占位用的，两个字符 */
-    let placeholderSpan2 = '<span style="color:transparent;display:inline">空白</span>'
+    const placeholderSpan2 = '<span style="color:transparent;display:inline">空白</span>'
     /**消息提醒的图标 */
-    let noticimgurl = [
+    const noticimgurl = [
         'https://s3.ax1x.com/2020/11/28/DynR1S.png',
         'https://s3.ax1x.com/2020/11/28/DynW6g.png',
         'https://s3.ax1x.com/2020/11/28/DynfXQ.png',
@@ -45,18 +49,34 @@
         'https://s3.ax1x.com/2020/11/28/Dyncff.png',
     ]
     /**技术性前缀, 防止变量名冲突 */
-    let techprefix = 'saltMCBBS-'
+    const techprefix = 'saltMCBBS-'
     /**安全锁 */
     let autoRunLock = true
     /**配置项优先级操作 */
     let myPriority = 0
-    /**反水帖小工具 */
-    let antiWaterRegExp = [
+    /**反水帖小工具判定正则 */
+    const antiWaterRegExp = [
         // 表情包会被处理成'/meme/'的文字形式
-        /^\s*(\S|\/meme\/)\s*(\1(\s|\/meme\/)*)+$/, // 刷同一个字/表情包
+        /^([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*$/, // 刷同一个字/表情包
+        /^.{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务).{0,3}$/, // "水水水"、"完成任务"之类的无意义回帖
     ]
     /**原始类，包含各种基础方法*/
     class saltMCBBSOriginClass implements saltMCBBSOriginClass {
+        getData(key: 'antiWaterRegExp'): RegExp[];
+        getData(key: 'noticImgUrl'): String[];
+        /**
+         * 获取一些由于闭包而不能直接访问的数据
+         * @param key 默认返回空字符串
+         */
+        getData(key: string): any {
+            let temp: any // 做一下简单的隔离
+            switch (key) {
+                case 'antiWaterRegExp': temp = antiWaterRegExp
+                case 'noticImgUrl': temp = noticimgurl
+                default: temp = ''
+            }
+            return temp
+        }
         /**
          * 将页面平滑地滚动到某个位置
          * @param targetY 目标高度
@@ -348,7 +368,7 @@
         constructor(autorun = false) {
             super()
             window.saltMCBBSCSS.setStyle( // 主要更改
-                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}body #toptb{opacity:0}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2}.warned:hover{opacity:0.9}#scrolltop{visibility:visible !important;opacity:1;transition:0.3s ease}#scrolltop:not([style]){display:none}#scrolltop[style*="hidden"]{margin-left:-10px;opacity:0 !important}.pl .blockcode{position:relative}.pl .blockcode>em{top:2px;right:2px;position:absolute;margin:0 0 0 0}.pl .blockcode>em:hover{outline:1px dashed}.pl .blockcode ol{overflow:auto;max-height:45em}.pl .blockcode ol li{color:#444;margin-left:29px;line-height:1.8em;height:1.8em;white-space:pre}.settingPanel{width:40vw;min-width:360px;left:30vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;height:4em;min-height:2em;max-height:20em;width:calc(100% - 8px)}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal,.messagePanel>div.info{background-color:#efefef}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}
+                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}body #toptb{opacity:0}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warn::after{content:"已制裁";color:#2c4}.pl .blockcode{position:relative}.pl .blockcode>em{top:2px;right:2px;position:absolute;margin:0 0 0 0}.pl .blockcode>em:hover{outline:1px dashed}.pl .blockcode ol{overflow:auto;max-height:45em;max-width:750px;scrollbar-width:thin;scrollbar-color:#eee #999}.pl .blockcode ol::-webkit-scrollbar{width:10px;height:10px}.pl .blockcode ol::-webkit-scrollbar-thumb{border-radius:10px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.pl .blockcode ol::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:10px;background:#eee}.pl .blockcode ol li{color:#444;margin-left:29px;line-height:1.8em;height:1.8em;white-space:pre}.settingPanel{width:40vw;min-width:360px;left:30vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:37.5em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}
 `
                 , 'main'
             )
@@ -363,9 +383,9 @@
                 , 'night-style'
             )
             window.saltMCBBSCSS.setStyle( // 勋章样式
-                `p.md_ctrl{position:relative;float:left;overflow:visible;margin-left:15px}p.md_ctrl,p.md_ctrl:hover{max-height:var(--maxHeight, 96px)}p.md_ctrl.salt-expand,p.md_ctrl.salt-expand:hover{max-height:var(--expandHeight, 960px)}p.md_ctrl.expandable{padding-bottom:32px;overflow:hidden}p.md_ctrl .saltExpandHandler{position:absolute;bottom:0;left:0;width:100%;height:32px;color:#3882a7;background-image:linear-gradient(0deg, #e3c99e, #e3c99e, rgba(227,201,158,0));cursor:pointer}p.md_ctrl .saltExpandHandler:after{content:"点击展开";display:block;width:100%;height:32px;line-height:32px;text-align:center}p.md_ctrl.salt-expand .saltExpandHandler:after{content:"点击收起"}p.md_ctrl:not(.expandable) .saltExpandHandler{display:none}p.md_ctrl>a{width:100%}p.md_ctrl>a>img{animation:dropdown 0.5s ease;position:relative;width:35px;height:55px;-webkit-filter:drop-shadow(0 2px 1px #000);filter:drop-shadow(0 2px 1px #000);margin:4.5px;transition:filter 0.5s ease}p.md_ctrl>a>img:hover{animation:pickup 0.5s ease;-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);-webkit-filter:drop-shadow(0 3px 2px rgba(0,0,0,0.5));filter:drop-shadow(0 3px 2px rgba(0,0,0,0.5))}body.night-style p.md_ctrl .saltExpandHandler{color:#6cf;background-image:linear-gradient(0deg, var(--bodybg-l, #313131), var(--bodybg-l, #313131), var(--bodybg-l-t, rgba(49,49,49,0)))}body #append_parent>.tip_4,body .tip_4.aimg_tip,body .pls .tip_4,body .tip_4[id*="attach"],body dd>.tip_4{background-color:#e3c99eee !important;max-height:90px !important;width:140px;margin-top:35px}body .tip_4.aimg_tip,body .tip_4[id*="attach"]{width:200px !important;padding:5px !important;background-image:none !important}body .tip_4[id*="attach"] .tip_c{padding:5px !important;background-image:none !important}body .tip_4.aimg_tip p{pointer-events:auto !important}body #append_parent>.tip_4{margin-top:40px;margin-left:-10px}body .tip_3,body .tip_4{transition:opacity 0.4s ease !important;width:105px;height:165px;padding:0;border:none;border-radius:5px;margin-top:85px;margin-left:44px;pointer-events:none !important;overflow:hidden;background-color:rgba(34,34,34,0.75);box-shadow:0px 10px 25px -4px #000;image-rendering:pixelated}body .tip_3::before,body .tip_4::before{content:"";position:absolute;z-index:-1;top:-7px;left:-7px;width:119px;height:187px;background-size:119px 187px !important;-webkit-filter:saturate(140%);filter:saturate(140%)}body .tip .tip_horn{display:none}body .tip .tip_c{background-image:linear-gradient(142deg, #fff0 0%, #fff7 5%, #fff5 28%, #fff0 29%, #fff0 70%, #fff5 70.5%, #fff5 73%, #fff0 74%, #fff7 75%, #fff7 85%, #fff0 85.1%);padding:20px 15px 0 15px;height:165px;color:#222}body .tip .tip_c>p,body .tip .tip_c>h4{color:#222;text-shadow:0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
+                `p.md_ctrl{position:relative;float:left;min-width:120px;overflow:visible;margin-left:5px;padding-left:10px}p.md_ctrl,p.md_ctrl:hover{max-height:var(--maxHeight, 96px)}p.md_ctrl.salt-expand,p.md_ctrl.salt-expand:hover{max-height:var(--expandHeight, 960px)}p.md_ctrl.expandable{padding-bottom:32px;overflow:hidden}p.md_ctrl .saltExpandHandler{position:absolute;bottom:0;left:0;width:100%;height:32px;color:#3882a7;background-image:linear-gradient(0deg, #e3c99e, #e3c99e, rgba(227,201,158,0));cursor:pointer}p.md_ctrl .saltExpandHandler:after{content:"点击展开";display:block;width:100%;height:32px;line-height:32px;text-align:center}p.md_ctrl.salt-expand .saltExpandHandler:after{content:"点击收起"}p.md_ctrl:not(.expandable) .saltExpandHandler{display:none}p.md_ctrl>a{width:100%}p.md_ctrl>a>img{animation:dropdown 0.5s ease;position:relative;width:35px;height:55px;-webkit-filter:drop-shadow(0 3px 2px #000);filter:drop-shadow(0 3px 2px #000);margin:4.5px;transition:filter 0.5s ease}p.md_ctrl>a>img:hover{animation:pickup 0.5s ease;-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85);-webkit-filter:drop-shadow(0 5px 4px rgba(0,0,0,0.75));filter:drop-shadow(0 5px 4px rgba(0,0,0,0.75))}body.night-style p.md_ctrl .saltExpandHandler{color:#6cf;background-image:linear-gradient(0deg, var(--bodybg-l, #313131), var(--bodybg-l, #313131), var(--bodybg-l-t, rgba(49,49,49,0)))}body #append_parent>.tip_4,body .tip_4.aimg_tip,body .pls .tip_4,body .tip_4[id*="attach"],body dd>.tip_4{background-color:#e3c99eee !important;max-height:90px !important;width:140px;margin-top:35px}body .tip_4.aimg_tip,body .tip_4[id*="attach"]{width:200px !important;padding:5px !important;background-image:none !important}body .tip_4[id*="attach"] .tip_c{padding:5px !important;background-image:none !important}body .tip_4.aimg_tip p{pointer-events:auto !important}body #append_parent>.tip_4{margin-top:40px;margin-left:-10px}body .tip_3,body .tip_4{transition:opacity 0.4s ease !important;width:105px;height:165px;padding:0;border:none;border-radius:5px;margin-top:85px;margin-left:44px;pointer-events:none !important;overflow:hidden;background-color:rgba(34,34,34,0.75);box-shadow:0px 10px 25px -4px #000;image-rendering:pixelated}body .tip_3::before,body .tip_4::before{content:"";position:absolute;z-index:-1;top:-7px;left:-7px;width:119px;height:187px;background-size:119px 187px !important;-webkit-filter:saturate(140%);filter:saturate(140%)}body .tip .tip_horn{display:none}body .tip .tip_c{background-image:linear-gradient(142deg, #fff0 0%, #fff7 5%, #fff5 28%, #fff0 29%, #fff0 70%, #fff5 70.5%, #fff5 73%, #fff0 74%, #fff7 75%, #fff7 85%, #fff0 85.1%);padding:20px 15px 0 15px;height:165px;color:#222}body .tip .tip_c>p,body .tip .tip_c>h4{color:#222;text-shadow:0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
  0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff,
- 0 0 3px #fff, 0 0 3px #fff !important}body .tip .tip_c h4{border-bottom:1px solid #fff}body div[id*="_menu"]:before{background-repeat:no-repeat}body #md_101_menu:before,body #medal_101_menu:before{background:url(static/image/common/m_a2.png)}body #md_102_menu:before,body #medal_102_menu:before{background:url(static/image/common/m_a3.png)}body #md_103_menu:before,body #medal_103_menu:before{background:url(static/image/common/m_a6.png)}body #md_11_menu:before,body #medal_11_menu:before{background:url(static/image/common/m_d1.png)}body #md_12_menu:before,body #medal_12_menu:before{background:url(static/image/common/m_d2.png)}body #md_104_menu:before,body #medal_104_menu:before{background:url(static/image/common/m_b1.png)}body #md_105_menu:before,body #medal_105_menu:before{background:url(static/image/common/m_b3.png)}body #md_106_menu:before,body #medal_106_menu:before{background:url(static/image/common/m_b4.png)}body #md_234_menu:before,body #medal_234_menu:before{background:url(static/image/common/m_b5.gif)}body #md_107_menu:before,body #medal_107_menu:before{background:url(static/image/common/m_rc1.png)}body #md_108_menu:before,body #medal_108_menu:before{background:url(static/image/common/m_rc3.png)}body #md_109_menu:before,body #medal_109_menu:before{background:url(static/image/common/m_rc5.png)}body #md_250_menu:before,body #medal_250_menu:before{background:url(static/image/common/m_c_10years.png)}body #md_76_menu:before,body #medal_76_menu:before{background:url(static/image/common/m_g5.png)}body #md_58_menu:before,body #medal_58_menu:before{background:url(static/image/common/m_g3.png)}body #md_59_menu:before,body #medal_59_menu:before{background:url(static/image/common/m_g4.png)}body #md_21_menu:before,body #medal_21_menu:before{background:url(static/image/common/m_noob.png)}body #md_9_menu:before,body #medal_9_menu:before{background:url(static/image/common/m_c2.png)}body #md_2_menu:before,body #medal_2_menu:before{background:url(static/image/common/m_c3.png)}body #md_38_menu:before,body #medal_38_menu:before{background:url(static/image/common/m_c1.png)}body #md_112_menu:before,body #medal_112_menu:before{background:url(static/image/common/m_c4.png)}body #md_251_menu:before,body #medal_251_menu:before{background:url(static/image/common/m_c_piglin.png)}body #md_155_menu:before,body #medal_155_menu:before{background:url(static/image/common/m_cape_mc2011.png)}body #md_156_menu:before,body #medal_156_menu:before{background:url(static/image/common/m_cape_mc2012.png)}body #md_157_menu:before,body #medal_157_menu:before{background:url(static/image/common/m_cape_mc2013.png)}body #md_158_menu:before,body #medal_158_menu:before{background:url(static/image/common/m_cape_mc2015.png)}body #md_159_menu:before,body #medal_159_menu:before{background:url(static/image/common/m_cape_Tr.png)}body #md_180_menu:before,body #medal_180_menu:before{background:url(static/image/common/m_cape_cobalt.png)}body #md_181_menu:before,body #medal_181_menu:before{background:url(static/image/common/m_cape_maper.png)}body #md_196_menu:before,body #medal_196_menu:before{background:url(static/image/common/m_cape_mc2016.png)}body #md_247_menu:before,body #medal_247_menu:before{background:url(static/image/common/m_cape_Mojira.png)}body #md_45_menu:before,body #medal_45_menu:before{background:url(static/image/common/m_s1.png)}body #md_127_menu:before,body #medal_127_menu:before{background:url(static/image/common/m_s2.png)}body #md_78_menu:before,body #medal_78_menu:before{background:url(static/image/common/m_p_pc.png)}body #md_113_menu:before,body #medal_113_menu:before{background:url(static/image/common/m_p_and.png)}body #md_114_menu:before,body #medal_114_menu:before{background:url(static/image/common/m_p_ios.png)}body #md_141_menu:before,body #medal_141_menu:before{background:url(static/image/common/m_p_wp.png)}body #md_160_menu:before,body #medal_160_menu:before{background:url(static/image/common/m_p_w10.png)}body #md_115_menu:before,body #medal_115_menu:before{background:url(static/image/common/m_p_box360.png)}body #md_116_menu:before,body #medal_116_menu:before{background:url(static/image/common/m_p_boxone.png)}body #md_117_menu:before,body #medal_117_menu:before{background:url(static/image/common/m_p_ps3.png)}body #md_118_menu:before,body #medal_118_menu:before{background:url(static/image/common/m_p_ps4.png)}body #md_119_menu:before,body #medal_119_menu:before{background:url(static/image/common/m_p_psv.png)}body #md_170_menu:before,body #medal_170_menu:before{background:url(static/image/common/m_p_wiiu.png)}body #md_209_menu:before,body #medal_209_menu:before{background:url(static/image/common/m_p_switch.png)}body #md_227_menu:before,body #medal_227_menu:before{background:url(static/image/common/m_p_3ds.png)}body #md_56_menu:before,body #medal_56_menu:before{background:url(static/image/common/m_g1.png)}body #md_57_menu:before,body #medal_57_menu:before{background:url(static/image/common/m_g2.png)}body #md_61_menu:before,body #medal_61_menu:before{background:url(static/image/common/m_p1.png)}body #md_62_menu:before,body #medal_62_menu:before{background:url(static/image/common/m_p2.png)}body #md_63_menu:before,body #medal_63_menu:before{background:url(static/image/common/m_p3.png)}body #md_46_menu:before,body #medal_46_menu:before{background:url(static/image/common/m_p4.png)}body #md_64_menu:before,body #medal_64_menu:before{background:url(static/image/common/m_p5.png)}body #md_65_menu:before,body #medal_65_menu:before{background:url(static/image/common/m_p6.png)}body #md_66_menu:before,body #medal_66_menu:before{background:url(static/image/common/m_p7.png)}body #md_75_menu:before,body #medal_75_menu:before{background:url(static/image/common/m_p8.png)}body #md_85_menu:before,body #medal_85_menu:before{background:url(static/image/common/m_p9.png)}body #md_86_menu:before,body #medal_86_menu:before{background:url(static/image/common/m_p10.png)}body #md_100_menu:before,body #medal_100_menu:before{background:url(static/image/common/m_p11.png)}body #md_175_menu:before,body #medal_175_menu:before{background:url(static/image/common/m_p12.png)}body #md_182_menu:before,body #medal_182_menu:before{background:url(static/image/common/m_p13.png)}body #md_91_menu:before,body #medal_91_menu:before{background:url(static/image/common/m_h1.png)}body #md_93_menu:before,body #medal_93_menu:before{background:url(static/image/common/m_h2.png)}body #md_92_menu:before,body #medal_92_menu:before{background:url(static/image/common/m_h3.png)}body #md_94_menu:before,body #medal_94_menu:before{background:url(static/image/common/m_h4.png)}body #md_95_menu:before,body #medal_95_menu:before{background:url(static/image/common/m_h5.png)}body #md_96_menu:before,body #medal_96_menu:before{background:url(static/image/common/m_h6.png)}body #md_152_menu:before,body #medal_152_menu:before{background:url(static/image/common/m_h7.png)}body #md_183_menu:before,body #medal_183_menu:before{background:url(static/image/common/m_h8.png)}body #md_200_menu:before,body #medal_200_menu:before{background:url(static/image/common/m_h9.png)}body #md_210_menu:before,body #medal_210_menu:before{background:url(static/image/common/m_h10.png)}body #md_70_menu:before,body #medal_70_menu:before{background:url(static/image/common/m_arena_v1.png)}body #md_72_menu:before,body #medal_72_menu:before{background:url(static/image/common/m_arena_v2.png)}body #md_88_menu:before,body #medal_88_menu:before{background:url(static/image/common/m_arena_v3.png)}body #md_111_menu:before,body #medal_111_menu:before{background:url(static/image/common/m_arena_v4.png)}body #md_69_menu:before,body #medal_69_menu:before{background:url(static/image/common/m_arena_w1.png)}body #md_68_menu:before,body #medal_68_menu:before{background:url(static/image/common/m_arena_w2.png)}body #md_73_menu:before,body #medal_73_menu:before{background:url(static/image/common/m_arena_w3.png)}body #md_74_menu:before,body #medal_74_menu:before{background:url(static/image/common/m_arena_w4.png)}body #md_89_menu:before,body #medal_89_menu:before{background:url(static/image/common/m_arena_w5.png)}body #md_90_menu:before,body #medal_90_menu:before{background:url(static/image/common/m_arena_w6.png)}body #md_98_menu:before,body #medal_98_menu:before{background:url(static/image/common/m_arena_w8.png)}body #md_99_menu:before,body #medal_99_menu:before{background:url(static/image/common/m_arena_w7.png)}body #md_120_menu:before,body #medal_120_menu:before{background:url(static/image/common/m_arena_v5.png)}body #md_121_menu:before,body #medal_121_menu:before{background:url(static/image/common/m_arena_w9.png)}body #md_122_menu:before,body #medal_122_menu:before{background:url(static/image/common/m_arena_w10.png)}body #md_123_menu:before,body #medal_123_menu:before{background:url(static/image/common/m_arena_i1.png)}body #md_129_menu:before,body #medal_129_menu:before{background:url(static/image/common/m_arena_v6.png)}body #md_130_menu:before,body #medal_130_menu:before{background:url(static/image/common/m_arena_w11.png)}body #md_131_menu:before,body #medal_131_menu:before{background:url(static/image/common/m_arena_w12.png)}body #md_132_menu:before,body #medal_132_menu:before{background:url(static/image/common/m_arena_i2.png)}body #md_143_menu:before,body #medal_143_menu:before{background:url(static/image/common/m_arena_v7.png)}body #md_144_menu:before,body #medal_144_menu:before{background:url(static/image/common/m_arena_v7f.png)}body #md_145_menu:before,body #medal_145_menu:before{background:url(static/image/common/m_arena_w13.png)}body #md_146_menu:before,body #medal_146_menu:before{background:url(static/image/common/m_arena_w14.png)}body #md_164_menu:before,body #medal_164_menu:before{background:url(static/image/common/m_arena_v8.png)}body #md_165_menu:before,body #medal_165_menu:before{background:url(static/image/common/m_arena_w15.png)}body #md_166_menu:before,body #medal_166_menu:before{background:url(static/image/common/m_arena_w16.png)}body #md_176_menu:before,body #medal_176_menu:before{background:url(static/image/common/m_arena_v9.png)}body #md_177_menu:before,body #medal_177_menu:before{background:url(static/image/common/m_arena_w17.png)}body #md_178_menu:before,body #medal_178_menu:before{background:url(static/image/common/m_arena_w18.png)}body #md_184_menu:before,body #medal_184_menu:before{background:url(static/image/common/m_arena_v10.png)}body #md_185_menu:before,body #medal_185_menu:before{background:url(static/image/common/m_arena_w19.png)}body #md_186_menu:before,body #medal_186_menu:before{background:url(static/image/common/m_arena_w20.png)}body #md_204_menu:before,body #medal_204_menu:before{background:url(static/image/common/m_arena_v11.png)}body #md_205_menu:before,body #medal_205_menu:before{background:url(static/image/common/m_arena_w21.png)}body #md_206_menu:before,body #medal_206_menu:before{background:url(static/image/common/m_arena_w22.png)}body #md_211_menu:before,body #medal_211_menu:before{background:url(static/image/common/m_arena_v12.png)}body #md_212_menu:before,body #medal_212_menu:before{background:url(static/image/common/m_arena_w23.png)}body #md_213_menu:before,body #medal_213_menu:before{background:url(static/image/common/m_arena_w24.png)}body #md_224_menu:before,body #medal_224_menu:before{background:url(static/image/common/m_arena_v13.png)}body #md_225_menu:before,body #medal_225_menu:before{background:url(static/image/common/m_arena_w25.png)}body #md_226_menu:before,body #medal_226_menu:before{background:url(static/image/common/m_arena_w26.png)}body #md_237_menu:before,body #medal_237_menu:before{background:url(static/image/common/m_arena14_1.png)}body #md_238_menu:before,body #medal_238_menu:before{background:url(static/image/common/m_arena14_2.png)}body #md_239_menu:before,body #medal_239_menu:before{background:url(static/image/common/m_arena14_3.png)}body #md_136_menu:before,body #medal_136_menu:before{background:url(static/image/common/m_s_v1.png)}body #md_167_menu:before,body #medal_167_menu:before{background:url(static/image/common/m_s_bili.png)}body #md_174_menu:before,body #medal_174_menu:before{background:url(static/image/common/m_s_v2.png)}body #md_195_menu:before,body #medal_195_menu:before{background:url(static/image/common/m_s_v3.png)}body #md_218_menu:before,body #medal_218_menu:before{background:url(static/image/common/m_s_bili2.png)}body #md_240_menu:before,body #medal_240_menu:before{background:url(static/image/common/m_s_v4.png)}body #md_253_menu:before,body #medal_253_menu:before{background:url(static/image/common/m_s_wiki.png)}body #md_254_menu:before,body #medal_254_menu:before{background:url(static/image/common/m_s_mcwiki.png)}body #md_124_menu:before,body #medal_124_menu:before{background:url(static/image/common/m_pearena_v1.png)}body #md_125_menu:before,body #medal_125_menu:before{background:url(static/image/common/m_pearena_w2.png)}body #md_126_menu:before,body #medal_126_menu:before{background:url(static/image/common/m_pearena_w1.png)}body #md_133_menu:before,body #medal_133_menu:before{background:url(static/image/common/m_pearena_v2.png)}body #md_134_menu:before,body #medal_134_menu:before{background:url(static/image/common/m_pearena_w4.png)}body #md_135_menu:before,body #medal_135_menu:before{background:url(static/image/common/m_pearena_w3.png)}body #md_147_menu:before,body #medal_147_menu:before{background:url(static/image/common/m_pearena_v3.png)}body #md_148_menu:before,body #medal_148_menu:before{background:url(static/image/common/m_pearena_w6.png)}body #md_149_menu:before,body #medal_149_menu:before{background:url(static/image/common/m_pearena_w5.png)}body #md_161_menu:before,body #medal_161_menu:before{background:url(static/image/common/m_pearena_v4.png)}body #md_162_menu:before,body #medal_162_menu:before{background:url(static/image/common/m_pearena_w8.png)}body #md_163_menu:before,body #medal_163_menu:before{background:url(static/image/common/m_pearena_w7.png)}body #md_171_menu:before,body #medal_171_menu:before{background:url(static/image/common/m_pearena_v5.png)}body #md_172_menu:before,body #medal_172_menu:before{background:url(static/image/common/m_pearena_w10.png)}body #md_173_menu:before,body #medal_173_menu:before{background:url(static/image/common/m_pearena_w9.png)}body #md_190_menu:before,body #medal_190_menu:before{background:url(static/image/common/m_pearena_w13.png)}body #md_192_menu:before,body #medal_192_menu:before{background:url(static/image/common/m_pearena_v6.png)}body #md_193_menu:before,body #medal_193_menu:before{background:url(static/image/common/m_pearena_w11.png)}body #md_194_menu:before,body #medal_194_menu:before{background:url(static/image/common/m_pearena_w12.png)}body #md_201_menu:before,body #medal_201_menu:before{background:url(static/image/common/m_pearena_v7.png)}body #md_202_menu:before,body #medal_202_menu:before{background:url(static/image/common/m_pearena_w16.png)}body #md_203_menu:before,body #medal_203_menu:before{background:url(static/image/common/m_pearena_w15.png)}body #md_214_menu:before,body #medal_214_menu:before{background:url(static/image/common/m_pearena_v8.png)}body #md_215_menu:before,body #medal_215_menu:before{background:url(static/image/common/m_pearena_w18.png)}body #md_216_menu:before,body #medal_216_menu:before{background:url(static/image/common/m_pearena_w17.png)}body #md_221_menu:before,body #medal_221_menu:before{background:url(static/image/common/m_pearena_v9.png)}body #md_222_menu:before,body #medal_222_menu:before{background:url(static/image/common/m_pearena_w20.png)}body #md_223_menu:before,body #medal_223_menu:before{background:url(static/image/common/m_pearena_w19.png)}body #md_229_menu:before,body #medal_229_menu:before{background:url(static/image/common/m_pearena_v10.png)}body #md_230_menu:before,body #medal_230_menu:before{background:url(static/image/common/m_pearena_w22.png)}body #md_231_menu:before,body #medal_231_menu:before{background:url(static/image/common/m_pearena_w21.png)}body #md_241_menu:before,body #medal_241_menu:before{background:url(static/image/common/m_pearena_v11.png)}body #md_242_menu:before,body #medal_242_menu:before{background:url(static/image/common/m_pearena_w24.png)}body #md_243_menu:before,body #medal_243_menu:before{background:url(static/image/common/m_pearena_w23.png)}body #md_197_menu:before,body #medal_197_menu:before{background:url(static/image/common/m_pofg_v1.png)}body #md_198_menu:before,body #medal_198_menu:before{background:url(static/image/common/m_pofg_v2.png)}body #md_199_menu:before,body #medal_199_menu:before{background:url(static/image/common/m_pofg_v3.png)}body #md_137_menu:before,body #medal_137_menu:before{background:url(static/image/common/m_g_cw.png)}body #md_138_menu:before,body #medal_138_menu:before{background:url(static/image/common/m_g_trp.png)}body #md_139_menu:before,body #medal_139_menu:before{background:url(static/image/common/m_g_tas.png)}body #md_140_menu:before,body #medal_140_menu:before{background:url(static/image/common/m_g_sc.png)}body #md_142_menu:before,body #medal_142_menu:before{background:url(static/image/common/m_g_sl.png)}body #md_150_menu:before,body #medal_150_menu:before{background:url(static/image/common/m_g_hayo.png)}body #md_151_menu:before,body #medal_151_menu:before{background:url(static/image/common/m_g_aa.png)}body #md_153_menu:before,body #medal_153_menu:before{background:url(static/image/common/m_g_is.png)}body #md_154_menu:before,body #medal_154_menu:before{background:url(static/image/common/m_g_cbl.png)}body #md_168_menu:before,body #medal_168_menu:before{background:url(static/image/common/m_g_ntl.png)}body #md_169_menu:before,body #medal_169_menu:before{background:url(static/image/common/m_g_tcp.png)}body #md_179_menu:before,body #medal_179_menu:before{background:url(static/image/common/m_g_mpw.png)}body #md_207_menu:before,body #medal_207_menu:before{background:url(static/image/common/m_g_ud.png)}body #md_217_menu:before,body #medal_217_menu:before{background:url(static/image/common/m_g_bs.png)}body #md_219_menu:before,body #medal_219_menu:before{background:url(static/image/common/m_g_pcd.png)}body #md_220_menu:before,body #medal_220_menu:before{background:url(static/image/common/m_g_gwnw.png)}body #md_228_menu:before,body #medal_228_menu:before{background:url(static/image/common/m_g_lw.png)}body #md_232_menu:before,body #medal_232_menu:before{background:url(static/image/common/m_g_uel.png)}body #md_233_menu:before,body #medal_233_menu:before{background:url(static/image/common/m_g_tgc.png)}body #md_235_menu:before,body #medal_235_menu:before{background:url(static/image/common/m_g_nf.png)}body #md_236_menu:before,body #medal_236_menu:before{background:url(static/image/common/m_g_mcbk.png)}body #md_244_menu:before,body #medal_244_menu:before{background:url(static/image/common/m_g_pos.png)}body #md_245_menu:before,body #medal_245_menu:before{background:url(static/image/common/m_g_stc.png)}body #md_246_menu:before,body #medal_246_menu:before{background:url(static/image/common/m_g_cps.png)}body #md_248_menu:before,body #medal_248_menu:before{background:url(static/image/common/m_g_wiki.png)}body #md_249_menu:before,body #medal_249_menu:before{background:url(static/image/common/m_g_rmg.png)}body #md_252_menu:before,body #medal_252_menu:before{background:url(static/image/common/m_g_tml.png)}@keyframes pickup{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.95);transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.95)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92)}}@keyframes dropdown{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.92)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.95);transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.95)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}}
+ 0 0 3px #fff, 0 0 3px #fff !important}body .tip .tip_c h4{border-bottom:1px solid #fff}body div[id*="_menu"]:before{background-repeat:no-repeat}body #md_101_menu:before,body #medal_101_menu:before{background:url(static/image/common/m_a2.png)}body #md_102_menu:before,body #medal_102_menu:before{background:url(static/image/common/m_a3.png)}body #md_103_menu:before,body #medal_103_menu:before{background:url(static/image/common/m_a6.png)}body #md_11_menu:before,body #medal_11_menu:before{background:url(static/image/common/m_d1.png)}body #md_12_menu:before,body #medal_12_menu:before{background:url(static/image/common/m_d2.png)}body #md_104_menu:before,body #medal_104_menu:before{background:url(static/image/common/m_b1.png)}body #md_105_menu:before,body #medal_105_menu:before{background:url(static/image/common/m_b3.png)}body #md_106_menu:before,body #medal_106_menu:before{background:url(static/image/common/m_b4.png)}body #md_234_menu:before,body #medal_234_menu:before{background:url(static/image/common/m_b5.gif)}body #md_107_menu:before,body #medal_107_menu:before{background:url(static/image/common/m_rc1.png)}body #md_108_menu:before,body #medal_108_menu:before{background:url(static/image/common/m_rc3.png)}body #md_109_menu:before,body #medal_109_menu:before{background:url(static/image/common/m_rc5.png)}body #md_250_menu:before,body #medal_250_menu:before{background:url(static/image/common/m_c_10years.png)}body #md_76_menu:before,body #medal_76_menu:before{background:url(static/image/common/m_g5.png)}body #md_58_menu:before,body #medal_58_menu:before{background:url(static/image/common/m_g3.png)}body #md_59_menu:before,body #medal_59_menu:before{background:url(static/image/common/m_g4.png)}body #md_21_menu:before,body #medal_21_menu:before{background:url(static/image/common/m_noob.png)}body #md_9_menu:before,body #medal_9_menu:before{background:url(static/image/common/m_c2.png)}body #md_2_menu:before,body #medal_2_menu:before{background:url(static/image/common/m_c3.png)}body #md_38_menu:before,body #medal_38_menu:before{background:url(static/image/common/m_c1.png)}body #md_112_menu:before,body #medal_112_menu:before{background:url(static/image/common/m_c4.png)}body #md_251_menu:before,body #medal_251_menu:before{background:url(static/image/common/m_c_piglin.png)}body #md_155_menu:before,body #medal_155_menu:before{background:url(static/image/common/m_cape_mc2011.png)}body #md_156_menu:before,body #medal_156_menu:before{background:url(static/image/common/m_cape_mc2012.png)}body #md_157_menu:before,body #medal_157_menu:before{background:url(static/image/common/m_cape_mc2013.png)}body #md_158_menu:before,body #medal_158_menu:before{background:url(static/image/common/m_cape_mc2015.png)}body #md_159_menu:before,body #medal_159_menu:before{background:url(static/image/common/m_cape_Tr.png)}body #md_180_menu:before,body #medal_180_menu:before{background:url(static/image/common/m_cape_cobalt.png)}body #md_181_menu:before,body #medal_181_menu:before{background:url(static/image/common/m_cape_maper.png)}body #md_196_menu:before,body #medal_196_menu:before{background:url(static/image/common/m_cape_mc2016.png)}body #md_247_menu:before,body #medal_247_menu:before{background:url(static/image/common/m_cape_Mojira.png)}body #md_45_menu:before,body #medal_45_menu:before{background:url(static/image/common/m_s1.png)}body #md_127_menu:before,body #medal_127_menu:before{background:url(static/image/common/m_s2.png)}body #md_78_menu:before,body #medal_78_menu:before{background:url(static/image/common/m_p_pc.png)}body #md_113_menu:before,body #medal_113_menu:before{background:url(static/image/common/m_p_and.png)}body #md_114_menu:before,body #medal_114_menu:before{background:url(static/image/common/m_p_ios.png)}body #md_141_menu:before,body #medal_141_menu:before{background:url(static/image/common/m_p_wp.png)}body #md_160_menu:before,body #medal_160_menu:before{background:url(static/image/common/m_p_w10.png)}body #md_115_menu:before,body #medal_115_menu:before{background:url(static/image/common/m_p_box360.png)}body #md_116_menu:before,body #medal_116_menu:before{background:url(static/image/common/m_p_boxone.png)}body #md_117_menu:before,body #medal_117_menu:before{background:url(static/image/common/m_p_ps3.png)}body #md_118_menu:before,body #medal_118_menu:before{background:url(static/image/common/m_p_ps4.png)}body #md_119_menu:before,body #medal_119_menu:before{background:url(static/image/common/m_p_psv.png)}body #md_170_menu:before,body #medal_170_menu:before{background:url(static/image/common/m_p_wiiu.png)}body #md_209_menu:before,body #medal_209_menu:before{background:url(static/image/common/m_p_switch.png)}body #md_227_menu:before,body #medal_227_menu:before{background:url(static/image/common/m_p_3ds.png)}body #md_56_menu:before,body #medal_56_menu:before{background:url(static/image/common/m_g1.png)}body #md_57_menu:before,body #medal_57_menu:before{background:url(static/image/common/m_g2.png)}body #md_61_menu:before,body #medal_61_menu:before{background:url(static/image/common/m_p1.png)}body #md_62_menu:before,body #medal_62_menu:before{background:url(static/image/common/m_p2.png)}body #md_63_menu:before,body #medal_63_menu:before{background:url(static/image/common/m_p3.png)}body #md_46_menu:before,body #medal_46_menu:before{background:url(static/image/common/m_p4.png)}body #md_64_menu:before,body #medal_64_menu:before{background:url(static/image/common/m_p5.png)}body #md_65_menu:before,body #medal_65_menu:before{background:url(static/image/common/m_p6.png)}body #md_66_menu:before,body #medal_66_menu:before{background:url(static/image/common/m_p7.png)}body #md_75_menu:before,body #medal_75_menu:before{background:url(static/image/common/m_p8.png)}body #md_85_menu:before,body #medal_85_menu:before{background:url(static/image/common/m_p9.png)}body #md_86_menu:before,body #medal_86_menu:before{background:url(static/image/common/m_p10.png)}body #md_100_menu:before,body #medal_100_menu:before{background:url(static/image/common/m_p11.png)}body #md_175_menu:before,body #medal_175_menu:before{background:url(static/image/common/m_p12.png)}body #md_182_menu:before,body #medal_182_menu:before{background:url(static/image/common/m_p13.png)}body #md_91_menu:before,body #medal_91_menu:before{background:url(static/image/common/m_h1.png)}body #md_93_menu:before,body #medal_93_menu:before{background:url(static/image/common/m_h2.png)}body #md_92_menu:before,body #medal_92_menu:before{background:url(static/image/common/m_h3.png)}body #md_94_menu:before,body #medal_94_menu:before{background:url(static/image/common/m_h4.png)}body #md_95_menu:before,body #medal_95_menu:before{background:url(static/image/common/m_h5.png)}body #md_96_menu:before,body #medal_96_menu:before{background:url(static/image/common/m_h6.png)}body #md_152_menu:before,body #medal_152_menu:before{background:url(static/image/common/m_h7.png)}body #md_183_menu:before,body #medal_183_menu:before{background:url(static/image/common/m_h8.png)}body #md_200_menu:before,body #medal_200_menu:before{background:url(static/image/common/m_h9.png)}body #md_210_menu:before,body #medal_210_menu:before{background:url(static/image/common/m_h10.png)}body #md_70_menu:before,body #medal_70_menu:before{background:url(static/image/common/m_arena_v1.png)}body #md_72_menu:before,body #medal_72_menu:before{background:url(static/image/common/m_arena_v2.png)}body #md_88_menu:before,body #medal_88_menu:before{background:url(static/image/common/m_arena_v3.png)}body #md_111_menu:before,body #medal_111_menu:before{background:url(static/image/common/m_arena_v4.png)}body #md_69_menu:before,body #medal_69_menu:before{background:url(static/image/common/m_arena_w1.png)}body #md_68_menu:before,body #medal_68_menu:before{background:url(static/image/common/m_arena_w2.png)}body #md_73_menu:before,body #medal_73_menu:before{background:url(static/image/common/m_arena_w3.png)}body #md_74_menu:before,body #medal_74_menu:before{background:url(static/image/common/m_arena_w4.png)}body #md_89_menu:before,body #medal_89_menu:before{background:url(static/image/common/m_arena_w5.png)}body #md_90_menu:before,body #medal_90_menu:before{background:url(static/image/common/m_arena_w6.png)}body #md_98_menu:before,body #medal_98_menu:before{background:url(static/image/common/m_arena_w8.png)}body #md_99_menu:before,body #medal_99_menu:before{background:url(static/image/common/m_arena_w7.png)}body #md_120_menu:before,body #medal_120_menu:before{background:url(static/image/common/m_arena_v5.png)}body #md_121_menu:before,body #medal_121_menu:before{background:url(static/image/common/m_arena_w9.png)}body #md_122_menu:before,body #medal_122_menu:before{background:url(static/image/common/m_arena_w10.png)}body #md_123_menu:before,body #medal_123_menu:before{background:url(static/image/common/m_arena_i1.png)}body #md_129_menu:before,body #medal_129_menu:before{background:url(static/image/common/m_arena_v6.png)}body #md_130_menu:before,body #medal_130_menu:before{background:url(static/image/common/m_arena_w11.png)}body #md_131_menu:before,body #medal_131_menu:before{background:url(static/image/common/m_arena_w12.png)}body #md_132_menu:before,body #medal_132_menu:before{background:url(static/image/common/m_arena_i2.png)}body #md_143_menu:before,body #medal_143_menu:before{background:url(static/image/common/m_arena_v7.png)}body #md_144_menu:before,body #medal_144_menu:before{background:url(static/image/common/m_arena_v7f.png)}body #md_145_menu:before,body #medal_145_menu:before{background:url(static/image/common/m_arena_w13.png)}body #md_146_menu:before,body #medal_146_menu:before{background:url(static/image/common/m_arena_w14.png)}body #md_164_menu:before,body #medal_164_menu:before{background:url(static/image/common/m_arena_v8.png)}body #md_165_menu:before,body #medal_165_menu:before{background:url(static/image/common/m_arena_w15.png)}body #md_166_menu:before,body #medal_166_menu:before{background:url(static/image/common/m_arena_w16.png)}body #md_176_menu:before,body #medal_176_menu:before{background:url(static/image/common/m_arena_v9.png)}body #md_177_menu:before,body #medal_177_menu:before{background:url(static/image/common/m_arena_w17.png)}body #md_178_menu:before,body #medal_178_menu:before{background:url(static/image/common/m_arena_w18.png)}body #md_184_menu:before,body #medal_184_menu:before{background:url(static/image/common/m_arena_v10.png)}body #md_185_menu:before,body #medal_185_menu:before{background:url(static/image/common/m_arena_w19.png)}body #md_186_menu:before,body #medal_186_menu:before{background:url(static/image/common/m_arena_w20.png)}body #md_204_menu:before,body #medal_204_menu:before{background:url(static/image/common/m_arena_v11.png)}body #md_205_menu:before,body #medal_205_menu:before{background:url(static/image/common/m_arena_w21.png)}body #md_206_menu:before,body #medal_206_menu:before{background:url(static/image/common/m_arena_w22.png)}body #md_211_menu:before,body #medal_211_menu:before{background:url(static/image/common/m_arena_v12.png)}body #md_212_menu:before,body #medal_212_menu:before{background:url(static/image/common/m_arena_w23.png)}body #md_213_menu:before,body #medal_213_menu:before{background:url(static/image/common/m_arena_w24.png)}body #md_224_menu:before,body #medal_224_menu:before{background:url(static/image/common/m_arena_v13.png)}body #md_225_menu:before,body #medal_225_menu:before{background:url(static/image/common/m_arena_w25.png)}body #md_226_menu:before,body #medal_226_menu:before{background:url(static/image/common/m_arena_w26.png)}body #md_237_menu:before,body #medal_237_menu:before{background:url(static/image/common/m_arena14_1.png)}body #md_238_menu:before,body #medal_238_menu:before{background:url(static/image/common/m_arena14_2.png)}body #md_239_menu:before,body #medal_239_menu:before{background:url(static/image/common/m_arena14_3.png)}body #md_136_menu:before,body #medal_136_menu:before{background:url(static/image/common/m_s_v1.png)}body #md_167_menu:before,body #medal_167_menu:before{background:url(static/image/common/m_s_bili.png)}body #md_174_menu:before,body #medal_174_menu:before{background:url(static/image/common/m_s_v2.png)}body #md_195_menu:before,body #medal_195_menu:before{background:url(static/image/common/m_s_v3.png)}body #md_218_menu:before,body #medal_218_menu:before{background:url(static/image/common/m_s_bili2.png)}body #md_240_menu:before,body #medal_240_menu:before{background:url(static/image/common/m_s_v4.png)}body #md_253_menu:before,body #medal_253_menu:before{background:url(static/image/common/m_s_wiki.png)}body #md_254_menu:before,body #medal_254_menu:before{background:url(static/image/common/m_s_mcwiki.png)}body #md_124_menu:before,body #medal_124_menu:before{background:url(static/image/common/m_pearena_v1.png)}body #md_125_menu:before,body #medal_125_menu:before{background:url(static/image/common/m_pearena_w2.png)}body #md_126_menu:before,body #medal_126_menu:before{background:url(static/image/common/m_pearena_w1.png)}body #md_133_menu:before,body #medal_133_menu:before{background:url(static/image/common/m_pearena_v2.png)}body #md_134_menu:before,body #medal_134_menu:before{background:url(static/image/common/m_pearena_w4.png)}body #md_135_menu:before,body #medal_135_menu:before{background:url(static/image/common/m_pearena_w3.png)}body #md_147_menu:before,body #medal_147_menu:before{background:url(static/image/common/m_pearena_v3.png)}body #md_148_menu:before,body #medal_148_menu:before{background:url(static/image/common/m_pearena_w6.png)}body #md_149_menu:before,body #medal_149_menu:before{background:url(static/image/common/m_pearena_w5.png)}body #md_161_menu:before,body #medal_161_menu:before{background:url(static/image/common/m_pearena_v4.png)}body #md_162_menu:before,body #medal_162_menu:before{background:url(static/image/common/m_pearena_w8.png)}body #md_163_menu:before,body #medal_163_menu:before{background:url(static/image/common/m_pearena_w7.png)}body #md_171_menu:before,body #medal_171_menu:before{background:url(static/image/common/m_pearena_v5.png)}body #md_172_menu:before,body #medal_172_menu:before{background:url(static/image/common/m_pearena_w10.png)}body #md_173_menu:before,body #medal_173_menu:before{background:url(static/image/common/m_pearena_w9.png)}body #md_190_menu:before,body #medal_190_menu:before{background:url(static/image/common/m_pearena_w13.png)}body #md_192_menu:before,body #medal_192_menu:before{background:url(static/image/common/m_pearena_v6.png)}body #md_193_menu:before,body #medal_193_menu:before{background:url(static/image/common/m_pearena_w11.png)}body #md_194_menu:before,body #medal_194_menu:before{background:url(static/image/common/m_pearena_w12.png)}body #md_201_menu:before,body #medal_201_menu:before{background:url(static/image/common/m_pearena_v7.png)}body #md_202_menu:before,body #medal_202_menu:before{background:url(static/image/common/m_pearena_w16.png)}body #md_203_menu:before,body #medal_203_menu:before{background:url(static/image/common/m_pearena_w15.png)}body #md_214_menu:before,body #medal_214_menu:before{background:url(static/image/common/m_pearena_v8.png)}body #md_215_menu:before,body #medal_215_menu:before{background:url(static/image/common/m_pearena_w18.png)}body #md_216_menu:before,body #medal_216_menu:before{background:url(static/image/common/m_pearena_w17.png)}body #md_221_menu:before,body #medal_221_menu:before{background:url(static/image/common/m_pearena_v9.png)}body #md_222_menu:before,body #medal_222_menu:before{background:url(static/image/common/m_pearena_w20.png)}body #md_223_menu:before,body #medal_223_menu:before{background:url(static/image/common/m_pearena_w19.png)}body #md_229_menu:before,body #medal_229_menu:before{background:url(static/image/common/m_pearena_v10.png)}body #md_230_menu:before,body #medal_230_menu:before{background:url(static/image/common/m_pearena_w22.png)}body #md_231_menu:before,body #medal_231_menu:before{background:url(static/image/common/m_pearena_w21.png)}body #md_241_menu:before,body #medal_241_menu:before{background:url(static/image/common/m_pearena_v11.png)}body #md_242_menu:before,body #medal_242_menu:before{background:url(static/image/common/m_pearena_w24.png)}body #md_243_menu:before,body #medal_243_menu:before{background:url(static/image/common/m_pearena_w23.png)}body #md_197_menu:before,body #medal_197_menu:before{background:url(static/image/common/m_pofg_v1.png)}body #md_198_menu:before,body #medal_198_menu:before{background:url(static/image/common/m_pofg_v2.png)}body #md_199_menu:before,body #medal_199_menu:before{background:url(static/image/common/m_pofg_v3.png)}body #md_137_menu:before,body #medal_137_menu:before{background:url(static/image/common/m_g_cw.png)}body #md_138_menu:before,body #medal_138_menu:before{background:url(static/image/common/m_g_trp.png)}body #md_139_menu:before,body #medal_139_menu:before{background:url(static/image/common/m_g_tas.png)}body #md_140_menu:before,body #medal_140_menu:before{background:url(static/image/common/m_g_sc.png)}body #md_142_menu:before,body #medal_142_menu:before{background:url(static/image/common/m_g_sl.png)}body #md_150_menu:before,body #medal_150_menu:before{background:url(static/image/common/m_g_hayo.png)}body #md_151_menu:before,body #medal_151_menu:before{background:url(static/image/common/m_g_aa.png)}body #md_153_menu:before,body #medal_153_menu:before{background:url(static/image/common/m_g_is.png)}body #md_154_menu:before,body #medal_154_menu:before{background:url(static/image/common/m_g_cbl.png)}body #md_168_menu:before,body #medal_168_menu:before{background:url(static/image/common/m_g_ntl.png)}body #md_169_menu:before,body #medal_169_menu:before{background:url(static/image/common/m_g_tcp.png)}body #md_179_menu:before,body #medal_179_menu:before{background:url(static/image/common/m_g_mpw.png)}body #md_207_menu:before,body #medal_207_menu:before{background:url(static/image/common/m_g_ud.png)}body #md_217_menu:before,body #medal_217_menu:before{background:url(static/image/common/m_g_bs.png)}body #md_219_menu:before,body #medal_219_menu:before{background:url(static/image/common/m_g_pcd.png)}body #md_220_menu:before,body #medal_220_menu:before{background:url(static/image/common/m_g_gwnw.png)}body #md_228_menu:before,body #medal_228_menu:before{background:url(static/image/common/m_g_lw.png)}body #md_232_menu:before,body #medal_232_menu:before{background:url(static/image/common/m_g_uel.png)}body #md_233_menu:before,body #medal_233_menu:before{background:url(static/image/common/m_g_tgc.png)}body #md_235_menu:before,body #medal_235_menu:before{background:url(static/image/common/m_g_nf.png)}body #md_236_menu:before,body #medal_236_menu:before{background:url(static/image/common/m_g_mcbk.png)}body #md_244_menu:before,body #medal_244_menu:before{background:url(static/image/common/m_g_pos.png)}body #md_245_menu:before,body #medal_245_menu:before{background:url(static/image/common/m_g_stc.png)}body #md_246_menu:before,body #medal_246_menu:before{background:url(static/image/common/m_g_cps.png)}body #md_248_menu:before,body #medal_248_menu:before{background:url(static/image/common/m_g_wiki.png)}body #md_249_menu:before,body #medal_249_menu:before{background:url(static/image/common/m_g_rmg.png)}body #md_252_menu:before,body #medal_252_menu:before{background:url(static/image/common/m_g_tml.png)}@keyframes pickup{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.92);transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.92)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85)}}@keyframes dropdown{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.92);transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.92)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}}
 `, 'medal')
             if (autorun) {
                 this.log('运行saltMCBBS主过程')
@@ -376,7 +396,7 @@
                 // 显示版本与更新历史
                 this.version(); this.history()
                 // 使用主要CSS
-                window.saltMCBBSCSS.putStyle('', 'main'); window.saltMCBBSCSS.putStyle('', 'medal')
+                window.saltMCBBSCSS.putStyle('', 'main')
                 // 启用夜间模式
                 this.nightStyle(this.readWithDefault<boolean>('isNightStyle', false), false)
                 // 以下部分需要在文档加载完毕后执行
@@ -397,6 +417,8 @@
                     this.confiectFixOP()
                     // 安全功能
                     this.antiSniff()
+                    // 举报记忆功能
+                    this.reportRememberOP()
                     // 反水帖功能
                     this.antiWater()
                     // 关闭安全锁
@@ -451,6 +473,13 @@
                     document.body.style.setProperty('--mcmapwpOpacity', vl + '')
                 }, '主体部分的透明度', 212)
             this.updateBackground()
+            // 水帖审查设置
+            let enableAntiWater = this.readWithDefault<boolean>('SaltAntiWater', false)
+            this.addCheckSetting('水帖检测机制<br><small>只会检测页面中的漏网水帖</small>', enableAntiWater, (ck, ev) => {
+                this.write('SaltAntiWater', ck)
+                this.message('"水帖检测机制"配置项需要刷新生效<br>点击刷新', () => { location.reload() }, 3)
+            }, '水帖检测机制', 421)
+            if (enableAntiWater) { this.antiWater() }
         }
         /**movePageHead 移动顶栏到页面左侧*/
         movePageHead() {
@@ -556,8 +585,8 @@
 </div>
 <span class="progress" tooltip="${progresstitle}"><span style="width:${progress}%">&nbsp;</span></span>
 <div class="credit">
-<span>总积分: ${credits}</span>
-<span>${grouptitle}</span>
+<span><a href="https://www.mcbbs.net/home.php?mod=spacecp&ac=credit" target="_self">总积分: ${credits}</a></span>
+<span><a href="https://www.mcbbs.net/home.php?mod=spacecp&ac=usergroup" target="_self">${grouptitle}</a></span>
 <span>${creaitex[1].img}${creaitex[1].title}: ${extcredits[1] + creaitex[1].unit}</span>
 <span>${creaitex[2].img}${creaitex[2].title}: ${extcredits[2] + creaitex[2].unit}</span>
 <span>${creaitex[3].img}${creaitex[3].title}: ${extcredits[3] + creaitex[3].unit}</span>
@@ -758,7 +787,9 @@
         medalOP() {
             this.assert(autoRunLock, '不在页面初始运行状态')
             let obj = this
-            this.saltQuery('p.md_ctrl', (i, el) => { // 添加展开/关闭按钮
+            let enable = this.readWithDefault('saltMedalFunction', true)
+            // 添加展开/关闭按钮
+            this.saltQuery('p.md_ctrl', (i, el) => {
                 if (!(el instanceof HTMLElement)) { return }
                 let img = el.querySelectorAll('a img'); if (img.length < 1) { return }
                 // 通过a确定实际高度
@@ -772,17 +803,34 @@
                 })
                 el.appendChild(div)
             })
+            // 添加设置项
+            this.addCheckSetting('启用勋章栏功能<br><small> 特别的勋章样式(会被MCBBS Extender覆盖)</small>', enable, (ck, ev) => {
+                this.write('saltMedalFunction', ck)
+                enable = ck
+                if (enable) {
+                    window.saltMCBBSCSS.putStyle('', 'medal')
+                    setTimeout(sub, 500)
+                } else {
+                    window.saltMCBBSCSS.delStyle('medal')
+                }
+            }, '启用勋章栏功能', 300)
             this.addInputSetting('勋章栏高度<br><small> 行高64像素,可以输入小数(会被MCBBS Extender覆盖)</small>', this.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
                 let line = parseFloat(el.value)
                 if (isNaN(line)) { return }
                 if (line < 0.5) { line = 0.5 }
                 if (line > 25) { line = 25 }
-                this.write('medalLine', el.value)
-                sub()
+                this.write('medalLine', line)
+                if (enable) { sub() } else {
+                    this.message('使用勋章栏高度控制功能前，需要先启用勋章栏功能', undefined, 3)
+                }
             }, '勋章栏高度', 301)
-            sub()
+            // 是否启用
+            if (enable) {
+                window.saltMCBBSCSS.putStyle('', 'medal')
+                setTimeout(sub, 500)
+            }
             async function sub() { // 因为只涉及部分元素的class操作，所以放在异步
-                let line = obj.readWithDefault<number>('medalLine', 3)
+                let line = obj.readWithDefault<number>('medalLine', 2.5)
                 let style = 'p.md_ctrl,p.md_ctrl:hover{--maxHeight:calc(64px * ' + line + ');}'
                 window.saltMCBBSCSS.putStyle(style, 'medalLine')
                 heightCheck()
@@ -834,30 +882,194 @@
                 })
             }
         }
-        /**反水帖功能 */
-        async antiWater() {
-            let enable = this.readWithDefault<boolean>('SaltAntiWater', false)
-            this.addCheckSetting('水帖检测机制<br><small>检测页面中的漏网水帖，举报他们！</small>', enable, (ck, ev) => {
-                this.write('SaltAntiWater', ck)
-                this.message('"水帖检测机制"配置项需要刷新页面生效', (f) => { f() })
-            }, '水帖检测机制', 421)
-            if (!enable) { return }
+        /**记忆用户举报过的帖子 */
+        reportRememberOP() {
+            this.assert(autoRunLock, '不在页面初始运行状态')
             let obj = this
-            this.saltQuery('#postlist > div:not(.warned) td[id^="postmessage"]', (i, el) => {
+            let saveKey = 'saltReportRemember'
+            let numSaveKey = 'saltReportRememberLength'
+            // let enable = true
+            main()
+            /**主过程 */
+            function main() {
+                if (obj.getUID() < 1) {
+                    obj.message('未检测到UID<br>点击重试', (f) => {
+                        f()
+                        main()
+                    })
+                    return
+                }
+                saveKey += '-' + obj.getUID()
+                // 检测帖子
+                check()
+                // 添加配置项
+                obj.addInputSetting('帖子举报历史记录长度<br><small>建议在4w以内, 设为 0 关闭此功能</small>',
+                    '' + obj.readWithDefault<number>(numSaveKey, 1024),
+                    (el, ev) => {
+                        let len = parseInt(el.value)
+                        if (isNaN(len)) { return }
+                        if (len < 0) { len = 0 }
+                        if (len > 1048576) { len = 1048576 }
+                        obj.write(numSaveKey, len)
+                        lengthControl()
+                    }, '举报记录功能', 404)
+                // 监听用户点击举报
+                let obs = obj.saltObserver('append_parent', () => {
+                    // 获取举报按钮
+                    let reportBtn = document.querySelector('#report_submit[fwin]:not([done])')
+                    // console.log(reportUl);
+                    if (reportBtn) {
+                        /**举报理由列表 */
+                        reportBtn.setAttribute('done', '')
+                        /**提取PID, 没提取到则为0 */
+                        let pid = ((reportBtn.getAttribute('fwin') || '0').match(/\d+/) || ['0'])[0]
+                        if (pid != '0') {
+                            reportBtn.addEventListener('click', () => {
+                                obj.log('检测到举报: pid-' + pid)
+                                push(pid)
+                                // 刷新检测
+                                check()
+                            })
+                        }
+                    }
+                })
+            }
+            /**将刚刚举报的帖子的PID压入本地储存 */
+            async function push(pid: number | string) {
+                // 管理PID
+                if (typeof pid == 'string') {
+                    pid = parseInt(pid)
+                    if (isNaN(pid) || pid < 1) {
+                        return
+                    }
+                } else if (typeof pid == 'number') {
+                    if (pid < 1) {
+                        return
+                    }
+                } else if (typeof pid == 'bigint') {
+                    if (pid < 1) {
+                        return
+                    }
+                }
+                // 获取PID列表
+                let pidList = obj.readWithDefault<number[]>(saveKey, [])
+                // 压入列表并控制长度
+                cut(pidList, obj.readWithDefault<number>(numSaveKey, 1024) - 1)
+                pidList.push(pid)
+                // 记录
+                obj.write(saveKey, pidList)
+                obj.log('已记录举报: pid-' + pid)
+            }
+            /**去除某个历史记录 */
+            async function remove(pid: number | string) {
+                // 管理PID
+                if (typeof pid == 'string') {
+                    pid = parseInt(pid)
+                    if (isNaN(pid) || pid < 1) {
+                        return
+                    }
+                } else if (typeof pid == 'number') {
+                    if (pid < 1) {
+                        return
+                    }
+                } else if (typeof pid == 'bigint') {
+                    if (pid < 1) {
+                        return
+                    }
+                }
+                // 获取PID列表
+                let pidList = obj.readWithDefault<number[]>(saveKey, [])
+                let inedx = pidList.indexOf(pid)
+                if (inedx != -1) {
+                    pidList.splice(inedx, 1)
+                }
+                // 刷新检测
+                check()
+            }
+            /**给已举报的帖子添加标记 */
+            async function check() {
+                let pidList = obj.readWithDefault<number[]>(saveKey, [])
+                // 检查是不是有帖子被错误打上了标记
+                for (let div of Array.from(document.querySelectorAll('#postlist > div.reported'))) {
+                    if (!(div instanceof HTMLElement)) { continue }
+                    let pid = parseInt(((div.getAttribute('id') || '0').match(/\d+/) || ['0'])[0])
+                    if (pidList.indexOf(pid) == -1) {
+                        div.removeClass('reported')
+                    }
+                }
+                // 检查是不是有帖子没有打上标记
+                for (let div of Array.from(document.querySelectorAll('#postlist > div:not(.reported)'))) {
+                    if (!(div instanceof HTMLElement)) { continue }
+                    let pid = parseInt(((div.getAttribute('id') || '0').match(/\d+/) || ['0'])[0])
+                    if (pidList.indexOf(pid) != -1) {
+                        div.addClass('reported')
+                    }
+                }
+            }
+            /**数组控制长度 */
+            function cut(list: number[], len: number): number[] {
+                let newlist = list
+                let diff = newlist.length - len
+                if (diff < 1) { return newlist }
+                newlist = newlist.slice(diff)
+                return newlist
+            }
+            /**PID列表长度控制 */
+            function lengthControl() {
+                // 获取PID列表与设置的长度
+                let pidList = obj.readWithDefault<number[]>(saveKey, []), maxLen = obj.readWithDefault<number>(numSaveKey, 1024)
+                if (pidList.length > maxLen) {
+                    pidList = cut(pidList, maxLen)
+                    obj.write(saveKey, pidList)
+                }
+            }
+        }
+        /**
+         * 水帖审查工具, 一个异步函数(考虑到正则匹配很花时间)
+         * @param RegExps 审查用的正则表达式数组, 不填则默认使用内置的
+         * @param ignoreWarned 是否忽略那些已经被制裁的帖子, 默认为是
+         * @param callback 回调函数, 接受 3个参数, 代表一层楼的 div 元素, 这层楼的内容所在的元素, 处理后的文本, 没有的话则使用默认处理方式
+         */
+        async antiWater(RegExps: RegExp[] = antiWaterRegExp, ignoreWarned: boolean = true,
+            callback?: (el: HTMLElement, ts: HTMLElement, text: string) => void) {
+            let obj = this
+            // 默认忽略那些已经被制裁的帖子
+            let queryStr = ignoreWarned ? '#postlist > div:not(.warned)' : '#postlist > div'
+            // console.log(queryStr)
+            this.saltQuery(queryStr, (i, el) => {
                 if (!(el instanceof HTMLElement)) { return }
+                let td = el.querySelector('td[id^="postmessage"]')
+                if (!(td instanceof HTMLElement)) { return }
+                // el 代表一层楼的 div 元素
+                // td 这层楼的内容所在的元素
+                /**复制了td的HTML, 实现隔离 */
                 let tempEl: Element | null = document.createElement('div')
-                tempEl.innerHTML = el.innerHTML
+                tempEl.innerHTML = td.innerHTML
                 for (let img of Array.from(tempEl.querySelectorAll('img[smilieid]'))) {
                     if (img instanceof HTMLImageElement) {
                         img.replaceWith('/meme/') // 表情包会被处理成'/meme/'的文字形式
                     }
+                } for (let font0 of Array.from(tempEl.querySelectorAll('font[style*="font-size:0px"]'))) {
+                    if (font0 instanceof HTMLImageElement) {
+                        font0.remove() // 不可见的节点将被忽略
+                    }
                 }
                 let t = tempEl.textContent || ''
-                for (let aw of antiWaterRegExp) {
+                for (let aw of RegExps) {
                     if (aw.test(t)) {
-                        obj.message('发现未被制裁的垃圾信息:<br><span>' + t + '</span>', () => {
-                            obj.scrollTo(el.offset().top - 57)
-                        })
+                        if (callback) {
+                            callback(el, td, t)
+                        } else {
+                            if (el.hasClass('reported')) {
+                                obj.message('该疑似水帖已被您举报:<br><span>' + tempEl.innerHTML + '</span>', () => {
+                                    obj.scrollTo(el.offset().top - 20)
+                                }, 1)
+                            } else {
+                                obj.message('发现未制裁的疑似水帖:<br><span>' + tempEl.innerHTML + '</span>', () => {
+                                    obj.scrollTo(el.offset().top - 20)
+                                })
+                            }
+                        }
                     }
                 }
                 tempEl = null // 释放内存
@@ -888,6 +1100,37 @@
                     window.saltMCBBSCSS.putStyle('', 'userInfoSticky')
                 } else {
                     window.saltMCBBSCSS.delStyle('userInfoSticky')
+                }
+            }
+            // 回到顶部按钮动画
+            window.saltMCBBSCSS.setStyle(`#scrolltop {
+                visibility: visible !important;
+                overflow: hidden;
+                width: 100px;
+                margin-left: -1px;
+                opacity: 1;
+                transition: 0.3s ease;
+              }
+              #scrolltop:not([style]) {
+                display: none;
+              }
+              #scrolltop[style*="hidden"] {
+                opacity: 0 !important;
+                pointer-events: none;
+              }
+              #scrolltop[style*="hidden"] .scrolltopa {
+                margin-left: -40px;
+              }`, 'scrollTopAnime')
+            scrollTopAnime(this.readWithDefault('scrollTopAnime', true))
+            this.addCheckSetting('回到顶部按钮动画<br><small>兼容MCBBS Extender</small>', this.readWithDefault('scrollTopAnime', true), (ck, ev) => {
+                this.write('scrollTopAnime', ck)
+                scrollTopAnime(ck)
+            }, '回到顶部按钮动画', 403)
+            function scrollTopAnime(b: boolean) {
+                if (b) {
+                    window.saltMCBBSCSS.putStyle('', 'scrollTopAnime')
+                } else {
+                    window.saltMCBBSCSS.delStyle('scrollTopAnime')
                 }
             }
         }

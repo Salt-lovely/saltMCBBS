@@ -4,6 +4,13 @@ interface saltMCBBSOriginClass {
     new(): saltMCBBSOriginClassNew
 }
 interface saltMCBBSOriginClassNew {
+    getData(key: 'antiWaterRegExp'): RegExp[],
+    getData(key: 'noticImgUrl'): String[],
+    /**
+     * 获取一些由于闭包而不能直接访问的数据
+     * @param key 键值, 详见方法重载, 默认返回空字符串
+     */
+    getData(key: string): any,
     /**
      * 将页面平滑地滚动到某个位置
      * @param targetY 目标高度
@@ -106,7 +113,7 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
      * 夜间模式
      * @param night boolean切换为夜晚还是白天；
      * @param log 是否记录进本地存储
-     *  */
+     */
     nightStyle(night: boolean, log: boolean): void,
     /**转换夜间模式 */
     toggleNightStyle(): void,
@@ -114,6 +121,14 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
     showSettingPanel(): void,
     /**隐藏设置面板 */
     hideSettingPanel(): void,
+    /**
+     * 水帖审查工具
+     * @param RegExps 审查用的正则表达式数组, 不填则默认使用内置的
+     * @param ignoreWarned 是否忽略那些已经被制裁的帖子, 默认为是
+     * @param callback 回调函数, 接受 3个参数: 代表一层楼的 div 元素, 这层楼的内容所在的元素, 处理后的文本; 没有的话则使用默认处理方式
+     */
+    async antiWater(RegExps?: RegExp[], ignoreWarned?: boolean,
+        callback?: (el: HTMLElement, ts: HTMLElement, text: string) => void): void,
     /**
      * 添加配置项
      * @param div 一个元素，里面的东西自己写
