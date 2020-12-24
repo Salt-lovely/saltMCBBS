@@ -56,8 +56,6 @@ interface BBSAPIResponceDataVariablesSpace {
     birthdist: string,
     /** 出生月份 */
     birthmonth: string,
-    /** 出生省份 */
-    birthprovince: string,
     /** 出生年份 */
     birthyear: string,
     /** 总积分 */
@@ -147,10 +145,6 @@ interface BBSAPIResponceDataVariablesSpace {
     username: string,
     /**访客访问数 */
     views: string,
-    /**体重 */
-    weight: string,
-    /**生肖 */
-    zodiac: string,
 }
 
 /**MCBBS的TIDAPI返回中.data的部分内容 */
