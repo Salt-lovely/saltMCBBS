@@ -15,6 +15,11 @@ interface Window {
     extstyle: (
         styleType: './template/mcbbs/style/winter' | './template/mcbbs/style/default' | './template/mcbbs/style/nether'
     ) => void,
+    /**
+     * 调整img大小以适应页面
+     * @param obj 传入一个img
+     */
+    thumbImg: (obj: Element, method?: any) => void,
 }
 interface HTMLElement {
     /**

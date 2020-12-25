@@ -91,6 +91,13 @@ interface saltMCBBSOriginClassNew {
     /**获取当前页面的TID，没有则返回0*/
     getTID(): number,
     /**
+     * 在屏幕右下角输出提示信息
+     * @param info 要显示的信息, HTML
+     * @param callback 点击后的回调函数, 如果用户点击关闭则不会触发, 回调函数可以接受一个销毁这个消息的函数作为参数
+     * @param type 类型 0-默认 1-信息(其实就是默认) 2-成功 3-警告 4-出错 默认为0
+     */
+    message(html: string, callback?: (() => void) | ((removeDiv: () => void) => void), type?: number),
+    /**
      * 断言
      * @param condition 为假时报错
      * @param msg 报错语句，默认为“发生错误”
@@ -194,13 +201,6 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
     addSideBarLink(a: HTMLElement | string, callback?: (ev: MouseEvent) => void | string): void,
     /**更新背景 */
     updateBackground(): void,
-    /**
-     * 在屏幕右下角输出提示信息
-     * @param info 要显示的信息, HTML
-     * @param callback 点击后的回调函数, 如果用户点击关闭则不会触发, 回调函数可以接受一个销毁这个消息的函数作为参数
-     * @param type 类型 0-默认 1-信息(其实就是默认) 2-成功 3-警告 4-出错 默认为0
-     */
-    message(html: string, callback?: (() => void) | ((removeDiv: () => void) => void), type?: number)
 }
 /**saltMCBBSCSS接口 */
 interface saltMCBBScss {

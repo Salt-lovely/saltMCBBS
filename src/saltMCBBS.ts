@@ -6,24 +6,34 @@
 // @author       salt
 // @match        https://*.mcbbs.net/*
 // @grant        none
-// @version      0.1.6pre3
+// @version      0.1.6pre4
 // @license      CC BY-NC-SA 4.0
 // @run-at       document-body
 // ==/UserScript==
-/* 设置面板
+/* 
+设置面板
+
+冲突修复功能 21
+左侧用户信息跟随 22
+回到顶部按钮动画 23
+
+反嗅探措施 31
+水帖检测机制 41
+
+另一种图片懒加载 45
+
+启用勋章栏功能 50
+勋章栏高度 51
+举报记录功能 61
 自定义评分理由 201
 自定义举报理由 202
 昼间模式下的背景图片 210
 夜间模式下的背景图片 211
 主体部分的透明度 212
-启用勋章栏功能 300
-勋章栏高度 301
-冲突修复功能 401
-左侧用户信息跟随 402
-回到顶部按钮动画 403
-举报记录功能 404
-反嗅探措施 411
-水帖检测机制 421
+
+打算实装的功能
+帖子颜色标记
+控制台功能
 */
 (function () {
     /**版本 */
@@ -57,11 +67,28 @@
     /**反水帖小工具判定正则 */
     const antiWaterRegExp = [
         // 表情包会被处理成'/meme/'的文字形式
-        /^([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*$/, // 刷同一个字/表情包
-        /^.{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务).{0,3}$/, // "水水水"、"完成任务"之类的无意义回帖
+        /^[\s\S]{0,2}([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*[\s\S]?\s?$/, // 刷同一个字/表情包
+        /^[\s\S]{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务)[\s\S]{0,3}$/, // "水水水"、"完成任务"之类的无意义回帖
     ]
     /**原始类，包含各种基础方法*/
     class saltMCBBSOriginClass implements saltMCBBSOriginClass {
+        messagePanel: HTMLElement = document.querySelector('#messagePanel') || document.createElement('div') // 右侧消息框
+        consolePanel: HTMLElement = document.querySelector('#consolePanel') || document.createElement('div') // 右侧消息框
+        constructor() {
+            // 初始化消息框和控制台
+            let mg = this.messagePanel
+            if (!(mg.hasAttribute('id'))) {
+                mg.id = 'messagePanel'
+                mg.className = 'messagePanel'
+                document.body.append(mg)
+            }
+            let cc = this.consolePanel
+            if (!(cc.hasAttribute('id'))) {
+                cc.id = 'consolePanel'
+                cc.className = 'consolePanel'
+                // document.body.append(cc)
+            }
+        }
         getData(key: 'antiWaterRegExp'): RegExp[];
         getData(key: 'noticImgUrl'): String[];
         /**
@@ -324,6 +351,49 @@
             return parseInt((window.tid ? window.tid + '' : null) || (window.location.href.match(/thread-([\d]+)/) || window.location.href.match(/tid\=([\d]+)/) || ['0', '0'])[1])
         }
         /**
+         * 在屏幕右下角输出提示信息
+         * @param info 要显示的信息, HTML
+         * @param callback 点击后的回调函数, 如果用户点击关闭则不会触发, 回调函数可以接受一个销毁这个消息的函数作为参数
+         * @param type 类型 0-默认 1-信息(其实就是默认) 2-成功 3-警告 4-出错 默认为0
+         */
+        message(html: string, callback?: (() => void) | ((removeDiv: () => void) => void), type: number = 0) {
+            let div = document.createElement('div')
+            div.innerHTML = html
+            div.className = switchType(type)
+            div.addEventListener('click', () => {
+                if (callback)
+                    callback(removeDiv)
+            })
+            // 添加关闭按钮
+            let close = document.createElement('div')
+            close.className = 'close-button'
+            close.addEventListener('click', function (this, ev) {
+                ev.stopPropagation()
+                removeDiv()
+            })
+            div.appendChild(close)
+            // 输出信息
+            this.messagePanel.appendChild(div)
+            function removeDiv() {
+                div.remove()
+            }
+            /**根据type返回类名 */
+            function switchType(type: number) {
+                switch (type) {
+                    case 1:
+                        return 'info'
+                    case 2:
+                        return 'success'
+                    case 3:
+                        return 'warn'
+                    case 4:
+                        return 'error'
+                    default:
+                        return 'normal'
+                }
+            }
+        }
+        /**
          * 断言
          * @param condition 为假时报错
          * @param msg 报错语句，默认为“发生错误”
@@ -363,12 +433,11 @@
     // 继承原始类
     class saltMCBBS extends saltMCBBSOriginClass implements saltMCBBS {
         settingPanel: HTMLElement = document.createElement('div') // 配置框
-        messagePanel: HTMLElement = document.createElement('div') // 右侧消息框
         links: HTMLElement = document.createElement('div') // 左侧栏底部的一大堆链接
         constructor(autorun = false) {
             super()
             window.saltMCBBSCSS.setStyle( // 主要更改
-                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}body #toptb{opacity:0}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warn::after{content:"已制裁";color:#2c4}.pl .blockcode{position:relative}.pl .blockcode>em{top:2px;right:2px;position:absolute;margin:0 0 0 0}.pl .blockcode>em:hover{outline:1px dashed}.pl .blockcode ol{overflow:auto;max-height:45em;max-width:750px;scrollbar-width:thin;scrollbar-color:#eee #999}.pl .blockcode ol::-webkit-scrollbar{width:10px;height:10px}.pl .blockcode ol::-webkit-scrollbar-thumb{border-radius:10px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.pl .blockcode ol::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:10px;background:#eee}.pl .blockcode ol li{color:#444;margin-left:29px;line-height:1.8em;height:1.8em;white-space:pre}.settingPanel{width:40vw;min-width:360px;left:30vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:37.5em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}
+                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}body #toptb{opacity:0}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warned::after{content:"已制裁";color:#2c4}.pl .blockcode{position:relative}.pl .blockcode>em{top:2px;right:2px;position:absolute;margin:0 0 0 0}.pl .blockcode>em:hover{outline:1px dashed}.pl .blockcode ol{overflow:auto;max-height:45em;max-width:750px;scrollbar-width:thin;scrollbar-color:#eee #999}.pl .blockcode ol::-webkit-scrollbar{width:10px;height:10px}.pl .blockcode ol::-webkit-scrollbar-thumb{border-radius:10px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.pl .blockcode ol::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:10px;background:#eee}.pl .blockcode ol li{color:#444;margin-left:29px;line-height:1.8em;height:1.8em;white-space:pre}.settingPanel{width:40vw;min-width:360px;left:30vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel>*:first-child{background-color:#fbf2db;position:sticky;top:0}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;color:#000000;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:37.5em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}
 `
                 , 'main'
             )
@@ -378,7 +447,7 @@
                 , 'pagehead'
             )
             window.saltMCBBSCSS.setStyle( // 夜间模式样式
-                `body.night-style{--bodybg:#2b2b2b;--bodybg-l:#2b2b2b;--bodybg-l-t:rgba(43,43,43,0)}body.night-style input,body.night-style button,body.night-style select,body.night-style textarea{background-color:#3d3d3d;background-image:none;border-color:#837c73;color:#eaeaea}body.night-style{background-color:#1c1c1c !important;background-image:var(--bodyimg-night);color:#eaeaea}body.night-style .mc_map_wp{box-shadow:0 0 20px 1px #000}body.night-style .mc_map_border_right,body.night-style .mc_map_border_left,body.night-style .mc_map_border_top,body.night-style .mc_map_border_foot{background-color:#2b2b2b;background-image:none;color:#eaeaea}body.night-style #body_fixed_bg{opacity:0}body.night-style .fl .forum_index_title,body.night-style .sttl,body.night-style .mn .bm_h{background-color:#3d3d3d;padding-left:16px}body.night-style .p_pop,body.night-style .p_pof,body.night-style .sllt{background-color:#3d3d3d;border-color:#837c73;background-image:none}body.night-style .p_pop a:hover,body.night-style .p_pof a:hover,body.night-style .sllt a:hover{background-color:#837c73}body.night-style #pt .z a,body.night-style #pt .z em,body.night-style #pt .z span{color:#eaeaea}body.night-style #nv_right{background-color:#3d3d3d;background-image:none}body.night-style #nv_right a{color:#eaeaea}body.night-style #nv_right a:hover{color:#6cf}body.night-style .m_c,body.night-style .tm_c{background-color:#2b2b2b;color:#eaeaea}body.night-style .m_c .dt th,body.night-style .tm_c .dt th{background-color:#2b2b2b}body.night-style .m_c .px,body.night-style .m_c .pt,body.night-style .m_c .ps,body.night-style .m_c select,body.night-style .tm_c .px,body.night-style .tm_c .pt,body.night-style .tm_c .ps,body.night-style .tm_c select{background-color:#3d3d3d;border-top:none;border-bottom:none;border-left:none;border-right:none;border-width:0px}body.night-style .m_c .o,body.night-style .tm_c .o{background-color:#3d3d3d}body.night-style .m_c a,body.night-style .tm_c a{color:#eaeaea}body.night-style .m_c a:hover,body.night-style .tm_c a:hover{color:#6cf}body.night-style .xi2,body.night-style .xi2 a,body.night-style .xi3 a{color:#69f}body.night-style .nfl .f_c{background-color:#444;border:none}body.night-style .alt>th,body.night-style .alt>td{background-color:#3d3d3d}body.night-style .dt td,body.night-style .dt th{background-color:#3d3d3d}body.night-style .dt td a,body.night-style .dt th a{color:#eaeaea}body.night-style .dt td a:hover,body.night-style .dt th a:hover{color:#6cf}body.night-style .dt tr:not(.alt) td,body.night-style .dt tr:not(.alt) th{background-color:#2b2b2b}body.night-style .bm{background-color:transparent}body.night-style #diy_chart #frame48dS31{border-color:transparent !important}body.night-style #diy_chart .frame{background-color:#3d3d3d;border-color:transparent}body.night-style #diy_chart .frame .column{color:#eaeaea}body.night-style #diy_chart .frame .column a{color:#eaeaea}body.night-style #diy_chart .frame .column a:hover{color:#6cf}body.night-style #diy_chart .frame .column .tab-title.title{background-color:#2b2b2b !important}body.night-style #diy_chart .frame .column .tab-title.title ul{background-color:#3d3d3d !important}body.night-style #diy_chart .frame .column .tab-title.title ul li a{border-color:transparent !important}body.night-style #diy_chart .frame .column .tab-title.title ul li:not(.a) a{background-color:#525252}body.night-style #diy_chart .frame .column .tab-title.title ul li.a a{background-color:#666}body.night-style #diy_chart .frame .column .tb-c>div{background-color:#3d3d3d}body.night-style #diy_chart #tabVpFJkk{background-color:#3d3d3d !important;border-color:transparent !important}body.night-style .mn>.bm>.bm{background-color:#3d3d3d;border-color:transparent}body.night-style .mn>.bm>.bm .bm_h{background-color:#1c1c1c;background-image:none}body.night-style .mn>.bm>.bm .bm_c{background-color:#3d3d3d;border-color:transparent}body.night-style .portal_left_dev{border:none}body.night-style .portal_left_dev .portal_left_title{background-color:#1c1c1c;background-image:none}body.night-style .portal_left_dev .portal_left_title[style*="background"]{background-color:#1c1c1c !important;background-image:none !important}body.night-style .portal_left_dev .portal_left_content{border-color:transparent;background-color:#3d3d3d}body.night-style .portal_left_dev a{color:#eaeaea}body.night-style .portal_left_dev a:hover{color:#6cf}body.night-style #ct .mn .bm,body.night-style #group_sd .bm{border:none}body.night-style #ct .mn .bm .bm_h,body.night-style #group_sd .bm .bm_h{background-color:#1c1c1c;background-image:none}body.night-style #ct .mn .bm .area,body.night-style #ct .mn .bm .bm_c,body.night-style #group_sd .bm .area,body.night-style #group_sd .bm .bm_c{background-color:#3d3d3d;border-color:transparent}body.night-style #ct .mn .bm .area .frame,body.night-style #ct .mn .bm .bm_c .frame,body.night-style #group_sd .bm .area .frame,body.night-style #group_sd .bm .bm_c .frame{background-color:transparent}body.night-style #ct .mn a,body.night-style #group_sd a{color:#eaeaea}body.night-style #ct .mn a:hover,body.night-style #group_sd a:hover{color:#6cf}body.night-style #diy_right .frame{background-color:transparent}body.night-style #diy_right .block{background-color:#3d3d3d !important;border-color:transparent !important}body.night-style #diy_right .block .title{background-color:#1c1c1c;background-image:none}body.night-style #diy_right .block a{color:#eaeaea}body.night-style #diy_right .block a:hover{color:#6cf}body.night-style #diy_right .portal_news,body.night-style #diy_right .portal_game,body.night-style #diy_right .modpack,body.night-style #diy_right .portal_zb,body.night-style #diy_right .portal_note{border-color:transparent}body.night-style .special_user_info{background-color:#3d3d3d;background-image:none}body.night-style .special_user_info .special_info{background-color:transparent;background-image:none}body.night-style .special_user_info .special_info>div{background-color:#525252}body.night-style .special_user_info a{color:#eaeaea}body.night-style .special_user_info a:hover{color:#6cf}body.night-style .portal_block_summary iframe{filter:brightness(0.5)}body.night-style .pgb a{background-color:transparent}body.night-style .pgt .pg a,body.night-style .pgt .pg strong,body.night-style .pgt .pg label,body.night-style .pgs .pg a,body.night-style .pgs .pg strong,body.night-style .pgs .pg label{color:#eaeaea;background-color:transparent}body.night-style .pgt .pg strong,body.night-style .pgs .pg strong{background-color:#3d3d3d}body.night-style .pgbtn,body.night-style .pgbtn a{border:none;box-shadow:none}body.night-style .pgbtn a{background-color:#3d3d3d;color:#eaeaea;border:none}body.night-style #wp .wp{background-color:#2b2b2b;color:#eaeaea}body.night-style #wp .wp table,body.night-style #wp .wp tr,body.night-style #wp .wp td{border-color:#837c73}body.night-style #wp .wp table a,body.night-style #wp .wp tr a,body.night-style #wp .wp td a{color:#eaeaea}body.night-style #wp .wp table a:hover,body.night-style #wp .wp tr a:hover,body.night-style #wp .wp td a:hover{color:#6cf}body.night-style #postlist{background-color:transparent;border:none}body.night-style #postlist>table,body.night-style .plhin,body.night-style #f_pst{border:none;box-shadow:none}body.night-style #postlist>table tr,body.night-style #postlist>table td,body.night-style #postlist>table div,body.night-style .plhin tr,body.night-style .plhin td,body.night-style .plhin div,body.night-style #f_pst tr,body.night-style #f_pst td,body.night-style #f_pst div{border-color:#837c73}body.night-style #postlist>table .ad,body.night-style .plhin .ad,body.night-style #f_pst .ad{background-color:#3d3d3d}body.night-style #postlist>table td.pls,body.night-style .plhin td.pls,body.night-style #f_pst td.pls{background-color:#2b2b2b;border:none}body.night-style #postlist>table td.plc,body.night-style .plhin td.plc,body.night-style #f_pst td.plc{background-color:#3d3d3d;border:none}body.night-style #postlist>table .pls .avatar img,body.night-style .plhin .pls .avatar img,body.night-style #f_pst .pls .avatar img{background-color:#3d3d3d;background-image:none}body.night-style #postlist>table a,body.night-style .plhin a,body.night-style #f_pst a{color:#eaeaea}body.night-style #postlist>table a:hover,body.night-style .plhin a:hover,body.night-style #f_pst a:hover{color:#6cf}body.night-style .plhin .quote{background-color:#525252;color:#eaeaea}body.night-style .plhin .pcb .t_fsz>table table{color:#444;text-shadow:0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff}body.night-style .plhin .pcb .t_fsz>table .spoilerbutton{border:1px solid #525252}body.night-style .plhin .pcb .t_fsz>table .spoilerbody>table{color:#eaeaea;text-shadow:none}body.night-style .plhin.warned{opacity:0.1}body.night-style .plhin.warned:hover{opacity:0.9}body.night-style .plhin .tbn .mt.bbda{background-image:none;background-color:#3d3d3d}body.night-style .plhin .tbn ul{border-top:none;border-bottom:none;border-left:none;border-right:none;border-width:0px}body.night-style #vfastpost{background-color:transparent;background-image:none}body.night-style #vfastpost #vf_l,body.night-style #vfastpost #vf_m,body.night-style #vfastpost #vf_r,body.night-style #vfastpost #vf_b{background-color:#2b2b2b;background-image:none}body.night-style #vfastpost #vf_m input{border-color:transparent;color:#eaeaea !important}body.night-style #vfastpost #vf_l{border-radius:5px 0 0 5px}body.night-style #vfastpost #vf_r{border-radius:0 5px 5px 0}body.night-style #vfastpost #vreplysubmit{background-color:#2b2b2b;background-image:none;box-shadow:none;position:relative}body.night-style #vfastpost #vreplysubmit:after{content:"快速回复";position:absolute;top:0;left:0;width:100%;height:38px;line-height:38px;font-size:1rem}body.night-style #p_btn a,body.night-style #p_btn a i{background-color:#525252;background-image:none}body.night-style .psth{background-color:#525252;background-image:none}body.night-style #postlist.bm{border-color:#837c73}body.night-style #mymodannouncement,body.night-style #myskinannouncement,body.night-style #mytextureannouncement,body.night-style #my16modannouncement,body.night-style .cgtl caption,body.night-style .locked{background-color:#2b2b2b;border:none}body.night-style #fastpostform .pls,body.night-style #fastpostform .plc{border:none}body.night-style #fastposteditor,body.night-style #fastposteditor .bar,body.night-style #fastposteditor .area,body.night-style #fastposteditor .pt{background-color:#2b2b2b;border:none}body.night-style #fastposteditor .fpd a{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff)}body.night-style .pi strong a{border-color:transparent}body.night-style #threadstamp img{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff)}body.night-style .blockcode{filter:invert(0.8) hue-rotate(170deg)}body.night-style .blockcode ol li{color:#222}body.night-style #ct .bm.bml.pbn .bm_c,body.night-style #ct .bm.bmw.fl .bm_c{background-color:#3d3d3d !important}body.night-style #ct #pgt{background-color:transparent !important}body.night-style #ct #thread_types>li a,body.night-style #ct #separatorline th,body.night-style #ct #separatorline td,body.night-style #ct #forumnewshow,body.night-style #ct #f_pst .bm_c{background-color:#3d3d3d !important}body.night-style #ct #threadlist .th,body.night-style #ct #threadlisttableid{background-color:transparent}body.night-style #ct #threadlist .th tr th,body.night-style #ct #threadlist .th tr td,body.night-style #ct #threadlisttableid tr th,body.night-style #ct #threadlisttableid tr td{background-color:transparent;border:none}body.night-style #ct #threadlist .th tr:hover th,body.night-style #ct #threadlist .th tr:hover td,body.night-style #ct #threadlisttableid tr:hover th,body.night-style #ct #threadlisttableid tr:hover td{background-color:#525252}body.night-style #ct .mn a.bm_h{background-color:#3d3d3d !important;border:none;color:#eaeaea}body.night-style #ct .mn a.bm_h:hover{color:#6cf}body.night-style #ct #waterfall li{background-image:none;background-color:#3d3d3d;transition:0.3 ease}body.night-style #ct #waterfall li:hover{background-color:#525252}body.night-style #ct #waterfall li>*{background-image:none;background-color:transparent}body.night-style #ct .fastpreview .bm_c{background-color:#2b2b2b !important}body.night-style #ct .fastpreview .bm_c .pcb{background-color:#2b2b2b}body.night-style #ct .appl{border-color:transparent !important}body.night-style #ct .appl .tbn h2{background-color:#1c1c1c;background-image:none}body.night-style #ct .appl .tbn ul{border:none}body.night-style #ct .appl .tbn ul li:hover{background-color:#3d3d3d}body.night-style #ct .appl .tbn a{color:#eaeaea}body.night-style #ct .appl .tbn a:hover{color:#6cf}body.night-style #ct .mn .bm{background-color:transparent}body.night-style #ct .mn .bm .tb.cl,body.night-style #ct .mn .bm .bm_h{background-color:#1c1c1c;background-image:none}body.night-style #ct .mn .bm .tb.cl h3,body.night-style #ct .mn .bm .bm_h h3{color:#eaeaea !important}body.night-style #ct .mn .bm .bm.mtm,body.night-style #ct .mn .bm .bm_c{background-color:#3d3d3d;border-color:transparent}body.night-style #ct .mn .bm ul li{color:#eaeaea}body.night-style #ct .mn .bm ul.buddy li{background-color:#3d3d3d;border:none}body.night-style #ct .mn .bm a{color:#eaeaea}body.night-style #ct .mn .bm a:hover{color:#6cf}body.night-style #ct .mn .bm .bm.bmn.mtm.cl{background-color:transparent !important}body.night-style #ct .mn .bm input,body.night-style #ct .mn .bm select,body.night-style #ct .mn .bm option{background-color:#3d3d3d;background-image:none;border-top:none;border-bottom:none;border-left:none;border-right:none;border-width:0px}body.night-style #ct .mn .bm .nts{background-color:#3d3d3d}body.night-style #ct .mn .bm .nts .ntc_body[style*="color"]{color:#eaeaea !important}body.night-style #ct .mn .bm .pg a,body.night-style #ct .mn .bm .pg strong,body.night-style #ct .mn .bm .pg label{color:#eaeaea;background-color:transparent}body.night-style #ct .mn .bm .pg strong{background-color:#3d3d3d}body.night-style #nv>ul{background-color:#2b2b2b;background-image:none;border:none}body.night-style #nv>ul li:first-child>a,body.night-style #nv>ul li:first-child>a:hover{border-left:none}body.night-style #nv>ul li:last-child>a,body.night-style #nv>ul li:last-child>a:hover{border-right:none}body.night-style #nv>ul li>a{background-color:#3d3d3d}body.night-style #nv>ul li>a,body.night-style #nv>ul li>a:hover{border-color:#3d3d3d}body.night-style #nv>ul li>a:hover{background-color:#525252}body.night-style #uhd{background-color:#3d3d3d;border-color:#2b2b2b}body.night-style #uhd ul.tb.cl{border-bottom-color:#2b2b2b}body.night-style #uhd ul.tb.cl li a{background-color:#2b2b2b;border:none;color:#eaeaea}body.night-style #uhd ul.tb.cl li a:hover{color:#6cf}body.night-style #ct{border-color:#2b2b2b}body.night-style .tl{background-color:transparent}body.night-style .tl tr{background-color:transparent}body.night-style .tl tr th,body.night-style .tl tr td{background-color:transparent;border:none}body.night-style .tl tr:hover th,body.night-style .tl tr:hover td{background-color:#525252}body.night-style #typeid_ctrl_menu{background-color:#3d3d3d;border-color:#837c73}body.night-style #typeid_ctrl_menu li{color:#eaeaea}body.night-style #editorbox{background-color:#3d3d3d}body.night-style #editorbox>*{background-color:transparent}body.night-style #editorbox .tb .a a,body.night-style #editorbox .tb .current a{background-color:#525252}body.night-style #editorbox .ftid a{background-color:#525252;color:#eaeaea !important}body.night-style #editorbox #e_controls{background-color:#525252}body.night-style #editorbox #e_controls .b1r a,body.night-style #editorbox #e_controls .b2r a{border:none;border-width:0px}body.night-style #editorbox #e_controls .b1r a:not(.dp),body.night-style #editorbox #e_controls .b2r a:not(.dp){filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff)}body.night-style #editorbox #e_controls .b1r a.dp,body.night-style #editorbox #e_controls .b2r a.dp{background-color:#525252;color:#eaeaea}body.night-style #editorbox #e_textarea{background-color:#2b2b2b}body.night-style #editorbox #rstnotice,body.night-style #editorbox #e_bbar,body.night-style #editorbox .area{background-color:#3d3d3d;border-color:#837c73}body.night-style #editorbox .area{background-color:#2b2b2b}body.night-style #editorbox .exfm{background-color:#525252}body.night-style #nav>a,body.night-style #content>*>a,body.night-style li>a,body.night-style #end>a,body.night-style #footer strong>a{color:#eaeaea}body.night-style #nav>a:hover,body.night-style #content>*>a:hover,body.night-style li>a:hover,body.night-style #end>a:hover,body.night-style #footer strong>a:hover{color:#6cf}body.night-style #content p.author{background-color:#3d3d3d}body.night-style .xl label,body.night-style .xl label a{color:#f99}body.night-style a[style*="color"][style*="#333333"],body.night-style font[style*="color"][style*="#333333"]{color:#e0e0e0 !important}body.night-style a[style*="color"][style*="#663399"],body.night-style font[style*="color"][style*="#663399"]{color:#de90df !important}body.night-style a[style*="color"][style*="#8f2a90"],body.night-style font[style*="color"][style*="#8f2a90"]{color:#de90df !important}body.night-style a[style*="color"][style*="#660099"],body.night-style font[style*="color"][style*="#660099"]{color:#bf8cd9 !important}body.night-style a[style*="color"][style*="#660000"],body.night-style font[style*="color"][style*="#660000"]{color:#c66 !important}body.night-style a[style*="color"][style*="#993333"],body.night-style font[style*="color"][style*="#993333"]{color:#f99 !important}body.night-style a[style*="color"][style*="#EE1B2E"],body.night-style font[style*="color"][style*="#EE1B2E"]{color:#f99 !important}body.night-style a[style*="color"][style*="#ff0000"],body.night-style font[style*="color"][style*="#ff0000"]{color:#f99 !important}body.night-style a[style*="color"][style*="#FF0000"],body.night-style font[style*="color"][style*="#FF0000"]{color:#f99 !important}body.night-style a[style*="color"][style*="#EE5023"],body.night-style font[style*="color"][style*="#EE5023"]{color:#d97f26 !important}body.night-style a[style*="color"][style*="#996600"],body.night-style font[style*="color"][style*="#996600"]{color:#e6a219 !important}body.night-style a[style*="color"][style*="#663300"],body.night-style font[style*="color"][style*="#663300"]{color:#d97f26 !important}body.night-style a[style*="color"][style*="#006666"],body.night-style font[style*="color"][style*="#006666"]{color:#6cc !important}body.night-style a[style*="color"][style*="#3C9D40"],body.night-style font[style*="color"][style*="#3C9D40"]{color:#8f8 !important}body.night-style a[style*="color"][style*="#009900"],body.night-style font[style*="color"][style*="#009900"]{color:#9f9 !important}body.night-style a[style*="color"][style*="#3366ff"],body.night-style font[style*="color"][style*="#3366ff"]{color:#6af !important}body.night-style a[style*="color"][style*="#2b65b7"],body.night-style font[style*="color"][style*="#2b65b7"]{color:#6af !important}body.night-style a[style*="color"][style*="#003399"],body.night-style font[style*="color"][style*="#003399"]{color:#6af !important}body.night-style a[style*="color"][style*="#2B65B7"],body.night-style font[style*="color"][style*="#2B65B7"]{color:#6af !important}body.night-style a[style*="color"][style*="#330066"],body.night-style font[style*="color"][style*="#330066"]{color:#b28cd9 !important}body.night-style a[style*="color"][style*="#8F2A90"],body.night-style font[style*="color"][style*="#8F2A90"]{color:#cf61d1 !important}body.night-style a[style*="background-color"][style*="#FFFFFF"],body.night-style font[style*="background-color"][style*="#FFFFFF"]{background-color:transparent !important}body.night-style a[style*="background-color"][style*="Wheat"],body.night-style font[style*="background-color"][style*="Wheat"]{background-color:transparent !important}body.night-style font[color*="#660000"]{color:#c66 !important}body.night-style font[color*="#8b0000"]{color:#c66 !important}body.night-style font[color*="#ff0000"]{color:#f99 !important}body.night-style font[color*="red"]{color:#f99 !important}body.night-style font[color*="Red"]{color:#f99 !important}body.night-style font[color*="#000080"]{color:#8af !important}body.night-style font[color*="#0000ff"]{color:#8af !important}body.night-style font[color*="#3366ff"]{color:#8af !important}body.night-style font[color*="#003399"]{color:#8af !important}body.night-style font[color*="blue"]{color:#8af !important}body.night-style font[color*="Blue"]{color:#8af !important}body.night-style font[color*="#339933"]{color:#9f9 !important}body.night-style font[color*="#009900"]{color:#9f9 !important}body.night-style font[color*="#008000"]{color:#9f9 !important}body.night-style font[color*="#006400"]{color:#9f9 !important}body.night-style font[color*="green"]{color:#9f9 !important}body.night-style font[color*="Green"]{color:#9f9 !important}body.night-style font[color*="#000000"]{color:#fff !important}body.night-style font[color*="black"]{color:#fff !important}body.night-style font[color*="Black"]{color:#fff !important}body.night-style font[color*="#660099"]{color:#bf8cd9 !important}body.night-style font[color*="#4b0082"]{color:#b54dff !important}body.night-style font[color*="Indigo"]{color:#b54dff !important}body.night-style font[color*="DarkOrchid"]{color:#c57ce9 !important}body.night-style font[color*="Purple"]{color:#ff4dff !important}body.night-style font[color*="#2d76c4"]{color:#5c97d6 !important}body.night-style font[color*="Olive"]{color:#ff3 !important}body.night-style .t_f[style*="background-color"][style*="#FBF2DB"]{background-color:transparent !important}body.night-style .settingPanel{background-color:#2b2b2b;color:#eaeaea}body.night-style .settingPanel textarea{background-color:#3d3d3d;border:none}body.night-style .settingPanel input{border:none;border-width:0px}
+                `body.night-style{--bodybg:#2b2b2b;--bodybg-l:#2b2b2b;--bodybg-l-t:rgba(43,43,43,0)}body.night-style input,body.night-style button,body.night-style select,body.night-style textarea{background-color:#3d3d3d;background-image:none;border-color:#837c73;color:#eaeaea}body.night-style{background-color:#1c1c1c !important;background-image:var(--bodyimg-night);color:#eaeaea}body.night-style .mc_map_wp{box-shadow:0 0 20px 1px #000}body.night-style .mc_map_border_right,body.night-style .mc_map_border_left,body.night-style .mc_map_border_top,body.night-style .mc_map_border_foot{background-color:#2b2b2b;background-image:none;color:#eaeaea}body.night-style #body_fixed_bg{opacity:0}body.night-style .fl .forum_index_title,body.night-style .sttl,body.night-style .mn .bm_h{background-color:#3d3d3d;padding-left:16px}body.night-style .p_pop,body.night-style .p_pof,body.night-style .sllt{background-color:#3d3d3d;border-color:#837c73;background-image:none}body.night-style .p_pop a:hover,body.night-style .p_pof a:hover,body.night-style .sllt a:hover{background-color:#837c73}body.night-style #pt .z a,body.night-style #pt .z em,body.night-style #pt .z span{color:#eaeaea}body.night-style #nv_right{background-color:#3d3d3d;background-image:none}body.night-style #nv_right a{color:#eaeaea}body.night-style #nv_right a:hover{color:#6cf}body.night-style .m_c,body.night-style .tm_c{background-color:#2b2b2b;color:#eaeaea}body.night-style .m_c .dt th,body.night-style .tm_c .dt th{background-color:#2b2b2b}body.night-style .m_c .px,body.night-style .m_c .pt,body.night-style .m_c .ps,body.night-style .m_c select,body.night-style .tm_c .px,body.night-style .tm_c .pt,body.night-style .tm_c .ps,body.night-style .tm_c select{background-color:#3d3d3d;border-top:none;border-bottom:none;border-left:none;border-right:none;border-width:0px}body.night-style .m_c .o,body.night-style .tm_c .o{background-color:#3d3d3d}body.night-style .m_c a,body.night-style .tm_c a{color:#eaeaea}body.night-style .m_c a:hover,body.night-style .tm_c a:hover{color:#6cf}body.night-style .xi2,body.night-style .xi2 a,body.night-style .xi3 a{color:#69f}body.night-style .nfl .f_c{background-color:#444;border:none}body.night-style .alt>th,body.night-style .alt>td{background-color:#3d3d3d}body.night-style .dt td,body.night-style .dt th{background-color:#3d3d3d}body.night-style .dt td a,body.night-style .dt th a{color:#eaeaea}body.night-style .dt td a:hover,body.night-style .dt th a:hover{color:#6cf}body.night-style .dt tr:not(.alt) td,body.night-style .dt tr:not(.alt) th{background-color:#2b2b2b}body.night-style .bm{background-color:transparent}body.night-style #diy_chart #frame48dS31{border-color:transparent !important}body.night-style #diy_chart .frame{background-color:#3d3d3d;border-color:transparent}body.night-style #diy_chart .frame .column{color:#eaeaea}body.night-style #diy_chart .frame .column a{color:#eaeaea}body.night-style #diy_chart .frame .column a:hover{color:#6cf}body.night-style #diy_chart .frame .column .tab-title.title{background-color:#2b2b2b !important}body.night-style #diy_chart .frame .column .tab-title.title ul{background-color:#3d3d3d !important}body.night-style #diy_chart .frame .column .tab-title.title ul li a{border-color:transparent !important}body.night-style #diy_chart .frame .column .tab-title.title ul li:not(.a) a{background-color:#525252}body.night-style #diy_chart .frame .column .tab-title.title ul li.a a{background-color:#666}body.night-style #diy_chart .frame .column .tb-c>div{background-color:#3d3d3d}body.night-style #diy_chart #tabVpFJkk{background-color:#3d3d3d !important;border-color:transparent !important}body.night-style .mn>.bm>.bm{background-color:#3d3d3d;border-color:transparent}body.night-style .mn>.bm>.bm .bm_h{background-color:#1c1c1c;background-image:none}body.night-style .mn>.bm>.bm .bm_c{background-color:#3d3d3d;border-color:transparent}body.night-style .portal_left_dev{border:none}body.night-style .portal_left_dev .portal_left_title{background-color:#1c1c1c;background-image:none}body.night-style .portal_left_dev .portal_left_title[style*="background"]{background-color:#1c1c1c !important;background-image:none !important}body.night-style .portal_left_dev .portal_left_content{border-color:transparent;background-color:#3d3d3d}body.night-style .portal_left_dev a{color:#eaeaea}body.night-style .portal_left_dev a:hover{color:#6cf}body.night-style #ct .mn .bm,body.night-style #group_sd .bm{border:none}body.night-style #ct .mn .bm .bm_h,body.night-style #group_sd .bm .bm_h{background-color:#1c1c1c;background-image:none}body.night-style #ct .mn .bm .area,body.night-style #ct .mn .bm .bm_c,body.night-style #group_sd .bm .area,body.night-style #group_sd .bm .bm_c{background-color:#3d3d3d;border-color:transparent}body.night-style #ct .mn .bm .area .frame,body.night-style #ct .mn .bm .bm_c .frame,body.night-style #group_sd .bm .area .frame,body.night-style #group_sd .bm .bm_c .frame{background-color:transparent}body.night-style #ct .mn a,body.night-style #group_sd a{color:#eaeaea}body.night-style #ct .mn a:hover,body.night-style #group_sd a:hover{color:#6cf}body.night-style #diy_right .frame{background-color:transparent}body.night-style #diy_right .block{background-color:#3d3d3d !important;border-color:transparent !important}body.night-style #diy_right .block .title{background-color:#1c1c1c;background-image:none}body.night-style #diy_right .block a{color:#eaeaea}body.night-style #diy_right .block a:hover{color:#6cf}body.night-style #diy_right .portal_news,body.night-style #diy_right .portal_game,body.night-style #diy_right .modpack,body.night-style #diy_right .portal_zb,body.night-style #diy_right .portal_note{border-color:transparent}body.night-style .special_user_info{background-color:#3d3d3d;background-image:none}body.night-style .special_user_info .special_info{background-color:transparent;background-image:none}body.night-style .special_user_info .special_info>div{background-color:#525252}body.night-style .special_user_info a{color:#eaeaea}body.night-style .special_user_info a:hover{color:#6cf}body.night-style .portal_block_summary iframe{filter:brightness(0.5)}body.night-style .pgb a{background-color:transparent}body.night-style .pgt .pg a,body.night-style .pgt .pg strong,body.night-style .pgt .pg label,body.night-style .pgs .pg a,body.night-style .pgs .pg strong,body.night-style .pgs .pg label{color:#eaeaea;background-color:transparent}body.night-style .pgt .pg strong,body.night-style .pgs .pg strong{background-color:#3d3d3d}body.night-style .pgbtn,body.night-style .pgbtn a{border:none;box-shadow:none}body.night-style .pgbtn a{background-color:#3d3d3d;color:#eaeaea;border:none}body.night-style #wp .wp{background-color:#2b2b2b;color:#eaeaea}body.night-style #wp .wp table,body.night-style #wp .wp tr,body.night-style #wp .wp td{border-color:#837c73}body.night-style #wp .wp table a,body.night-style #wp .wp tr a,body.night-style #wp .wp td a{color:#eaeaea}body.night-style #wp .wp table a:hover,body.night-style #wp .wp tr a:hover,body.night-style #wp .wp td a:hover{color:#6cf}body.night-style #postlist{background-color:transparent;border:none}body.night-style #postlist>table,body.night-style .plhin,body.night-style #f_pst{border:none;box-shadow:none}body.night-style #postlist>table tr,body.night-style #postlist>table td,body.night-style #postlist>table div,body.night-style .plhin tr,body.night-style .plhin td,body.night-style .plhin div,body.night-style #f_pst tr,body.night-style #f_pst td,body.night-style #f_pst div{border-color:#837c73}body.night-style #postlist>table .ad,body.night-style .plhin .ad,body.night-style #f_pst .ad{background-color:#3d3d3d}body.night-style #postlist>table td.pls,body.night-style .plhin td.pls,body.night-style #f_pst td.pls{background-color:#2b2b2b;border:none}body.night-style #postlist>table td.plc,body.night-style .plhin td.plc,body.night-style #f_pst td.plc{background-color:#3d3d3d;border:none}body.night-style #postlist>table .pls .avatar img,body.night-style .plhin .pls .avatar img,body.night-style #f_pst .pls .avatar img{background-color:#3d3d3d;background-image:none}body.night-style #postlist>table a,body.night-style .plhin a,body.night-style #f_pst a{color:#eaeaea}body.night-style #postlist>table a:hover,body.night-style .plhin a:hover,body.night-style #f_pst a:hover{color:#6cf}body.night-style .plhin .quote{background-color:#525252;color:#eaeaea}body.night-style .plhin .pcb .t_fsz>table table{color:#444;text-shadow:0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff}body.night-style .plhin .pcb .t_fsz>table .spoilerbutton{border:1px solid #525252}body.night-style .plhin .pcb .t_fsz>table .spoilerbody>table{color:#eaeaea;text-shadow:none}body.night-style .plhin.warned{opacity:0.1}body.night-style .plhin.warned:hover{opacity:0.9}body.night-style .plhin .tbn .mt.bbda{background-image:none;background-color:#3d3d3d}body.night-style .plhin .tbn ul{border-top:none;border-bottom:none;border-left:none;border-right:none;border-width:0px}body.night-style #vfastpost{background-color:transparent;background-image:none}body.night-style #vfastpost #vf_l,body.night-style #vfastpost #vf_m,body.night-style #vfastpost #vf_r,body.night-style #vfastpost #vf_b{background-color:#2b2b2b;background-image:none}body.night-style #vfastpost #vf_m input{border-color:transparent;color:#eaeaea !important}body.night-style #vfastpost #vf_l{border-radius:5px 0 0 5px}body.night-style #vfastpost #vf_r{border-radius:0 5px 5px 0}body.night-style #vfastpost #vreplysubmit{background-color:#2b2b2b;background-image:none;box-shadow:none;position:relative}body.night-style #vfastpost #vreplysubmit:after{content:"快速回复";position:absolute;top:0;left:0;width:100%;height:38px;line-height:38px;font-size:1rem}body.night-style #p_btn a,body.night-style #p_btn a i{background-color:#525252;background-image:none}body.night-style .psth{background-color:#525252;background-image:none}body.night-style #postlist.bm{border-color:#837c73}body.night-style #mymodannouncement,body.night-style #myskinannouncement,body.night-style #mytextureannouncement,body.night-style #my16modannouncement,body.night-style .cgtl caption,body.night-style .locked{background-color:#2b2b2b;border:none}body.night-style #fastpostform .pls,body.night-style #fastpostform .plc{border:none}body.night-style #fastposteditor,body.night-style #fastposteditor .bar,body.night-style #fastposteditor .area,body.night-style #fastposteditor .pt{background-color:#2b2b2b;border:none}body.night-style #fastposteditor .fpd a{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff)}body.night-style .pi strong a{border-color:transparent}body.night-style #threadstamp img{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff)}body.night-style .blockcode{filter:invert(0.8) hue-rotate(170deg)}body.night-style .blockcode ol li{color:#222}body.night-style #ct .bm.bml.pbn .bm_c,body.night-style #ct .bm.bmw.fl .bm_c{background-color:#3d3d3d !important}body.night-style #ct #pgt{background-color:transparent !important}body.night-style #ct #thread_types>li a,body.night-style #ct #separatorline th,body.night-style #ct #separatorline td,body.night-style #ct #forumnewshow,body.night-style #ct #f_pst .bm_c{background-color:#3d3d3d !important}body.night-style #ct #threadlist .th,body.night-style #ct #threadlisttableid{background-color:transparent}body.night-style #ct #threadlist .th tr th,body.night-style #ct #threadlist .th tr td,body.night-style #ct #threadlisttableid tr th,body.night-style #ct #threadlisttableid tr td{background-color:transparent;border:none}body.night-style #ct #threadlist .th tr:hover>th,body.night-style #ct #threadlist .th tr:hover>td,body.night-style #ct #threadlisttableid tr:hover>th,body.night-style #ct #threadlisttableid tr:hover>td{background-color:#525252}body.night-style #ct .mn a.bm_h{background-color:#3d3d3d !important;border:none;color:#eaeaea}body.night-style #ct .mn a.bm_h:hover{color:#6cf}body.night-style #ct #waterfall li{background-image:none;background-color:#3d3d3d;transition:0.3 ease}body.night-style #ct #waterfall li:hover{background-color:#525252}body.night-style #ct #waterfall li>*{background-image:none;background-color:transparent}body.night-style #ct .fastpreview .bm_c{background-color:#2b2b2b !important}body.night-style #ct .fastpreview .bm_c .pcb{background-color:#2b2b2b}body.night-style #ct .appl{border-color:transparent !important}body.night-style #ct .appl .tbn h2{background-color:#1c1c1c;background-image:none}body.night-style #ct .appl .tbn ul{border:none}body.night-style #ct .appl .tbn ul li:hover{background-color:#3d3d3d}body.night-style #ct .appl .tbn a{color:#eaeaea}body.night-style #ct .appl .tbn a:hover{color:#6cf}body.night-style #ct .mn .bm{background-color:transparent}body.night-style #ct .mn .bm .tb.cl,body.night-style #ct .mn .bm .bm_h{background-color:#1c1c1c;background-image:none}body.night-style #ct .mn .bm .tb.cl h3,body.night-style #ct .mn .bm .bm_h h3{color:#eaeaea !important}body.night-style #ct .mn .bm .bm.mtm,body.night-style #ct .mn .bm .bm_c{background-color:#3d3d3d;border-color:transparent}body.night-style #ct .mn .bm ul li{color:#eaeaea}body.night-style #ct .mn .bm ul.buddy li{background-color:#3d3d3d;border:none}body.night-style #ct .mn .bm a{color:#eaeaea}body.night-style #ct .mn .bm a:hover{color:#6cf}body.night-style #ct .mn .bm .bm.bmn.mtm.cl{background-color:transparent !important}body.night-style #ct .mn .bm input,body.night-style #ct .mn .bm select,body.night-style #ct .mn .bm option{background-color:#3d3d3d;background-image:none;border-top:none;border-bottom:none;border-left:none;border-right:none;border-width:0px}body.night-style #ct .mn .bm .nts{background-color:#3d3d3d}body.night-style #ct .mn .bm .nts .ntc_body[style*="color"]{color:#eaeaea !important}body.night-style #ct .mn .bm .pg a,body.night-style #ct .mn .bm .pg strong,body.night-style #ct .mn .bm .pg label{color:#eaeaea;background-color:transparent}body.night-style #ct .mn .bm .pg strong{background-color:#3d3d3d}body.night-style #nv>ul{background-color:#2b2b2b;background-image:none;border:none}body.night-style #nv>ul li:first-child>a,body.night-style #nv>ul li:first-child>a:hover{border-left:none}body.night-style #nv>ul li:last-child>a,body.night-style #nv>ul li:last-child>a:hover{border-right:none}body.night-style #nv>ul li>a{background-color:#3d3d3d}body.night-style #nv>ul li>a,body.night-style #nv>ul li>a:hover{border-color:#3d3d3d}body.night-style #nv>ul li>a:hover{background-color:#525252}body.night-style #uhd{background-color:#3d3d3d;border-color:#2b2b2b}body.night-style #uhd ul.tb.cl{border-bottom-color:#2b2b2b}body.night-style #uhd ul.tb.cl li a{background-color:#2b2b2b;border:none;color:#eaeaea}body.night-style #uhd ul.tb.cl li a:hover{color:#6cf}body.night-style #ct{border-color:#2b2b2b}body.night-style .tl{background-color:transparent}body.night-style .tl tr{background-color:transparent}body.night-style .tl tr th,body.night-style .tl tr td{background-color:transparent;border:none}body.night-style .tl tr:hover th,body.night-style .tl tr:hover td{background-color:#525252}body.night-style #typeid_ctrl_menu{background-color:#3d3d3d;border-color:#837c73}body.night-style #typeid_ctrl_menu li{color:#eaeaea}body.night-style #editorbox{background-color:#3d3d3d}body.night-style #editorbox>*{background-color:transparent}body.night-style #editorbox .tb .a a,body.night-style #editorbox .tb .current a{background-color:#525252}body.night-style #editorbox .ftid a{background-color:#525252;color:#eaeaea !important}body.night-style #editorbox #e_controls{background-color:#525252}body.night-style #editorbox #e_controls .b1r a,body.night-style #editorbox #e_controls .b2r a{border:none;border-width:0px}body.night-style #editorbox #e_controls .b1r a:not(.dp),body.night-style #editorbox #e_controls .b2r a:not(.dp){filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff) drop-shadow(0 0 4px #fff)}body.night-style #editorbox #e_controls .b1r a.dp,body.night-style #editorbox #e_controls .b2r a.dp{background-color:#525252;color:#eaeaea}body.night-style #editorbox #e_textarea{background-color:#2b2b2b}body.night-style #editorbox #rstnotice,body.night-style #editorbox #e_bbar,body.night-style #editorbox .area{background-color:#3d3d3d;border-color:#837c73}body.night-style #editorbox .area{background-color:#2b2b2b}body.night-style #editorbox .exfm{background-color:#525252}body.night-style #nav>a,body.night-style #content>*>a,body.night-style li>a,body.night-style #end>a,body.night-style #footer strong>a{color:#eaeaea}body.night-style #nav>a:hover,body.night-style #content>*>a:hover,body.night-style li>a:hover,body.night-style #end>a:hover,body.night-style #footer strong>a:hover{color:#6cf}body.night-style #content p.author{background-color:#3d3d3d}body.night-style .xl label,body.night-style .xl label a{color:#f99}body.night-style a[style*="color"][style*="#333333"],body.night-style font[style*="color"][style*="#333333"]{color:#e0e0e0 !important}body.night-style a[style*="color"][style*="#663399"],body.night-style font[style*="color"][style*="#663399"]{color:#de90df !important}body.night-style a[style*="color"][style*="#8f2a90"],body.night-style font[style*="color"][style*="#8f2a90"]{color:#de90df !important}body.night-style a[style*="color"][style*="#660099"],body.night-style font[style*="color"][style*="#660099"]{color:#bf8cd9 !important}body.night-style a[style*="color"][style*="#660000"],body.night-style font[style*="color"][style*="#660000"]{color:#c66 !important}body.night-style a[style*="color"][style*="#993333"],body.night-style font[style*="color"][style*="#993333"]{color:#f99 !important}body.night-style a[style*="color"][style*="#EE1B2E"],body.night-style font[style*="color"][style*="#EE1B2E"]{color:#f99 !important}body.night-style a[style*="color"][style*="#ff0000"],body.night-style font[style*="color"][style*="#ff0000"]{color:#f99 !important}body.night-style a[style*="color"][style*="#FF0000"],body.night-style font[style*="color"][style*="#FF0000"]{color:#f99 !important}body.night-style a[style*="color"][style*="#EE5023"],body.night-style font[style*="color"][style*="#EE5023"]{color:#d97f26 !important}body.night-style a[style*="color"][style*="#996600"],body.night-style font[style*="color"][style*="#996600"]{color:#e6a219 !important}body.night-style a[style*="color"][style*="#663300"],body.night-style font[style*="color"][style*="#663300"]{color:#d97f26 !important}body.night-style a[style*="color"][style*="#006666"],body.night-style font[style*="color"][style*="#006666"]{color:#6cc !important}body.night-style a[style*="color"][style*="#3C9D40"],body.night-style font[style*="color"][style*="#3C9D40"]{color:#8f8 !important}body.night-style a[style*="color"][style*="#009900"],body.night-style font[style*="color"][style*="#009900"]{color:#9f9 !important}body.night-style a[style*="color"][style*="#3366ff"],body.night-style font[style*="color"][style*="#3366ff"]{color:#6af !important}body.night-style a[style*="color"][style*="#2b65b7"],body.night-style font[style*="color"][style*="#2b65b7"]{color:#6af !important}body.night-style a[style*="color"][style*="#003399"],body.night-style font[style*="color"][style*="#003399"]{color:#6af !important}body.night-style a[style*="color"][style*="#2B65B7"],body.night-style font[style*="color"][style*="#2B65B7"]{color:#6af !important}body.night-style a[style*="color"][style*="#330066"],body.night-style font[style*="color"][style*="#330066"]{color:#b28cd9 !important}body.night-style a[style*="color"][style*="#8F2A90"],body.night-style font[style*="color"][style*="#8F2A90"]{color:#cf61d1 !important}body.night-style a[style*="background-color"][style*="#FFFFFF"],body.night-style font[style*="background-color"][style*="#FFFFFF"]{background-color:transparent !important}body.night-style a[style*="background-color"][style*="Wheat"],body.night-style font[style*="background-color"][style*="Wheat"]{background-color:transparent !important}body.night-style font[color*="#660000"]{color:#c66 !important}body.night-style font[color*="#8b0000"]{color:#c66 !important}body.night-style font[color*="#ff0000"]{color:#f99 !important}body.night-style font[color*="red"]{color:#f99 !important}body.night-style font[color*="Red"]{color:#f99 !important}body.night-style font[color*="#000080"]{color:#8af !important}body.night-style font[color*="#0000ff"]{color:#8af !important}body.night-style font[color*="#3366ff"]{color:#8af !important}body.night-style font[color*="#003399"]{color:#8af !important}body.night-style font[color*="blue"]{color:#8af !important}body.night-style font[color*="Blue"]{color:#8af !important}body.night-style font[color*="#339933"]{color:#9f9 !important}body.night-style font[color*="#009900"]{color:#9f9 !important}body.night-style font[color*="#008000"]{color:#9f9 !important}body.night-style font[color*="#006400"]{color:#9f9 !important}body.night-style font[color*="green"]{color:#9f9 !important}body.night-style font[color*="Green"]{color:#9f9 !important}body.night-style font[color*="#000000"]{color:#fff !important}body.night-style font[color*="black"]{color:#fff !important}body.night-style font[color*="Black"]{color:#fff !important}body.night-style font[color*="#660099"]{color:#bf8cd9 !important}body.night-style font[color*="#4b0082"]{color:#b54dff !important}body.night-style font[color*="Indigo"]{color:#b54dff !important}body.night-style font[color*="DarkOrchid"]{color:#c57ce9 !important}body.night-style font[color*="Purple"]{color:#ff4dff !important}body.night-style font[color*="#2d76c4"]{color:#5c97d6 !important}body.night-style font[color*="Olive"]{color:#ff3 !important}body.night-style .t_f[style*="background-color"][style*="#FBF2DB"]{background-color:transparent !important}body.night-style .settingPanel{background-color:#2b2b2b;color:#eaeaea}body.night-style .settingPanel textarea{background-color:#3d3d3d;border:none}body.night-style .settingPanel input{border:none;border-width:0px}body.night-style .settingPanel *:first-child{background-color:#2b2b2b}
 `
                 , 'night-style'
             )
@@ -398,7 +467,12 @@
                 // 使用主要CSS
                 window.saltMCBBSCSS.putStyle('', 'main')
                 // 启用夜间模式
-                this.nightStyle(this.readWithDefault<boolean>('isNightStyle', false), false)
+                let isNight = this.readWithDefault<boolean>('isNightStyle', false)
+                if (typeof isNight == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                    if (isNight == 'true') { isNight = true }
+                    else { isNight = false }
+                }
+                this.nightStyle(isNight, false)
                 // 以下部分需要在文档加载完毕后执行
                 this.docReady(() => {
                     // 移动顶部栏到左侧
@@ -421,6 +495,8 @@
                     this.reportRememberOP()
                     // 反水帖功能
                     this.antiWater()
+                    // 图片懒加载
+                    this.lazyLoadImg()
                     // 关闭安全锁
                     autoRunLock = false
                     // 整理配置项
@@ -433,11 +509,6 @@
         /**初始化 */
         init() {
             let obj = this
-            // 初始化消息框
-            let mg = this.messagePanel
-            mg.id = 'messagePanel'
-            mg.className = 'messagePanel'
-            document.body.append(mg)
             // 初始化设置面板
             let sp = this.settingPanel
             sp.id = techprefix + 'settingPanel'
@@ -475,10 +546,14 @@
             this.updateBackground()
             // 水帖审查设置
             let enableAntiWater = this.readWithDefault<boolean>('SaltAntiWater', false)
+            if (typeof enableAntiWater == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                if (enableAntiWater == 'true') { enableAntiWater = true }
+                else { enableAntiWater = false }
+            }
             this.addCheckSetting('水帖检测机制<br><small>只会检测页面中的漏网水帖</small>', enableAntiWater, (ck, ev) => {
                 this.write('SaltAntiWater', ck)
                 this.message('"水帖检测机制"配置项需要刷新生效<br>点击刷新', () => { location.reload() }, 3)
-            }, '水帖检测机制', 421)
+            }, '水帖检测机制', 41)
             if (enableAntiWater) { this.antiWater() }
         }
         /**movePageHead 移动顶栏到页面左侧*/
@@ -507,7 +582,7 @@
             let myaddon: AnchorObj[] = [ // { text: '', url: '', target: '', img:'' }, // _self _blank
                 { text: '签到', url: 'plugin.php?id=dc_signin', img: 'https://patchwiki.biligame.com/images/mc/3/3f/23qf12ycegf4vgfbj7gehffrur6snkv.png' },
                 { text: '任务', url: 'home.php?mod=task', img: 'https://patchwiki.biligame.com/images/mc/9/98/kbezikk5l83s2l2ewht1mhr8fltn0dv.png' },
-                { text: '消息', url: 'home.php?mod=space&do=pm', class: 'saltmessage', img: noticimgurl[0] },
+                { text: '消息', url: 'home.php?mod=space&do=notice&view=mypost', class: 'saltmessage', img: noticimgurl[0] },
                 // { text: '粉丝', url: 'home.php?mod=follow&do=follower', target: '_self' },
                 { text: '好友', url: 'home.php?mod=space&do=friend', img: 'https://www.mcbbs.net/template/mcbbs/image/friends.png' },
                 { text: '勋章', url: 'home.php?mod=medal', img: 'https://patchwiki.biligame.com/images/mc/2/26/85hl535hwws6snk4dt430lh3k7nyknr.png' },
@@ -788,21 +863,6 @@
             this.assert(autoRunLock, '不在页面初始运行状态')
             let obj = this
             let enable = this.readWithDefault('saltMedalFunction', true)
-            // 添加展开/关闭按钮
-            this.saltQuery('p.md_ctrl', (i, el) => {
-                if (!(el instanceof HTMLElement)) { return }
-                let img = el.querySelectorAll('a img'); if (img.length < 1) { return }
-                // 通过a确定实际高度
-                let a = el.querySelector('a'); if (!a) { return }
-                // 点击后展开
-                el.style.setProperty('--expandHeight', (a.offsetHeight + 96) + 'px')
-                let div = document.createElement('div')
-                div.addClass('saltExpandHandler')
-                div.addEventListener('click', () => {
-                    el.toggleClass('salt-expand')
-                })
-                el.appendChild(div)
-            })
             // 添加设置项
             this.addCheckSetting('启用勋章栏功能<br><small> 特别的勋章样式(会被MCBBS Extender覆盖)</small>', enable, (ck, ev) => {
                 this.write('saltMedalFunction', ck)
@@ -813,28 +873,38 @@
                 } else {
                     window.saltMCBBSCSS.delStyle('medal')
                 }
-            }, '启用勋章栏功能', 300)
-            this.addInputSetting('勋章栏高度<br><small> 行高64像素,可以输入小数(会被MCBBS Extender覆盖)</small>', this.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
+            }, '启用勋章栏功能', 50)
+            this.addInputSetting('勋章栏高度<br><small> 64像素/行, 可以输入小数(会被MCBBS Extender覆盖)</small>', this.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
                 let line = parseFloat(el.value)
                 if (isNaN(line)) { return }
                 if (line < 0.5) { line = 0.5 }
                 if (line > 25) { line = 25 }
                 this.write('medalLine', line)
                 if (enable) { sub() } else {
-                    this.message('使用勋章栏高度控制功能前，需要先启用勋章栏功能', undefined, 3)
+                    this.message('使用勋章栏高度控制功能前，需要先启用勋章栏功能', (f) => { f() }, 3)
                 }
-            }, '勋章栏高度', 301)
+            }, '勋章栏高度', 51)
             // 是否启用
             if (enable) {
                 window.saltMCBBSCSS.putStyle('', 'medal')
-                setTimeout(sub, 500)
+                sub()
             }
+            // 监听页面出现新的勋章栏
+            this.saltObserver('postlist', () => {
+                if (document.querySelector('p.md_ctrl:not([saltMedalFunction-checked])')) {
+                    sub()
+                }
+            })
             async function sub() { // 因为只涉及部分元素的class操作，所以放在异步
                 let line = obj.readWithDefault<number>('medalLine', 2.5)
                 let style = 'p.md_ctrl,p.md_ctrl:hover{--maxHeight:calc(64px * ' + line + ');}'
                 window.saltMCBBSCSS.putStyle(style, 'medalLine')
+                addBtn()
                 heightCheck()
-                setTimeout(heightCheck, 500)
+                setTimeout(() => {
+                    addBtn()
+                    heightCheck()
+                }, 500)
                 function heightCheck() {
                     obj.saltQuery('p.md_ctrl', (i, el) => {
                         if (!(el instanceof HTMLElement)) { return }
@@ -846,34 +916,69 @@
                         }
                     })
                 }
+                function addBtn() {// 添加展开/关闭按钮
+                    obj.saltQuery('p.md_ctrl:not([saltMedalFunction-checked])', (i, el) => {
+                        if (!(el instanceof HTMLElement)) { return }
+                        el.setAttribute('saltMedalFunction-checked', '')
+                        let img = el.querySelectorAll('a img'); if (img.length < 1) { return }
+                        // 通过a确定实际高度
+                        let a = el.querySelector('a'); if (!a) { return }
+                        // 点击后展开
+                        el.style.setProperty('--expandHeight', (a.offsetHeight + 96) + 'px')
+                        let div = document.createElement('div')
+                        div.addClass('saltExpandHandler')
+                        div.addEventListener('click', () => {
+                            el.toggleClass('salt-expand')
+                        })
+                        el.appendChild(div)
+                    })
+                }
             }
         }
         /**反嗅探 */
         antiSniff() {
             let enable = this.readWithDefault<boolean>('saltAntiSniff', true)
+            if (typeof enable == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                if (enable == 'true') { enable = true }
+                else { enable = false }
+            }
+            console.log(typeof enable);
             let obj = this
             this.addCheckSetting('反嗅探措施<br><small>屏蔽一些坛友的部分探针</small>', enable, (ck, ev) => {
                 this.write('saltAntiSniff', ck)
                 if (ck)
                     sub()
-            }, '反嗅探措施', 411)
+            }, '反嗅探措施', 31)
             if (enable)
                 sub()
-            function sub() {
-                obj.saltQuery('img[src]', (i, el) => {
-                    if (el instanceof HTMLImageElement && el.hasAttribute('src')) {
-                        if (el.src.indexOf('home.php?') != -1 &&
-                            !/\&additional\=removevlog(\&|$)/.test(el.src)) {
-                            obj.message('侦测到<img>探针: <br>' + el.src + '<br>类型: Discuz!访客探针', (f) => { f() })
-                            console.log(el)
-                            el.src += '&additional=removevlog'
-                            // obj.log('已处理<img>探针')
+            async function sub() {
+                obj.saltQuery('img:not([saltAntiSniff-check-done])', (i, el) => {
+                    if (el instanceof HTMLImageElement) {
+                        el.setAttribute('saltAntiSniff-check-done', '') // 标记为已处理
+                        if (el.hasAttribute('src')) {
+                            if (el.src.indexOf('home.php?') != -1 &&
+                                !/\&additional\=removevlog(\&|$)/.test(el.src)) {
+                                obj.message('侦测到<img>探针: <br>' + el.src + '<br>类型: Discuz!访客探针', (f) => { f() })
+                                console.log(el)
+                                el.src += '&additional=removevlog'
+                                // obj.log('已处理<img>探针')
+                            }
+                        }
+                        if (el.hasAttribute('file')) {
+                            if ((el.getAttribute('file') || '').indexOf('home.php?') != -1 &&
+                                !/\&additional\=removevlog(\&|$)/.test((el.getAttribute('file') || ''))) {
+                                obj.message('侦测到<img>探针: <br>' + (el.getAttribute('file') || '') + '<br>类型: Discuz!访客探针', (f) => { f() })
+                                console.log(el)
+                                el.setAttribute('file', (el.getAttribute('file') || '') + '&additional=removevlog')
+                                // obj.log('已处理<img>探针')
+                            }
                         }
                     }
                 })
                 // 鼠标滑过显示个人信息框的那种锚点
-                obj.saltQuery('a.notabs', (i, el) => {
+                obj.saltQuery('a.notabs:not([saltAntiSniff-check-done])', (i, el) => {
                     if (el instanceof HTMLAnchorElement && el.hasAttribute('href')) {
+                        el.setAttribute('saltAntiSniff-check-done', '') // 标记为已处理
                         el.addEventListener('mouseout', () => {
                             obj.log('已处理访客探针: ' + el.href)
                             fetch(el.href + '&view=admin&additional=removevlog')
@@ -911,8 +1016,7 @@
                         if (len < 0) { len = 0 }
                         if (len > 1048576) { len = 1048576 }
                         obj.write(numSaveKey, len)
-                        lengthControl()
-                    }, '举报记录功能', 404)
+                    }, '举报记录功能', 61)
                 // 监听用户点击举报
                 let obs = obj.saltObserver('append_parent', () => {
                     // 获取举报按钮
@@ -953,8 +1057,6 @@
                 }
                 // 获取PID列表
                 let pidList = obj.readWithDefault<number[]>(saveKey, [])
-                // 压入列表并控制长度
-                cut(pidList, obj.readWithDefault<number>(numSaveKey, 1024) - 1)
                 pidList.push(pid)
                 // 记录
                 obj.write(saveKey, pidList)
@@ -988,7 +1090,7 @@
             }
             /**给已举报的帖子添加标记 */
             async function check() {
-                let pidList = obj.readWithDefault<number[]>(saveKey, [])
+                let pidList = cut(obj.readWithDefault<number[]>(saveKey, []), obj.readWithDefault<number>(numSaveKey, 1024))
                 // 检查是不是有帖子被错误打上了标记
                 for (let div of Array.from(document.querySelectorAll('#postlist > div.reported'))) {
                     if (!(div instanceof HTMLElement)) { continue }
@@ -1014,14 +1116,64 @@
                 newlist = newlist.slice(diff)
                 return newlist
             }
-            /**PID列表长度控制 */
-            function lengthControl() {
-                // 获取PID列表与设置的长度
-                let pidList = obj.readWithDefault<number[]>(saveKey, []), maxLen = obj.readWithDefault<number>(numSaveKey, 1024)
-                if (pidList.length > maxLen) {
-                    pidList = cut(pidList, maxLen)
-                    obj.write(saveKey, pidList)
-                }
+        }
+        lazyLoadImg() {
+            let enable = this.readWithDefault<boolean>('lazyLoadImgEnable', false), obj = this
+            if (typeof enable == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                if (enable == 'true') { enable = true }
+                else { enable = false }
+            }
+            this.addCheckSetting('另一种图片懒加载<br><small>一种更友好的图片懒加载方式</small>', enable, (ck, ev) => {
+                obj.write('lazyLoadImgEnable', ck)
+                obj.message('图片懒加载模式切换需要刷新生效', (f) => { f() }, 3)
+            }, '另一种图片懒加载', 45)
+            // 检查有没有启用懒加载
+            if (!enable) { return }
+            // 获取页面上尚未被discuz懒加载的图片
+            let imgs = [
+                ...Array.from(document.querySelectorAll('.t_fsz .t_f img:not([src]):not([lazyloaded])')),
+                ...Array.from(document.querySelectorAll('.t_fsz .t_f img[src*="static/image/common/none.gif"]:not([lazyloaded])')),
+            ]
+            let obs = new IntersectionObserver((entries) => {
+                let img = entries[0].target
+                obs.unobserve(img)
+                img.setAttribute('src', img.getAttribute('file') || '')
+                obj.log('加载图片: ' + (img.getAttribute('file') || ''))
+                // 控制图片大小
+                setTimeout(() => {
+                    if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) }
+                }, 500)
+                // 不放心, 所以1.5s后再处理一次
+                setTimeout(() => {
+                    if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) }
+                }, 1500)
+            });
+            for (let img of imgs) {
+                if (!(img instanceof HTMLImageElement)) { continue }
+                img.setAttribute('lazyloaded', 'true') // 标记为已开始加载, 骗过Discuz的懒加载
+                img.src = '' // src为空
+                img.alt = '图片加载中...' // 占位文字
+                // 控制图片大小
+                img.addEventListener('load', () => {
+                    img.setAttribute('loaded', '')
+                    if (img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) }
+                })
+                // 失败提示
+                img.addEventListener('error', () => {
+                    img.setAttribute('alt', '加载失败, 点击重试或等待自动重载')
+                    img.setAttribute('waitRetry', '') // 标记为等待重新加载
+                })
+                // 点击重试
+                img.addEventListener('click', () => {
+                    if (!(img.hasAttribute('loaded')) && img.hasAttribute('waitRetry')) {
+                        img.setAttribute('alt', '图片加载中...')
+                        img.removeAttribute('waitRetry') // 去除等待重新加载的标记
+                        img.setAttribute('src', img.getAttribute('file') || img.getAttribute('src') || '')
+                    }
+                })
+                // 监听
+                obs.observe(img)
+                obj.log('劫持图片: ' + (img.getAttribute('file') || ''))
             }
         }
         /**
@@ -1094,7 +1246,7 @@
             this.addCheckSetting('层主信息栏跟随页面<br><small>帖子页面左侧层主信息跟随页面滚动</small>', this.readWithDefault('userInfoSticky', true), (ck, ev) => {
                 this.write('userInfoSticky', ck)
                 userInfoSticky(ck)
-            }, '左侧用户信息跟随', 402)
+            }, '左侧用户信息跟随', 22)
             function userInfoSticky(b: boolean) {
                 if (b) {
                     window.saltMCBBSCSS.putStyle('', 'userInfoSticky')
@@ -1125,7 +1277,7 @@
             this.addCheckSetting('回到顶部按钮动画<br><small>兼容MCBBS Extender</small>', this.readWithDefault('scrollTopAnime', true), (ck, ev) => {
                 this.write('scrollTopAnime', ck)
                 scrollTopAnime(ck)
-            }, '回到顶部按钮动画', 403)
+            }, '回到顶部按钮动画', 23)
             function scrollTopAnime(b: boolean) {
                 if (b) {
                     window.saltMCBBSCSS.putStyle('', 'scrollTopAnime')
@@ -1142,7 +1294,7 @@
             this.addCheckSetting('冲突修复功能<br><small>尝试修复与其他脚本的冲突</small>', enabled, (ck, ev) => {
                 this.write('saltMCBBSconfiectFix', ck)
                 sub(ck)
-            }, '冲突修复功能', 401)
+            }, '冲突修复功能', 21)
             sub(enabled)
             function sub(enabled: boolean) {
                 if (!enabled) { return }
@@ -1410,50 +1562,12 @@
         /**转换夜间模式 */
         toggleNightStyle() {
             let isnight: boolean = this.readWithDefault<boolean>('isNightStyle', false)
+            let isNight = this.readWithDefault<boolean>('isNightStyle', false)
+            if (typeof isNight == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                if (isNight == 'true') { isNight = true }
+                else { isNight = false }
+            }
             this.nightStyle(!isnight, true)
-        }
-        /**
-         * 在屏幕右下角输出提示信息
-         * @param info 要显示的信息, HTML
-         * @param callback 点击后的回调函数, 如果用户点击关闭则不会触发, 回调函数可以接受一个销毁这个消息的函数作为参数
-         * @param type 类型 0-默认 1-信息(其实就是默认) 2-成功 3-警告 4-出错 默认为0
-         */
-        message(html: string, callback?: (() => void) | ((removeDiv: () => void) => void), type: number = 0) {
-            let div = document.createElement('div')
-            div.innerHTML = html
-            div.className = switchType(type)
-            div.addEventListener('click', () => {
-                if (callback)
-                    callback(removeDiv)
-            })
-            // 添加关闭按钮
-            let close = document.createElement('div')
-            close.className = 'close-button'
-            close.addEventListener('click', function (this, ev) {
-                ev.stopPropagation()
-                removeDiv()
-            })
-            div.appendChild(close)
-            // 输出信息
-            this.messagePanel.appendChild(div)
-            function removeDiv() {
-                div.remove()
-            }
-            /**根据type返回类名 */
-            function switchType(type: number) {
-                switch (type) {
-                    case 1:
-                        return 'info'
-                    case 2:
-                        return 'success'
-                    case 3:
-                        return 'warn'
-                    case 4:
-                        return 'error'
-                    default:
-                        return 'normal'
-                }
-            }
         }
     }
     /**CSS相关操作的类*/
