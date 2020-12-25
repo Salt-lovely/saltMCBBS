@@ -91,31 +91,11 @@ ul.xl.xl2.o.cl .pmwarn {
         opacity: 0.5;
         pointer-events: none;
     }
-    &.warn::after {
+    &.warned::after {
         content: "已制裁";
         color: #2c4;
     }
 }
-// 回到顶部按钮
-// #scrolltop {
-//     visibility: visible !important;
-//     overflow: hidden;
-//     width: 100px;
-//     margin-left: -1px;
-//     opacity: 1;
-//     transition: 0.3s ease;
-//     &:not([style]) {
-//         display: none;
-//     }
-//     &[style*="hidden"] {
-//         // 移动到顶部时
-//         opacity: 0 !important;
-//         pointer-events: none;
-//         .scrolltopa {
-//             margin-left: -40px;
-//         }
-//     }
-// }
 // 代码块
 .pl .blockcode {
     position: relative;
@@ -176,6 +156,11 @@ ul.xl.xl2.o.cl .pmwarn {
         box-sizing: border-box;
         margin-bottom: 8px;
         float: left;
+        &:first-child {
+            background-color: #fbf2db;
+            position: sticky;
+            top: 0;
+        }
     }
     .flb {
         span > a {
@@ -227,6 +212,7 @@ ul.xl.xl2.o.cl .pmwarn {
     bottom: 0;
     right: 0;
     font-size: 1rem;
+    color: #000000;
     box-sizing: content-box;
     > div {
         width: 100%;

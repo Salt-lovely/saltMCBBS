@@ -978,5 +978,8 @@ body.night-style {
             border: none;
             border-width: 0px;
         }
+        *:first-child {
+            background-color: $bodybg;
+        }
     }
 }
