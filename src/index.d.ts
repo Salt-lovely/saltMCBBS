@@ -9,8 +9,10 @@ interface Window {
     discuz_uid: string,
     /**切换编辑器模式( 0纯文本 1所见即所得 )仅在编辑器页面启用*/
     switchEditor?: (type: 0 | 1) => void,
-    /**帖子的tid，仅在浏览帖子的页面存在 */
+    /**当前帖子的tid */
     tid?: string,
+    /**当前版块的fid */
+    uid?: string,
     /**切换页面主题 冬季、默认、下界 */
     extstyle: (
         styleType: './template/mcbbs/style/winter' | './template/mcbbs/style/default' | './template/mcbbs/style/nether'
@@ -20,6 +22,8 @@ interface Window {
      * @param obj 传入一个img
      */
     thumbImg: (obj: Element, method?: any) => void,
+    /**BBS自带的懒加载 */
+    lazyload?: { imgs: HTMLImageElement[] },
 }
 interface HTMLElement {
     /**
@@ -47,4 +51,20 @@ interface HTMLElement {
      * @returns top: 顶部距离; left: 左边距离
      */
     offset(): { top: number, left: number },
+    /**将元素的某个属性以数值形式返回 */
+    numAttribute(key: string): numAttrReturn,
+}
+interface numAttrReturn {
+    /**值, 整数 */
+    value: value,
+    /**
+     * 将这个属性值设置为
+     * @param num 数值
+     */
+    set: (num: number) => numAttrReturn,
+    /**
+     * 加减这个属性值
+     * @param num 数值
+     */
+    add: (num: number) => numAttrReturn
 }

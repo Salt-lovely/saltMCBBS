@@ -6,7 +6,7 @@
 // @author       salt
 // @match        https://*.mcbbs.net/*
 // @grant        none
-// @version      0.1.6pre4
+// @version      0.1.6pre5
 // @license      CC BY-NC-SA 4.0
 // @run-at       document-body
 // ==/UserScript==
@@ -16,8 +16,10 @@
 冲突修复功能 21
 左侧用户信息跟随 22
 回到顶部按钮动画 23
+帖子分类高亮 25
 
 反嗅探措施 31
+处理探针后是否通知 32
 水帖检测机制 41
 
 另一种图片懒加载 45
@@ -434,6 +436,9 @@
     class saltMCBBS extends saltMCBBSOriginClass implements saltMCBBS {
         settingPanel: HTMLElement = document.createElement('div') // 配置框
         links: HTMLElement = document.createElement('div') // 左侧栏底部的一大堆链接
+        // ==========================================================
+        // ========== 以下直到另一个分割线之前, 都是内部代码 ==========
+        // ==========================================================
         constructor(autorun = false) {
             super()
             window.saltMCBBSCSS.setStyle( // 主要更改
@@ -442,7 +447,7 @@
                 , 'main'
             )
             window.saltMCBBSCSS.setStyle( // movePageHead 所需CSS
-                `body.night-style #saltNewPageHead{--saltNewPageHeadbgcolor-l-t:rgba(68,68,68,0.5);--saltNewPageHeadbgcolor-l:#444;--saltNewPageHeadbgcolor:#363636}body.night-style #saltNewPageHead,body.night-style #saltNewPageHead a{color:#f0f0f0}body.night-style #saltNewPageHead a:hover{color:#6cf}body.night-style #saltNewPageHead .y_search,body.night-style #saltNewPageHead #scbar_type_menu{background-image:none;background-color:#444}body.night-style #saltNewPageHead .y_search{outline:none}body.night-style #saltNewPageHead .y_search .y_search_btn button{box-shadow:none;filter:invert(0.8) hue-rotate(170deg)}body.night-style #saltNewPageHead .y_search .y_search_inp{background-color:#555;background-image:none}body.night-style #saltNewPageHead .y_search .y_search_inp input{background-color:#666}body.night-style #saltNewPageHead .y_search .scbar_type_td{background-color:#555;background-image:none}#toptb{display:none}#saltNewPageHead{position:fixed;width:310px;height:100vh;top:0;left:-340px;padding:10px 30px;background-color:var(--saltNewPageHeadbgcolor-l-t, #fdf6e699);color:#111;transition:0.4s ease;transition-delay:0.4s;overflow-x:hidden;opacity:0.35;z-index:999999}#saltNewPageHead:hover{left:0;background-color:var(--saltNewPageHeadbgcolor-l, #fdf6e6);opacity:1;transition:0.4s ease}#saltNewPageHead::after{content:"saltMCBBS脚本，开发语言: Typescript + SCSS";position:absolute;top:90vh;right:0;color:var(--saltNewPageHeadbgcolor, #fbf2dc);z-index:-1}#saltNewPageHead .y_search,#saltNewPageHead .userinfo,#saltNewPageHead .links,#saltNewPageHead .addons{width:100%;margin:0;margin-bottom:0.75rem;overflow:auto;border-bottom:#ccc;font-size:1rem}#saltNewPageHead .y_search{background-color:transparent;outline:1px solid #ccc;overflow-y:hidden}#saltNewPageHead .y_search,#saltNewPageHead .y_search table{width:100%}#saltNewPageHead .y_search .y_search_btn{opacity:0.5}#saltNewPageHead .y_search .y_search_btn:hover{opacity:0.9}#saltNewPageHead .y_search .y_search_inp{width:calc(100% - 42px);background-image:none}#saltNewPageHead .y_search .y_search_inp input{width:calc(100% - 10px)}#saltNewPageHead .y_search .scbar_type_td{width:48px;background-image:none}#saltNewPageHead #scbar_type_menu{top:322px !important}#saltNewPageHead .userinfo{overflow-x:hidden}#saltNewPageHead .userinfo>div,#saltNewPageHead .userinfo>span{margin-bottom:0.5rem}#saltNewPageHead .userinfo .username{width:100%;height:100px;font-weight:bold;position:relative}#saltNewPageHead .userinfo .username a{top:2px;position:absolute;font-size:1.75rem}#saltNewPageHead .userinfo .username div{top:calc(8px + 2rem);width:10.2em;position:absolute;color:#999}#saltNewPageHead .userinfo .username img{right:7px;top:4px;position:absolute;border-radius:10%;-webkit-filter:drop-shadow(0 3px 4px #222);filter:drop-shadow(0 3px 4px #222)}#saltNewPageHead .userinfo .thread{width:100%;display:flex;font-size:0.875rem;text-align:center}#saltNewPageHead .userinfo .thread span,#saltNewPageHead .userinfo .thread a{width:100%;display:inline-block}#saltNewPageHead .userinfo .progress{width:95%;height:0.75rem;margin-left:auto;margin-right:auto;outline:1px solid #ccc;background-color:var(--saltNewPageHeadbgcolor, #fbf2dc);position:relative;display:block;transition:0.3s ease}#saltNewPageHead .userinfo .progress>span{height:100%;background-color:var(--progresscolor, #6cf);display:block}#saltNewPageHead .userinfo .progress::after{content:attr(tooltip);display:block;width:140%;left:-20%;top:0;position:absolute;font-size:0.7rem;color:transparent;text-align:center;transition:0.3s ease}#saltNewPageHead .userinfo .progress:hover{transform:translateY(0.5rem)}#saltNewPageHead .userinfo .progress:hover::after{top:-1rem;color:inherit}#saltNewPageHead .userinfo .credit{position:relative;font-size:0.875rem}#saltNewPageHead .userinfo .credit span{width:calc(50% - 4px);display:inline-block;height:1.2rem;line-height:1.2rem;padding-left:1rem;position:relative;box-sizing:border-box}#saltNewPageHead .userinfo .credit span img{left:1px;top:2px;position:absolute}#saltNewPageHead .links a{width:100%;height:1.75rem;line-height:1.75rem;display:inline-block;background-color:#fff0;text-align:center;font-size:1rem;border-bottom:1px solid #eee}#saltNewPageHead .links a:hover{background-color:var(--saltNewPageHeadbgcolor, #fbf2dc)}#saltNewPageHead .links a:last-child{border-bottom:none}#saltNewPageHead .links .showmenu{padding-right:0;background-image:none}#saltNewPageHead .addons a{width:calc(50% - 4px);display:inline-block;height:1.6rem;line-height:1.6rem;text-align:center;font-size:1rem;background-color:#fff0;border:1px solid transparent}#saltNewPageHead .addons a:hover{background-color:var(--saltNewPageHeadbgcolor, #fbf2dc);border-color:#efefef}#saltNewPageHead .addons a img{display:inline-block;vertical-align:middle;max-width:1.5rem;max-height:1.5rem;margin-right:0.5rem}
+                `body.night-style #saltNewPageHead{--saltNewPageHeadbgcolor-l-t:rgba(68,68,68,0.5);--saltNewPageHeadbgcolor-l:#444;--saltNewPageHeadbgcolor:#363636}body.night-style #saltNewPageHead,body.night-style #saltNewPageHead a{color:#f0f0f0}body.night-style #saltNewPageHead a:hover{color:#6cf}body.night-style #saltNewPageHead .y_search,body.night-style #saltNewPageHead #scbar_type_menu{background-image:none;background-color:#444}body.night-style #saltNewPageHead .y_search{outline:none}body.night-style #saltNewPageHead .y_search .y_search_btn button{box-shadow:none;filter:invert(0.8) hue-rotate(170deg)}body.night-style #saltNewPageHead .y_search .y_search_inp{background-color:#555;background-image:none}body.night-style #saltNewPageHead .y_search .y_search_inp input{background-color:#666}body.night-style #saltNewPageHead .y_search .scbar_type_td{background-color:#555;background-image:none}#toptb{display:none}#saltNewPageHead{position:fixed;width:310px;height:100vh;top:0;left:-340px;padding:10px 30px;background-color:var(--saltNewPageHeadbgcolor-l-t, #fdf6e699);color:#111;transition:0.4s ease;transition-delay:0.4s;overflow-x:hidden;opacity:0.35;z-index:999999}#saltNewPageHead:hover{left:0;background-color:var(--saltNewPageHeadbgcolor-l, #fdf6e6);opacity:1;transition:0.4s ease}#saltNewPageHead::after{content:"saltMCBBS脚本，开发语言: Typescript + SCSS";position:absolute;top:90vh;right:0;color:var(--saltNewPageHeadbgcolor, #fbf2dc);z-index:-1}#saltNewPageHead .y_search,#saltNewPageHead .userinfo,#saltNewPageHead .links,#saltNewPageHead .addons{width:100%;margin:0;margin-bottom:0.75rem;overflow:auto;border-bottom:#ccc;font-size:1rem}#saltNewPageHead .y_search{background-color:transparent;outline:1px solid #ccc;overflow-y:hidden}#saltNewPageHead .y_search,#saltNewPageHead .y_search table{width:100%}#saltNewPageHead .y_search .y_search_btn{opacity:0.5}#saltNewPageHead .y_search .y_search_btn:hover{opacity:0.9}#saltNewPageHead .y_search .y_search_inp{width:calc(100% - 42px);background-image:none}#saltNewPageHead .y_search .y_search_inp input{width:calc(100% - 10px)}#saltNewPageHead .y_search .scbar_type_td{width:48px;background-image:none}#saltNewPageHead #scbar_type_menu{top:var(--top, 322px) !important}#saltNewPageHead .userinfo{overflow-x:hidden}#saltNewPageHead .userinfo>div,#saltNewPageHead .userinfo>span{margin-bottom:0.5rem}#saltNewPageHead .userinfo .username{width:100%;height:100px;font-weight:bold;position:relative}#saltNewPageHead .userinfo .username a{top:2px;position:absolute;font-size:1.75rem}#saltNewPageHead .userinfo .username div{top:calc(8px + 2rem);width:10.2em;position:absolute;color:#999}#saltNewPageHead .userinfo .username img{right:7px;top:4px;position:absolute;border-radius:10%;-webkit-filter:drop-shadow(0 3px 4px #222);filter:drop-shadow(0 3px 4px #222)}#saltNewPageHead .userinfo .thread{width:100%;display:flex;font-size:0.875rem;text-align:center}#saltNewPageHead .userinfo .thread span,#saltNewPageHead .userinfo .thread a{width:100%;display:inline-block}#saltNewPageHead .userinfo .progress{width:95%;height:0.75rem;margin-left:auto;margin-right:auto;outline:1px solid #ccc;background-color:var(--saltNewPageHeadbgcolor, #fbf2dc);position:relative;display:block;transition:0.3s ease}#saltNewPageHead .userinfo .progress>span{height:100%;background-color:var(--progresscolor, #6cf);display:block}#saltNewPageHead .userinfo .progress::after{content:attr(tooltip);display:block;width:140%;left:-20%;top:0;position:absolute;font-size:0.7rem;color:transparent;text-align:center;transition:0.3s ease}#saltNewPageHead .userinfo .progress:hover{transform:translateY(0.5rem)}#saltNewPageHead .userinfo .progress:hover::after{top:-1rem;color:inherit}#saltNewPageHead .userinfo .credit{position:relative;font-size:0.875rem}#saltNewPageHead .userinfo .credit span{width:calc(50% - 4px);display:inline-block;height:1.2rem;line-height:1.2rem;padding-left:1rem;position:relative;box-sizing:border-box}#saltNewPageHead .userinfo .credit span img{left:1px;top:2px;position:absolute}#saltNewPageHead .links a{width:100%;height:1.75rem;line-height:1.75rem;display:inline-block;background-color:#fff0;text-align:center;font-size:1rem;border-bottom:1px solid #eee}#saltNewPageHead .links a:hover{background-color:var(--saltNewPageHeadbgcolor, #fbf2dc)}#saltNewPageHead .links a:last-child{border-bottom:none}#saltNewPageHead .links .showmenu{padding-right:0;background-image:none}#saltNewPageHead .addons a{width:calc(50% - 4px);display:inline-block;height:1.6rem;line-height:1.6rem;text-align:center;font-size:1rem;background-color:#fff0;border:1px solid transparent}#saltNewPageHead .addons a:hover{background-color:var(--saltNewPageHeadbgcolor, #fbf2dc);border-color:#efefef}#saltNewPageHead .addons a img{display:inline-block;vertical-align:middle;max-width:1.5rem;max-height:1.5rem;margin-right:0.5rem}
 `
                 , 'pagehead'
             )
@@ -456,6 +461,9 @@
  0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff,
  0 0 3px #fff, 0 0 3px #fff !important}body .tip .tip_c h4{border-bottom:1px solid #fff}body div[id*="_menu"]:before{background-repeat:no-repeat}body #md_101_menu:before,body #medal_101_menu:before{background:url(static/image/common/m_a2.png)}body #md_102_menu:before,body #medal_102_menu:before{background:url(static/image/common/m_a3.png)}body #md_103_menu:before,body #medal_103_menu:before{background:url(static/image/common/m_a6.png)}body #md_11_menu:before,body #medal_11_menu:before{background:url(static/image/common/m_d1.png)}body #md_12_menu:before,body #medal_12_menu:before{background:url(static/image/common/m_d2.png)}body #md_104_menu:before,body #medal_104_menu:before{background:url(static/image/common/m_b1.png)}body #md_105_menu:before,body #medal_105_menu:before{background:url(static/image/common/m_b3.png)}body #md_106_menu:before,body #medal_106_menu:before{background:url(static/image/common/m_b4.png)}body #md_234_menu:before,body #medal_234_menu:before{background:url(static/image/common/m_b5.gif)}body #md_107_menu:before,body #medal_107_menu:before{background:url(static/image/common/m_rc1.png)}body #md_108_menu:before,body #medal_108_menu:before{background:url(static/image/common/m_rc3.png)}body #md_109_menu:before,body #medal_109_menu:before{background:url(static/image/common/m_rc5.png)}body #md_250_menu:before,body #medal_250_menu:before{background:url(static/image/common/m_c_10years.png)}body #md_76_menu:before,body #medal_76_menu:before{background:url(static/image/common/m_g5.png)}body #md_58_menu:before,body #medal_58_menu:before{background:url(static/image/common/m_g3.png)}body #md_59_menu:before,body #medal_59_menu:before{background:url(static/image/common/m_g4.png)}body #md_21_menu:before,body #medal_21_menu:before{background:url(static/image/common/m_noob.png)}body #md_9_menu:before,body #medal_9_menu:before{background:url(static/image/common/m_c2.png)}body #md_2_menu:before,body #medal_2_menu:before{background:url(static/image/common/m_c3.png)}body #md_38_menu:before,body #medal_38_menu:before{background:url(static/image/common/m_c1.png)}body #md_112_menu:before,body #medal_112_menu:before{background:url(static/image/common/m_c4.png)}body #md_251_menu:before,body #medal_251_menu:before{background:url(static/image/common/m_c_piglin.png)}body #md_155_menu:before,body #medal_155_menu:before{background:url(static/image/common/m_cape_mc2011.png)}body #md_156_menu:before,body #medal_156_menu:before{background:url(static/image/common/m_cape_mc2012.png)}body #md_157_menu:before,body #medal_157_menu:before{background:url(static/image/common/m_cape_mc2013.png)}body #md_158_menu:before,body #medal_158_menu:before{background:url(static/image/common/m_cape_mc2015.png)}body #md_159_menu:before,body #medal_159_menu:before{background:url(static/image/common/m_cape_Tr.png)}body #md_180_menu:before,body #medal_180_menu:before{background:url(static/image/common/m_cape_cobalt.png)}body #md_181_menu:before,body #medal_181_menu:before{background:url(static/image/common/m_cape_maper.png)}body #md_196_menu:before,body #medal_196_menu:before{background:url(static/image/common/m_cape_mc2016.png)}body #md_247_menu:before,body #medal_247_menu:before{background:url(static/image/common/m_cape_Mojira.png)}body #md_45_menu:before,body #medal_45_menu:before{background:url(static/image/common/m_s1.png)}body #md_127_menu:before,body #medal_127_menu:before{background:url(static/image/common/m_s2.png)}body #md_78_menu:before,body #medal_78_menu:before{background:url(static/image/common/m_p_pc.png)}body #md_113_menu:before,body #medal_113_menu:before{background:url(static/image/common/m_p_and.png)}body #md_114_menu:before,body #medal_114_menu:before{background:url(static/image/common/m_p_ios.png)}body #md_141_menu:before,body #medal_141_menu:before{background:url(static/image/common/m_p_wp.png)}body #md_160_menu:before,body #medal_160_menu:before{background:url(static/image/common/m_p_w10.png)}body #md_115_menu:before,body #medal_115_menu:before{background:url(static/image/common/m_p_box360.png)}body #md_116_menu:before,body #medal_116_menu:before{background:url(static/image/common/m_p_boxone.png)}body #md_117_menu:before,body #medal_117_menu:before{background:url(static/image/common/m_p_ps3.png)}body #md_118_menu:before,body #medal_118_menu:before{background:url(static/image/common/m_p_ps4.png)}body #md_119_menu:before,body #medal_119_menu:before{background:url(static/image/common/m_p_psv.png)}body #md_170_menu:before,body #medal_170_menu:before{background:url(static/image/common/m_p_wiiu.png)}body #md_209_menu:before,body #medal_209_menu:before{background:url(static/image/common/m_p_switch.png)}body #md_227_menu:before,body #medal_227_menu:before{background:url(static/image/common/m_p_3ds.png)}body #md_56_menu:before,body #medal_56_menu:before{background:url(static/image/common/m_g1.png)}body #md_57_menu:before,body #medal_57_menu:before{background:url(static/image/common/m_g2.png)}body #md_61_menu:before,body #medal_61_menu:before{background:url(static/image/common/m_p1.png)}body #md_62_menu:before,body #medal_62_menu:before{background:url(static/image/common/m_p2.png)}body #md_63_menu:before,body #medal_63_menu:before{background:url(static/image/common/m_p3.png)}body #md_46_menu:before,body #medal_46_menu:before{background:url(static/image/common/m_p4.png)}body #md_64_menu:before,body #medal_64_menu:before{background:url(static/image/common/m_p5.png)}body #md_65_menu:before,body #medal_65_menu:before{background:url(static/image/common/m_p6.png)}body #md_66_menu:before,body #medal_66_menu:before{background:url(static/image/common/m_p7.png)}body #md_75_menu:before,body #medal_75_menu:before{background:url(static/image/common/m_p8.png)}body #md_85_menu:before,body #medal_85_menu:before{background:url(static/image/common/m_p9.png)}body #md_86_menu:before,body #medal_86_menu:before{background:url(static/image/common/m_p10.png)}body #md_100_menu:before,body #medal_100_menu:before{background:url(static/image/common/m_p11.png)}body #md_175_menu:before,body #medal_175_menu:before{background:url(static/image/common/m_p12.png)}body #md_182_menu:before,body #medal_182_menu:before{background:url(static/image/common/m_p13.png)}body #md_91_menu:before,body #medal_91_menu:before{background:url(static/image/common/m_h1.png)}body #md_93_menu:before,body #medal_93_menu:before{background:url(static/image/common/m_h2.png)}body #md_92_menu:before,body #medal_92_menu:before{background:url(static/image/common/m_h3.png)}body #md_94_menu:before,body #medal_94_menu:before{background:url(static/image/common/m_h4.png)}body #md_95_menu:before,body #medal_95_menu:before{background:url(static/image/common/m_h5.png)}body #md_96_menu:before,body #medal_96_menu:before{background:url(static/image/common/m_h6.png)}body #md_152_menu:before,body #medal_152_menu:before{background:url(static/image/common/m_h7.png)}body #md_183_menu:before,body #medal_183_menu:before{background:url(static/image/common/m_h8.png)}body #md_200_menu:before,body #medal_200_menu:before{background:url(static/image/common/m_h9.png)}body #md_210_menu:before,body #medal_210_menu:before{background:url(static/image/common/m_h10.png)}body #md_70_menu:before,body #medal_70_menu:before{background:url(static/image/common/m_arena_v1.png)}body #md_72_menu:before,body #medal_72_menu:before{background:url(static/image/common/m_arena_v2.png)}body #md_88_menu:before,body #medal_88_menu:before{background:url(static/image/common/m_arena_v3.png)}body #md_111_menu:before,body #medal_111_menu:before{background:url(static/image/common/m_arena_v4.png)}body #md_69_menu:before,body #medal_69_menu:before{background:url(static/image/common/m_arena_w1.png)}body #md_68_menu:before,body #medal_68_menu:before{background:url(static/image/common/m_arena_w2.png)}body #md_73_menu:before,body #medal_73_menu:before{background:url(static/image/common/m_arena_w3.png)}body #md_74_menu:before,body #medal_74_menu:before{background:url(static/image/common/m_arena_w4.png)}body #md_89_menu:before,body #medal_89_menu:before{background:url(static/image/common/m_arena_w5.png)}body #md_90_menu:before,body #medal_90_menu:before{background:url(static/image/common/m_arena_w6.png)}body #md_98_menu:before,body #medal_98_menu:before{background:url(static/image/common/m_arena_w8.png)}body #md_99_menu:before,body #medal_99_menu:before{background:url(static/image/common/m_arena_w7.png)}body #md_120_menu:before,body #medal_120_menu:before{background:url(static/image/common/m_arena_v5.png)}body #md_121_menu:before,body #medal_121_menu:before{background:url(static/image/common/m_arena_w9.png)}body #md_122_menu:before,body #medal_122_menu:before{background:url(static/image/common/m_arena_w10.png)}body #md_123_menu:before,body #medal_123_menu:before{background:url(static/image/common/m_arena_i1.png)}body #md_129_menu:before,body #medal_129_menu:before{background:url(static/image/common/m_arena_v6.png)}body #md_130_menu:before,body #medal_130_menu:before{background:url(static/image/common/m_arena_w11.png)}body #md_131_menu:before,body #medal_131_menu:before{background:url(static/image/common/m_arena_w12.png)}body #md_132_menu:before,body #medal_132_menu:before{background:url(static/image/common/m_arena_i2.png)}body #md_143_menu:before,body #medal_143_menu:before{background:url(static/image/common/m_arena_v7.png)}body #md_144_menu:before,body #medal_144_menu:before{background:url(static/image/common/m_arena_v7f.png)}body #md_145_menu:before,body #medal_145_menu:before{background:url(static/image/common/m_arena_w13.png)}body #md_146_menu:before,body #medal_146_menu:before{background:url(static/image/common/m_arena_w14.png)}body #md_164_menu:before,body #medal_164_menu:before{background:url(static/image/common/m_arena_v8.png)}body #md_165_menu:before,body #medal_165_menu:before{background:url(static/image/common/m_arena_w15.png)}body #md_166_menu:before,body #medal_166_menu:before{background:url(static/image/common/m_arena_w16.png)}body #md_176_menu:before,body #medal_176_menu:before{background:url(static/image/common/m_arena_v9.png)}body #md_177_menu:before,body #medal_177_menu:before{background:url(static/image/common/m_arena_w17.png)}body #md_178_menu:before,body #medal_178_menu:before{background:url(static/image/common/m_arena_w18.png)}body #md_184_menu:before,body #medal_184_menu:before{background:url(static/image/common/m_arena_v10.png)}body #md_185_menu:before,body #medal_185_menu:before{background:url(static/image/common/m_arena_w19.png)}body #md_186_menu:before,body #medal_186_menu:before{background:url(static/image/common/m_arena_w20.png)}body #md_204_menu:before,body #medal_204_menu:before{background:url(static/image/common/m_arena_v11.png)}body #md_205_menu:before,body #medal_205_menu:before{background:url(static/image/common/m_arena_w21.png)}body #md_206_menu:before,body #medal_206_menu:before{background:url(static/image/common/m_arena_w22.png)}body #md_211_menu:before,body #medal_211_menu:before{background:url(static/image/common/m_arena_v12.png)}body #md_212_menu:before,body #medal_212_menu:before{background:url(static/image/common/m_arena_w23.png)}body #md_213_menu:before,body #medal_213_menu:before{background:url(static/image/common/m_arena_w24.png)}body #md_224_menu:before,body #medal_224_menu:before{background:url(static/image/common/m_arena_v13.png)}body #md_225_menu:before,body #medal_225_menu:before{background:url(static/image/common/m_arena_w25.png)}body #md_226_menu:before,body #medal_226_menu:before{background:url(static/image/common/m_arena_w26.png)}body #md_237_menu:before,body #medal_237_menu:before{background:url(static/image/common/m_arena14_1.png)}body #md_238_menu:before,body #medal_238_menu:before{background:url(static/image/common/m_arena14_2.png)}body #md_239_menu:before,body #medal_239_menu:before{background:url(static/image/common/m_arena14_3.png)}body #md_136_menu:before,body #medal_136_menu:before{background:url(static/image/common/m_s_v1.png)}body #md_167_menu:before,body #medal_167_menu:before{background:url(static/image/common/m_s_bili.png)}body #md_174_menu:before,body #medal_174_menu:before{background:url(static/image/common/m_s_v2.png)}body #md_195_menu:before,body #medal_195_menu:before{background:url(static/image/common/m_s_v3.png)}body #md_218_menu:before,body #medal_218_menu:before{background:url(static/image/common/m_s_bili2.png)}body #md_240_menu:before,body #medal_240_menu:before{background:url(static/image/common/m_s_v4.png)}body #md_253_menu:before,body #medal_253_menu:before{background:url(static/image/common/m_s_wiki.png)}body #md_254_menu:before,body #medal_254_menu:before{background:url(static/image/common/m_s_mcwiki.png)}body #md_124_menu:before,body #medal_124_menu:before{background:url(static/image/common/m_pearena_v1.png)}body #md_125_menu:before,body #medal_125_menu:before{background:url(static/image/common/m_pearena_w2.png)}body #md_126_menu:before,body #medal_126_menu:before{background:url(static/image/common/m_pearena_w1.png)}body #md_133_menu:before,body #medal_133_menu:before{background:url(static/image/common/m_pearena_v2.png)}body #md_134_menu:before,body #medal_134_menu:before{background:url(static/image/common/m_pearena_w4.png)}body #md_135_menu:before,body #medal_135_menu:before{background:url(static/image/common/m_pearena_w3.png)}body #md_147_menu:before,body #medal_147_menu:before{background:url(static/image/common/m_pearena_v3.png)}body #md_148_menu:before,body #medal_148_menu:before{background:url(static/image/common/m_pearena_w6.png)}body #md_149_menu:before,body #medal_149_menu:before{background:url(static/image/common/m_pearena_w5.png)}body #md_161_menu:before,body #medal_161_menu:before{background:url(static/image/common/m_pearena_v4.png)}body #md_162_menu:before,body #medal_162_menu:before{background:url(static/image/common/m_pearena_w8.png)}body #md_163_menu:before,body #medal_163_menu:before{background:url(static/image/common/m_pearena_w7.png)}body #md_171_menu:before,body #medal_171_menu:before{background:url(static/image/common/m_pearena_v5.png)}body #md_172_menu:before,body #medal_172_menu:before{background:url(static/image/common/m_pearena_w10.png)}body #md_173_menu:before,body #medal_173_menu:before{background:url(static/image/common/m_pearena_w9.png)}body #md_190_menu:before,body #medal_190_menu:before{background:url(static/image/common/m_pearena_w13.png)}body #md_192_menu:before,body #medal_192_menu:before{background:url(static/image/common/m_pearena_v6.png)}body #md_193_menu:before,body #medal_193_menu:before{background:url(static/image/common/m_pearena_w11.png)}body #md_194_menu:before,body #medal_194_menu:before{background:url(static/image/common/m_pearena_w12.png)}body #md_201_menu:before,body #medal_201_menu:before{background:url(static/image/common/m_pearena_v7.png)}body #md_202_menu:before,body #medal_202_menu:before{background:url(static/image/common/m_pearena_w16.png)}body #md_203_menu:before,body #medal_203_menu:before{background:url(static/image/common/m_pearena_w15.png)}body #md_214_menu:before,body #medal_214_menu:before{background:url(static/image/common/m_pearena_v8.png)}body #md_215_menu:before,body #medal_215_menu:before{background:url(static/image/common/m_pearena_w18.png)}body #md_216_menu:before,body #medal_216_menu:before{background:url(static/image/common/m_pearena_w17.png)}body #md_221_menu:before,body #medal_221_menu:before{background:url(static/image/common/m_pearena_v9.png)}body #md_222_menu:before,body #medal_222_menu:before{background:url(static/image/common/m_pearena_w20.png)}body #md_223_menu:before,body #medal_223_menu:before{background:url(static/image/common/m_pearena_w19.png)}body #md_229_menu:before,body #medal_229_menu:before{background:url(static/image/common/m_pearena_v10.png)}body #md_230_menu:before,body #medal_230_menu:before{background:url(static/image/common/m_pearena_w22.png)}body #md_231_menu:before,body #medal_231_menu:before{background:url(static/image/common/m_pearena_w21.png)}body #md_241_menu:before,body #medal_241_menu:before{background:url(static/image/common/m_pearena_v11.png)}body #md_242_menu:before,body #medal_242_menu:before{background:url(static/image/common/m_pearena_w24.png)}body #md_243_menu:before,body #medal_243_menu:before{background:url(static/image/common/m_pearena_w23.png)}body #md_197_menu:before,body #medal_197_menu:before{background:url(static/image/common/m_pofg_v1.png)}body #md_198_menu:before,body #medal_198_menu:before{background:url(static/image/common/m_pofg_v2.png)}body #md_199_menu:before,body #medal_199_menu:before{background:url(static/image/common/m_pofg_v3.png)}body #md_137_menu:before,body #medal_137_menu:before{background:url(static/image/common/m_g_cw.png)}body #md_138_menu:before,body #medal_138_menu:before{background:url(static/image/common/m_g_trp.png)}body #md_139_menu:before,body #medal_139_menu:before{background:url(static/image/common/m_g_tas.png)}body #md_140_menu:before,body #medal_140_menu:before{background:url(static/image/common/m_g_sc.png)}body #md_142_menu:before,body #medal_142_menu:before{background:url(static/image/common/m_g_sl.png)}body #md_150_menu:before,body #medal_150_menu:before{background:url(static/image/common/m_g_hayo.png)}body #md_151_menu:before,body #medal_151_menu:before{background:url(static/image/common/m_g_aa.png)}body #md_153_menu:before,body #medal_153_menu:before{background:url(static/image/common/m_g_is.png)}body #md_154_menu:before,body #medal_154_menu:before{background:url(static/image/common/m_g_cbl.png)}body #md_168_menu:before,body #medal_168_menu:before{background:url(static/image/common/m_g_ntl.png)}body #md_169_menu:before,body #medal_169_menu:before{background:url(static/image/common/m_g_tcp.png)}body #md_179_menu:before,body #medal_179_menu:before{background:url(static/image/common/m_g_mpw.png)}body #md_207_menu:before,body #medal_207_menu:before{background:url(static/image/common/m_g_ud.png)}body #md_217_menu:before,body #medal_217_menu:before{background:url(static/image/common/m_g_bs.png)}body #md_219_menu:before,body #medal_219_menu:before{background:url(static/image/common/m_g_pcd.png)}body #md_220_menu:before,body #medal_220_menu:before{background:url(static/image/common/m_g_gwnw.png)}body #md_228_menu:before,body #medal_228_menu:before{background:url(static/image/common/m_g_lw.png)}body #md_232_menu:before,body #medal_232_menu:before{background:url(static/image/common/m_g_uel.png)}body #md_233_menu:before,body #medal_233_menu:before{background:url(static/image/common/m_g_tgc.png)}body #md_235_menu:before,body #medal_235_menu:before{background:url(static/image/common/m_g_nf.png)}body #md_236_menu:before,body #medal_236_menu:before{background:url(static/image/common/m_g_mcbk.png)}body #md_244_menu:before,body #medal_244_menu:before{background:url(static/image/common/m_g_pos.png)}body #md_245_menu:before,body #medal_245_menu:before{background:url(static/image/common/m_g_stc.png)}body #md_246_menu:before,body #medal_246_menu:before{background:url(static/image/common/m_g_cps.png)}body #md_248_menu:before,body #medal_248_menu:before{background:url(static/image/common/m_g_wiki.png)}body #md_249_menu:before,body #medal_249_menu:before{background:url(static/image/common/m_g_rmg.png)}body #md_252_menu:before,body #medal_252_menu:before{background:url(static/image/common/m_g_tml.png)}@keyframes pickup{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.92);transform:matrix3d(1, 0, 0, -0.002, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1, 0, 0.92)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85)}}@keyframes dropdown{0%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, -0.001, 0, 0, 1, 0, 0, -1.6, 0, 0.85)}50%{-webkit-transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.92);transform:matrix3d(1, 0, 0, -0.001, 0, 1, 0, -0.002, 0, 0, 1, 0, 0, -1.1, 0, 0.92)}100%{-webkit-transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform:matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)}}
 `, 'medal')
+            window.saltMCBBSCSS.setStyle( // 帖子高亮
+                `#threadlisttableid>tbody[classified]{--backcolor:transparent;--backcolor-t1:transparent;--backcolor-t2:transparent;--backcolor-t3:transparent;background-image:-webkit-linear-gradient(90deg, var(--backcolor) 0%, var(--backcolor-t1) .2%, var(--backcolor-t2) .5%, var(--backcolor-t3) 45%, transparent 100%);background-image:linear-gradient(90deg, var(--backcolor) 0%, var(--backcolor-t1) .2%, var(--backcolor-t2) .5%, var(--backcolor-t3) 45%, transparent 100%)}#threadlisttableid>tbody[classified].digestpost{--backcolor:#0db1f2;--backcolor-t1:rgba(13,177,242,0.8);--backcolor-t2:rgba(13,177,242,0.08);--backcolor-t3:rgba(13,177,242,0)}#threadlisttableid>tbody[classified].reward{--backcolor:#f2690d;--backcolor-t1:rgba(242,105,13,0.8);--backcolor-t2:rgba(242,105,13,0.08);--backcolor-t3:rgba(242,105,13,0)}#threadlisttableid>tbody[classified].big-reward{--backcolor:#f20d93;--backcolor-t1:rgba(242,13,147,0.8);--backcolor-t2:rgba(242,13,147,0.08);--backcolor-t3:rgba(242,13,147,0)}#threadlisttableid>tbody[classified].great-reward{--backcolor:#f20dd3;--backcolor-t1:rgba(242,13,211,0.8);--backcolor-t2:rgba(242,13,211,0.08);--backcolor-t3:rgba(242,13,211,0)}#threadlisttableid>tbody[classified].solved{--backcolor:#0df2ad;--backcolor-t1:rgba(13,242,173,0.8);--backcolor-t2:rgba(13,242,173,0.08);--backcolor-t3:rgba(13,242,173,0)}#threadlisttableid>tbody[classified].locked{--backcolor:#333;--backcolor-t1:rgba(51,51,51,0.8);--backcolor-t2:rgba(51,51,51,0.08);--backcolor-t3:rgba(51,51,51,0)}#threadlisttableid>tbody[classified].top-1{--backcolor:#0dd7f2;--backcolor-t1:rgba(13,215,242,0.8);--backcolor-t2:rgba(13,215,242,0.08);--backcolor-t3:rgba(13,215,242,0)}#threadlisttableid>tbody[classified].top-2{--backcolor:#2196f3;--backcolor-t1:rgba(33,150,243,0.8);--backcolor-t2:rgba(33,150,243,0.08);--backcolor-t3:rgba(33,150,243,0)}#threadlisttableid>tbody[classified].top-3{--backcolor:#f28f0d;--backcolor-t1:rgba(242,143,13,0.8);--backcolor-t2:rgba(242,143,13,0.08);--backcolor-t3:rgba(242,143,13,0)}#threadlisttableid>tbody[classified].punitive-publicity{--backcolor:crimson;--backcolor-t1:rgba(220,20,60,0.8);--backcolor-t2:rgba(220,20,60,0.08);--backcolor-t3:rgba(220,20,60,0)}
+`, 'threadClassify')
             if (autorun) {
                 this.log('运行saltMCBBS主过程')
                 // 创建事件
@@ -493,10 +501,12 @@
                     this.antiSniff()
                     // 举报记忆功能
                     this.reportRememberOP()
+                    // 图片懒加载
+                    this.lazyLoadImgOP()
+                    // 帖子分类
+                    this.threadClassifyOP()
                     // 反水帖功能
                     this.antiWater()
-                    // 图片懒加载
-                    this.lazyLoadImg()
                     // 关闭安全锁
                     autoRunLock = false
                     // 整理配置项
@@ -537,6 +547,7 @@
                 obj.updateBackground()
             }, '夜间模式下的背景图片', 211)
             let opacity = this.readWithDefault<number>('mcmapwpOpacity', 0.5)
+            document.body.style.setProperty('--mcmapwpOpacity', opacity + '')
             this.addRangeSetting('主体部分的透明度<small> 仅在有背景图片时启用, 当前不透明度: ' + opacity + '</small>', opacity, [0, 1, 0.05],
                 (vl, ev) => {
                     this.write('mcmapwpOpacity', vl)
@@ -603,9 +614,15 @@
             leftdiv.appendChild(userinfo)
             // 移动搜索框
             let searchbox = document.querySelector('.cl.y_search')
-            if (searchbox) { leftdiv.appendChild(searchbox) }
+            if (searchbox instanceof HTMLElement) { leftdiv.appendChild(searchbox) }
             let searchtype = document.querySelector('#scbar_type_menu')
-            if (searchtype) { leftdiv.appendChild(searchtype) }
+            if (searchtype instanceof HTMLElement) {
+                leftdiv.appendChild(searchtype)
+                if (searchbox instanceof HTMLElement) {
+                    // 控制高度, 适应各个比例的浏览器窗口
+                    searchtype.style.setProperty('--top', Math.floor(Math.max(searchbox.offsetTop, 200) + 25) + 'px')
+                }
+            }
             // 继续添加节点
             leftdiv.appendChild(addons); leftdiv.appendChild(links)
             leftdiv.addEventListener('dblclick', () => { obj.toggleNightStyle() })
@@ -937,18 +954,25 @@
         }
         /**反嗅探 */
         antiSniff() {
-            let enable = this.readWithDefault<boolean>('saltAntiSniff', true)
+            let enable = this.readWithDefault<boolean>('saltAntiSniff', true), tellme = this.readWithDefault<boolean>('saltAntiSniffRecat', true)
             if (typeof enable == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
                 if (enable == 'true') { enable = true }
                 else { enable = false }
             }
-            console.log(typeof enable);
+            if (typeof tellme == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                if (tellme == 'true') { tellme = true }
+                else { tellme = false }
+            }
             let obj = this
             this.addCheckSetting('反嗅探措施<br><small>屏蔽一些坛友的部分探针</small>', enable, (ck, ev) => {
                 this.write('saltAntiSniff', ck)
                 if (ck)
                     sub()
             }, '反嗅探措施', 31)
+            this.addCheckSetting('处理探针后是否通知<br><small>右下角的提示可能会有点烦人</small>', tellme, (ck, ev) => {
+                this.write('saltAntiSniffRecat', ck)
+                tellme = ck
+            }, '处理探针后是否通知', 32)
             if (enable)
                 sub()
             async function sub() {
@@ -958,7 +982,8 @@
                         if (el.hasAttribute('src')) {
                             if (el.src.indexOf('home.php?') != -1 &&
                                 !/\&additional\=removevlog(\&|$)/.test(el.src)) {
-                                obj.message('侦测到<img>探针: <br>' + el.src + '<br>类型: Discuz!访客探针', (f) => { f() })
+                                if (tellme)
+                                    obj.message('侦测到<img>探针: <br>' + el.src + '<br>类型: Discuz!访客探针', (f) => { f() })
                                 console.log(el)
                                 el.src += '&additional=removevlog'
                                 // obj.log('已处理<img>探针')
@@ -967,7 +992,8 @@
                         if (el.hasAttribute('file')) {
                             if ((el.getAttribute('file') || '').indexOf('home.php?') != -1 &&
                                 !/\&additional\=removevlog(\&|$)/.test((el.getAttribute('file') || ''))) {
-                                obj.message('侦测到<img>探针: <br>' + (el.getAttribute('file') || '') + '<br>类型: Discuz!访客探针', (f) => { f() })
+                                if (tellme)
+                                    obj.message('侦测到<img>探针: <br>' + (el.getAttribute('file') || '') + '<br>类型: Discuz!访客探针', (f) => { f() })
                                 console.log(el)
                                 el.setAttribute('file', (el.getAttribute('file') || '') + '&additional=removevlog')
                                 // obj.log('已处理<img>探针')
@@ -1117,42 +1143,49 @@
                 return newlist
             }
         }
-        lazyLoadImg() {
-            let enable = this.readWithDefault<boolean>('lazyLoadImgEnable', false), obj = this
+        /**替代Discuz的图片懒加载 */
+        lazyLoadImgOP() {
+            this.assert(autoRunLock, '不在页面初始运行状态')
+            let enable = this.readWithDefault<boolean>('lazyLoadImgEnable', true), obj = this
             if (typeof enable == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
                 if (enable == 'true') { enable = true }
                 else { enable = false }
             }
-            this.addCheckSetting('另一种图片懒加载<br><small>一种更友好的图片懒加载方式</small>', enable, (ck, ev) => {
+            this.addCheckSetting('另一种图片懒加载<br><small>一种更友好的图片懒加载方式, 反防盗链</small>', enable, (ck, ev) => {
                 obj.write('lazyLoadImgEnable', ck)
                 obj.message('图片懒加载模式切换需要刷新生效', (f) => { f() }, 3)
             }, '另一种图片懒加载', 45)
             // 检查有没有启用懒加载
             if (!enable) { return }
             // 获取页面上尚未被discuz懒加载的图片
-            let imgs = [
-                ...Array.from(document.querySelectorAll('.t_fsz .t_f img:not([src]):not([lazyloaded])')),
-                ...Array.from(document.querySelectorAll('.t_fsz .t_f img[src*="static/image/common/none.gif"]:not([lazyloaded])')),
-            ]
+            let imgs: HTMLImageElement[]
+            if (window.lazyload) { // 如果页面中已有BBS的lazyload
+                imgs = HTMLImgFliter(window.lazyload.imgs)
+                window.lazyload.imgs = [] // 劫持
+            } else {
+                imgs = HTMLImgFliter([
+                    ...Array.from(document.querySelectorAll('.t_fsz .t_f img:not([src]):not([lazyloaded])')),
+                    ...Array.from(document.querySelectorAll('.t_fsz .t_f img[src*="static/image/common/none.gif"]:not([lazyloaded])')),
+                    ...Array.from(document.querySelectorAll('.t_fsz .pattl img[src*="static/image/common/none.gif"]:not([lazyloaded])')),
+                ])
+            }
             let obs = new IntersectionObserver((entries) => {
                 let img = entries[0].target
                 obs.unobserve(img)
                 img.setAttribute('src', img.getAttribute('file') || '')
+                img.setAttribute('alt', '图片加载中, 请稍作等待......')
                 obj.log('加载图片: ' + (img.getAttribute('file') || ''))
                 // 控制图片大小
-                setTimeout(() => {
-                    if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) }
-                }, 500)
-                // 不放心, 所以1.5s后再处理一次
-                setTimeout(() => {
-                    if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) }
-                }, 1500)
+                setTimeout(() => { if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) } }, 500)
+                // 不放心, 所以1.5s、5s、10s后再处理一次
+                setTimeout(() => { if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) } }, 1500)
+                setTimeout(() => { if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) } }, 5000)
+                setTimeout(() => { if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) } }, 10000)
             });
             for (let img of imgs) {
-                if (!(img instanceof HTMLImageElement)) { continue }
                 img.setAttribute('lazyloaded', 'true') // 标记为已开始加载, 骗过Discuz的懒加载
                 img.src = '' // src为空
-                img.alt = '图片加载中...' // 占位文字
+                antiAntiStealingLink(img) // 反防盗链
                 // 控制图片大小
                 img.addEventListener('load', () => {
                     img.setAttribute('loaded', '')
@@ -1160,72 +1193,140 @@
                 })
                 // 失败提示
                 img.addEventListener('error', () => {
-                    img.setAttribute('alt', '加载失败, 点击重试或等待自动重载')
+                    img.alt = '加载失败, 点击重试或等待自动重载......'
                     img.setAttribute('waitRetry', '') // 标记为等待重新加载
                 })
                 // 点击重试
                 img.addEventListener('click', () => {
                     if (!(img.hasAttribute('loaded')) && img.hasAttribute('waitRetry')) {
-                        img.setAttribute('alt', '图片加载中...')
+                        img.alt = '图片重新加载中......'
                         img.removeAttribute('waitRetry') // 去除等待重新加载的标记
-                        img.setAttribute('src', img.getAttribute('file') || img.getAttribute('src') || '')
+                        img.numAttribute('retry').add(1)
+                        // 重新加载
+                        img.src = img.getAttribute('file') || img.getAttribute('src') || ''
                     }
                 })
                 // 监听
                 obs.observe(img)
                 obj.log('劫持图片: ' + (img.getAttribute('file') || ''))
             }
+            /**反防盗链 */
+            function antiAntiStealingLink(img: HTMLImageElement) {
+                let src = img.src
+                let antiStealingLinkWebSite = ['sinaimg.cn', 'tiebapic.baidu.com', 'qpic.cn']
+                for (let site of antiStealingLinkWebSite) {
+                    if (src.indexOf(site) != -1) {
+                        img.setAttribute('referrerpolicy', 'no-referrer')
+                        img.setAttribute('referrerPolicy', 'no-referrer')
+                    }
+                }
+            }
+            /**过滤一个元素数组, 返回一个图片元素数组 */
+            function HTMLImgFliter(elems: Element[]): HTMLImageElement[] {
+                let imgs: HTMLImageElement[] = []
+                for (let el of elems)
+                    if (el instanceof HTMLImageElement)
+                        imgs.push(el)
+                return imgs
+            }
         }
-        /**
-         * 水帖审查工具, 一个异步函数(考虑到正则匹配很花时间)
-         * @param RegExps 审查用的正则表达式数组, 不填则默认使用内置的
-         * @param ignoreWarned 是否忽略那些已经被制裁的帖子, 默认为是
-         * @param callback 回调函数, 接受 3个参数, 代表一层楼的 div 元素, 这层楼的内容所在的元素, 处理后的文本, 没有的话则使用默认处理方式
-         */
-        async antiWater(RegExps: RegExp[] = antiWaterRegExp, ignoreWarned: boolean = true,
-            callback?: (el: HTMLElement, ts: HTMLElement, text: string) => void) {
-            let obj = this
-            // 默认忽略那些已经被制裁的帖子
-            let queryStr = ignoreWarned ? '#postlist > div:not(.warned)' : '#postlist > div'
-            // console.log(queryStr)
-            this.saltQuery(queryStr, (i, el) => {
-                if (!(el instanceof HTMLElement)) { return }
-                let td = el.querySelector('td[id^="postmessage"]')
-                if (!(td instanceof HTMLElement)) { return }
-                // el 代表一层楼的 div 元素
-                // td 这层楼的内容所在的元素
-                /**复制了td的HTML, 实现隔离 */
-                let tempEl: Element | null = document.createElement('div')
-                tempEl.innerHTML = td.innerHTML
-                for (let img of Array.from(tempEl.querySelectorAll('img[smilieid]'))) {
-                    if (img instanceof HTMLImageElement) {
-                        img.replaceWith('/meme/') // 表情包会被处理成'/meme/'的文字形式
+        /**帖子分类 */
+        threadClassifyOP() {
+            let enable = this.readWithDefault<boolean>('threadClassifyEnable', true), obj = this
+            if (typeof enable == 'string') { // 防坑措施, 这个东西在老浏览器上可能返回一个字符串
+                if (enable == 'true') { enable = true }
+                else { enable = false }
+            }
+            this.addCheckSetting('帖子分类高亮<br><small>按照帖子的类型进行高亮</small>', enable, (ck, ev) => {
+                obj.write('threadClassifyEnable', ck)
+                enable = ck
+                if (enable) { fullCheck(); window.saltMCBBSCSS.putStyle('', 'threadClassify') }
+                else { disable(); window.saltMCBBSCSS.delStyle('threadClassify') }
+            }, '帖子分类高亮', 45)
+            // 检查是否启用
+            if (enable) { fullCheck(); window.saltMCBBSCSS.putStyle('', 'threadClassify') }
+            // 监听帖子列表
+            let threadlisttableid = document.querySelector('#threadlisttableid')
+            if (threadlisttableid) {
+                this.saltObserver(threadlisttableid, () => {
+                    if (enable) { fullCheck() }
+                })
+            }
+            /*
+            ** 主题分类（如“讨论”“娱乐”“临时”之类的）会塞进“type”属性里 **
+            ** 主题作者昵称（如“混乱”）会塞进“author”属性里 **
+            ** 其他属性以类的形式添加到帖子列表的帖子上 **
+            top-1 top-2 top-3 本版置顶 大区置顶 全局置顶
+            debate newbie 辩论 新人帖
+            reward big-reward great-reward 悬赏 高额悬赏100+金粒 高额悬赏500+金粒
+            solved 解决
+            locked 锁帖
+            hot-1 hot-2 hot-3 热帖1 热帖2 热帖3
+            rec-1 rec-2 rec-3 推荐1 推荐2 推荐3
+            recommend moderator-recommend excellent digestpost 推荐 版主推荐 优秀 精华
+            file pic good bad 有附件 有图片 被加分 被扣分
+            punitive-publicity 晒尸
+            */
+            /**启用 */
+            async function fullCheck() {
+                obj.saltQuery('#threadlisttableid > tbody:not([classified])', (i, el) => {
+                    if (!(el instanceof HTMLElement)) { return }
+                    el.setAttribute('classified', '') // 添加标记
+                    el.setAttribute('type', el.querySelector('th > em a')?.textContent || '') // 主题分类
+                    el.setAttribute('author', (el.querySelector('.by cite')?.textContent || '').replace(/^\s|\s$/g, '')) // 作者昵称
+                    /**帖子图标的title */
+                    let title = el.querySelector('.icn a')?.getAttribute('title') || ''
+                    let thread = el.querySelector('th a.s.xst')?.textContent || ''
+                    // 判断置顶
+                    if (title.indexOf('全局置顶') != -1) { el.addClass('top-3') }
+                    else if (title.indexOf('分类置顶') != -1) { el.addClass('top-2') }
+                    else if (title.indexOf('本版置顶') != -1) { el.addClass('top-1') }
+                    // 辩论 新人帖
+                    if (title.indexOf('辩论') != -1) { el.addClass('debate') }
+                    if (el.querySelector('img[alt="新人帖"]')) { el.addClass('newbie') }
+                    // 悬赏
+                    if (title.indexOf('悬赏') != -1) {
+                        el.addClass('reward')
+                        let pirce = parseInt(((el.querySelector('a[title="只看进行中的"]')?.textContent || '').match(/\d+/) || ['30'])[0])
+                        if (pirce >= 100) { el.addClass('big-reward') }
+                        if (pirce >= 500) { el.addClass('great-reward') }
                     }
-                } for (let font0 of Array.from(tempEl.querySelectorAll('font[style*="font-size:0px"]'))) {
-                    if (font0 instanceof HTMLImageElement) {
-                        font0.remove() // 不可见的节点将被忽略
-                    }
-                }
-                let t = tempEl.textContent || ''
-                for (let aw of RegExps) {
-                    if (aw.test(t)) {
-                        if (callback) {
-                            callback(el, td, t)
-                        } else {
-                            if (el.hasClass('reported')) {
-                                obj.message('该疑似水帖已被您举报:<br><span>' + tempEl.innerHTML + '</span>', () => {
-                                    obj.scrollTo(el.offset().top - 20)
-                                }, 1)
-                            } else {
-                                obj.message('发现未制裁的疑似水帖:<br><span>' + tempEl.innerHTML + '</span>', () => {
-                                    obj.scrollTo(el.offset().top - 20)
-                                })
-                            }
-                        }
-                    }
-                }
-                tempEl = null // 释放内存
-            })
+                    // 已解决
+                    if (el.querySelector('th a[title="只看已解决的"]')) { el.addClass('solved') }
+                    // 锁帖
+                    if (title.indexOf('关闭的主题') != -1) { el.addClass('locked') }
+                    // 热帖
+                    if (el.querySelector('th img[src$="hot_3.gif"]')) { el.addClass('hot-3') }
+                    if (el.querySelector('th img[src$="hot_2.gif"]')) { el.addClass('hot-2') }
+                    if (el.querySelector('th img[src$="hot_1.gif"]')) { el.addClass('hot-1') }
+                    // 推荐帖
+                    if (el.querySelector('th img[src$="recommend_3.gif"]')) { el.addClass('rec-3') }
+                    if (el.querySelector('th img[src$="recommend_2.gif"]')) { el.addClass('rec-2') }
+                    if (el.querySelector('th img[src$="recommend_1.gif"]')) { el.addClass('rec-1') }
+                    // 推荐 版主推荐 优秀 精华
+                    if (el.querySelector('th img[alt="推荐"]')) { el.addClass('recommend') }
+                    if (el.querySelector('th img[alt="版主推荐"]')) { el.addClass('moderator-recommend') }
+                    if (el.querySelector('th img[alt="优秀"]')) { el.addClass('excellent') }
+                    if (el.querySelector('th img[alt="digest"]')) { el.addClass('digestpost') }
+                    // 有附件 有图片 被加分 被扣分
+                    if (el.querySelector('th img[alt="attach_img"]')) { el.addClass('pic') }
+                    if (el.querySelector('th img[alt="attachment"]')) { el.addClass('file') }
+                    if (el.querySelector('th img[alt="agree"]')) { el.addClass('good') }
+                    if (el.querySelector('th img[alt="disagree"]')) { el.addClass('bad') }
+                    // 晒尸
+                    if (/[\[【]\s?.*晒尸\s?[】\]]|^(剽窃|转账)晒尸/.test(thread)) { el.addClass('punitive-publicity') }
+                })
+            }
+            /**禁用 */
+            async function disable() {
+                obj.saltQuery('#threadlisttableid > tbody[classified]', (i, el) => {
+                    if (!(el instanceof HTMLElement)) { return }
+                    el.removeAttribute('classified')
+                    el.removeAttribute('type')
+                    el.removeAttribute('author')
+                    el.removeClass('top-1 top-2 top-3 debate newbie reward big-reward great-reward solved locked hot-1 hot-2 hot-3 rec-1 rec-2 rec-3 recommend moderator-recommend excellent digestpost file pic good bad punitive-publicity')
+                })
+            }
         }
         /**动画效果 */
         animationOP() {
@@ -1311,6 +1412,60 @@
             }
             window.addEventListener('load', () => { sub(enabled) })
         }
+        // ==========================================================
+        // ========== 以上直到另一个分割线之前, 都是内部代码 ==========
+        // ==========================================================
+        /**
+         * 水帖审查工具, 一个异步函数(考虑到正则匹配很花时间)
+         * @param RegExps 审查用的正则表达式数组, 不填则默认使用内置的
+         * @param ignoreWarned 是否忽略那些已经被制裁的帖子, 默认为是
+         * @param callback 回调函数, 接受 3个参数, 代表一层楼的 div 元素, 这层楼的内容所在的元素, 处理后的文本, 没有的话则使用默认处理方式
+         */
+        async antiWater(RegExps: RegExp[] = antiWaterRegExp, ignoreWarned: boolean = true,
+            callback?: (el: HTMLElement, ts: HTMLElement, text: string) => void) {
+            let obj = this
+            // 默认忽略那些已经被制裁的帖子
+            let queryStr = ignoreWarned ? '#postlist > div:not(.warned)' : '#postlist > div'
+            // console.log(queryStr)
+            this.saltQuery(queryStr, (i, el) => {
+                if (!(el instanceof HTMLElement)) { return }
+                let td = el.querySelector('td[id^="postmessage"]')
+                if (!(td instanceof HTMLElement)) { return }
+                // el 代表一层楼的 div 元素
+                // td 这层楼的内容所在的元素
+                /**复制了td的HTML, 实现隔离 */
+                let tempEl: Element | null = document.createElement('div')
+                tempEl.innerHTML = td.innerHTML
+                for (let img of Array.from(tempEl.querySelectorAll('img[smilieid]'))) {
+                    if (img instanceof HTMLImageElement) {
+                        img.replaceWith('/meme/') // 表情包会被处理成'/meme/'的文字形式
+                    }
+                } for (let font0 of Array.from(tempEl.querySelectorAll('font[style*="font-size:0px"]'))) {
+                    if (font0 instanceof HTMLImageElement) {
+                        font0.remove() // 不可见的节点将被忽略
+                    }
+                }
+                let t = tempEl.textContent || ''
+                for (let aw of RegExps) {
+                    if (aw.test(t)) {
+                        if (callback) {
+                            callback(el, td, t)
+                        } else {
+                            if (el.hasClass('reported')) {
+                                obj.message('该疑似水帖已被您举报:<br><span>' + tempEl.innerHTML + '</span>', () => {
+                                    obj.scrollTo(el.offset().top - 20)
+                                }, 1)
+                            } else {
+                                obj.message('发现未制裁的疑似水帖:<br><span>' + tempEl.innerHTML + '</span>', () => {
+                                    obj.scrollTo(el.offset().top - 20)
+                                })
+                            }
+                        }
+                    }
+                }
+                tempEl = null // 释放内存
+            })
+        }
         /**更新背景 */
         updateBackground() {
             // 昼间
@@ -1381,7 +1536,7 @@
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个 textarea
-         * @param h3 配置项标题
+         * @param h3 配置项标题(可以是HTML代码)
          * @param textarea 默认配置
          * @param callback textarea触发change事件的回调函数，参数：el: textarea元素, ev: 事件
          * @param id 配置项的id，不填则默认为h3
@@ -1397,7 +1552,7 @@
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
-         * @param h3 配置项标题
+         * @param h3 配置项标题(可以是HTML代码)
          * @param text 默认配置
          * @param callback input触发change事件的回调函数，参数：el: textarea元素, ev: 事件
          * @param id 配置项的id，不填则默认为h3
@@ -1413,7 +1568,7 @@
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
-         * @param h3 配置项标题
+         * @param h3 配置项标题(可以是HTML代码)
          * @param text 默认配置
          * @param callback input触发click事件的回调函数，参数：ck: 勾选与否, ev: 事件
          * @param id 配置项的id，不填则默认为h3
@@ -1431,7 +1586,7 @@
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个滑动条 input
-         * @param h3 配置项标题
+         * @param h3 配置项标题(可以是HTML代码)
          * @param value 默认值
          * @param range [最小值,最大值,步长]或{min:最小值,max:最大值,step:步长}
          * @param callback input触发change事件的回调函数，参数：vl: 数字, ev: 事件
@@ -1702,50 +1857,78 @@
         }
     }
     // 开始给HTMLElement添加奇怪的方法
-    if (!HTMLElement.prototype.addClass) {
-        HTMLElement.prototype.addClass = function (classes: string): void {
-            let cls = String(classes).replace(/\s+/gm, ',').split(',');
-            for (let c of cls) {
-                this.classList.add(c)
+    (function () {
+        if (!HTMLElement.prototype.addClass) {
+            HTMLElement.prototype.addClass = function (classes: string): void {
+                let cls = String(classes).replace(/\s+/gm, ',').split(',');
+                for (let c of cls) {
+                    this.classList.add(c)
+                }
             }
         }
-    }
-    if (!HTMLElement.prototype.toggleClass) {
-        HTMLElement.prototype.toggleClass = function (classes: string): void {
-            var cls = String(classes).replace(/\s+/gm, ',').split(',');
-            for (var c of cls) {
-                if (this.classList.contains(c))
+        if (!HTMLElement.prototype.toggleClass) {
+            HTMLElement.prototype.toggleClass = function (classes: string): void {
+                var cls = String(classes).replace(/\s+/gm, ',').split(',');
+                for (var c of cls) {
+                    if (this.classList.contains(c))
+                        this.classList.remove(c);
+                    else
+                        this.classList.add(c);
+                }
+            }
+        }
+        if (!HTMLElement.prototype.hasClass) {
+            HTMLElement.prototype.hasClass = function (OneClass: string): boolean {
+                return this.classList.contains(OneClass);
+            }
+        }
+        if (!HTMLElement.prototype.removeClass) {
+            HTMLElement.prototype.removeClass = function (classes: string): void {
+                var cls = String(classes).replace(/\s+/gm, ',').split(',');
+                for (var c of cls) {
                     this.classList.remove(c);
-                else
-                    this.classList.add(c);
+                }
             }
         }
-    }
-    if (!HTMLElement.prototype.hasClass) {
-        HTMLElement.prototype.hasClass = function (OneClass: string): boolean {
-            return this.classList.contains(OneClass);
-        }
-    }
-    if (!HTMLElement.prototype.removeClass) {
-        HTMLElement.prototype.removeClass = function (classes: string): void {
-            var cls = String(classes).replace(/\s+/gm, ',').split(',');
-            for (var c of cls) {
-                this.classList.remove(c);
+        if (!HTMLElement.prototype.offset) {
+            HTMLElement.prototype.offset = function () {
+                if (!this.getClientRects().length)
+                    return { top: 0, left: 0 };
+                var rect = this.getBoundingClientRect();
+                var win = this.ownerDocument.defaultView || { pageYOffset: 0, pageXOffset: 0 };
+                return {
+                    top: rect.top + win.pageYOffset,
+                    left: rect.left + win.pageXOffset
+                }
             }
         }
-    }
-    if (!HTMLElement.prototype.offset) {
-        HTMLElement.prototype.offset = function () {
-            if (!this.getClientRects().length)
-                return { top: 0, left: 0 };
-            var rect = this.getBoundingClientRect();
-            var win = this.ownerDocument.defaultView || { pageYOffset: 0, pageXOffset: 0 };
-            return {
-                top: rect.top + win.pageYOffset,
-                left: rect.left + win.pageXOffset
+        if (!HTMLElement.prototype.numAttribute) {
+            HTMLElement.prototype.numAttribute = function (key: string) {
+                let value: number
+                if (this.hasAttribute(key)) {
+                    value = parseInt(this.getAttribute(key) || '')
+                } else {
+                    value = 0
+                    this.setAttribute(key, value + '')
+                }
+                if (isNaN(value)) {
+                    value = 0
+                    this.setAttribute(key, value + '')
+                }
+                return {
+                    value: value,
+                    set: (num: number) => {
+                        this.setAttribute(key, num + '')
+                        return this.numAttribute(key)
+                    },
+                    add: (num: number) => {
+                        this.setAttribute(key, (value + num) + '')
+                        return this.numAttribute(key)
+                    }
+                }
             }
         }
-    }
+    })()
     // ??????
     window['saltMCBBSCSS'] = new saltMCBBSCSS(); // saltMCBBSCSS 实例
     window['saltMCBBS'] = new saltMCBBS(true); // saltMCBBS 实例
