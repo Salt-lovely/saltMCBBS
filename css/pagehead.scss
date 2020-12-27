@@ -116,7 +116,7 @@ body.night-style {
     }
     // 配套的搜索类型框
     #scbar_type_menu {
-        top: 322px !important;
+        top: var(--top, 322px) !important;
     }
     .userinfo {
         overflow-x: hidden;

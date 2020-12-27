@@ -1,0 +1,74 @@
+$top-1: #0dd7f2;
+$top-2: #2196f3;
+$top-3: #f28f0d;
+
+$reward: #f2690d;
+$big-reward: #f20d93;
+$great-reward: #f20dd3;
+$solved: #0df2ad;
+$locked: #333;
+$digestpost: #0db1f2;
+$punitive-publicity: crimson;
+
+@mixin colorformat($mycolor: #999) {
+    --backcolor: $mycolor;
+    --backcolor-t1: rgba($color: $mycolor, $alpha: 0.8);
+    --backcolor-t2: rgba($color: $mycolor, $alpha: 0.08);
+    --backcolor-t3: rgba($color: $mycolor, $alpha: 0);
+}
+
+#threadlisttableid > tbody[classified] {
+    --backcolor: transparent;
+    --backcolor-t1: transparent;
+    --backcolor-t2: transparent;
+    --backcolor-t3: transparent;
+    background-image: -webkit-linear-gradient(
+        90deg,
+        var(--backcolor) 0%,
+        var(--backcolor-t1) 0.2%,
+        var(--backcolor-t2) 0.5%,
+        var(--backcolor-t3) 45%,
+        transparent 100%
+    );
+    background-image: linear-gradient(
+        90deg,
+        var(--backcolor) 0%,
+        var(--backcolor-t1) 0.2%,
+        var(--backcolor-t2) 0.5%,
+        var(--backcolor-t3) 45%,
+        transparent 100%
+    );
+    &.digestpost {
+        @include colorformat($digestpost);
+    }
+    // 已解决的优先级高
+    &.reward {
+        @include colorformat($reward);
+    }
+    &.big-reward {
+        @include colorformat($big-reward);
+    }
+    &.great-reward {
+        @include colorformat($great-reward);
+    }
+    &.solved {
+        @include colorformat($solved);
+    }
+    // 锁帖优先级低于置顶
+    &.locked {
+        @include colorformat($locked);
+    }
+    &.top-1 {
+        @include colorformat($top-1);
+    }
+    &.top-2 {
+        @include colorformat($top-2);
+    }
+    &.top-3 {
+        @include colorformat($top-3);
+    }
+    // 晒尸优先级最高
+    &.punitive-publicity {
+        @include colorformat($punitive-publicity);
+    }
+}
