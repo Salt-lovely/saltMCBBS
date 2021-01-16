@@ -50,6 +50,24 @@ $droplight: drop-shadow(0 0 4px #fff);
         background: $bgcolor;
     }
 }
+@mixin tedt {
+    .tedt {
+        > div {
+            background-color: $bodybg-l;
+        }
+        .bar .fpd {
+            a {
+                @include glow();
+            }
+        }
+        .area {
+            &,
+            textarea {
+                background-color: $bodybg;
+            }
+        }
+    }
+}
 // 大体更改
 body.night-style {
     --bodybg: $bodybg;
@@ -182,6 +200,44 @@ body.night-style {
     }
     .bm {
         background-color: transparent;
+    }
+    // 如果顶栏没有移动到左侧
+    #toptb {
+        background-image: none;
+        background-color: $bodybg-l;
+        .y_search {
+            background-image: none;
+            background-color: #444;
+            // outline: none;
+            .y_search_btn button {
+                box-shadow: none;
+                filter: invert(0.8) hue-rotate(170deg);
+            }
+            .y_search_inp {
+                background-color: #555;
+                background-image: none;
+                input {
+                    background-color: #666;
+                }
+            }
+            .scbar_type_td {
+                background-color: #555;
+                background-image: none;
+            }
+        }
+    }
+    #user_info_menu {
+        background-image: none;
+        background-color: $bodybg-l-l;
+        .linksStillOnTopBar {
+            a {
+                color: $fontcolor;
+                &:hover {
+                    background: var(--MExtBtnClr, #999);
+                    // color: #6cf;
+                }
+            }
+        }
     }
 }
 // 门户、论坛、小组
@@ -572,6 +628,10 @@ body.night-style {
             @include glow();
         }
     }
+    // 回复框
+    #postform {
+        @include tedt();
+    }
     // 每一楼右上角楼层显示
     .pi strong a {
         border-color: transparent;
@@ -782,6 +842,9 @@ body.night-style {
             color: $fontcolor;
         }
     }
+    #td_sightml {
+        @include tedt();
+    }
 }
 // 顶部5个按钮
 body.night-style {
@@ -831,9 +894,20 @@ body.night-style {
                 }
             }
         }
+        .mn {
+            ul li a {
+                color: $fontcolor;
+                :hover {
+                    color: $a-highlight;
+                }
+            }
+        }
     }
     #ct {
         border-color: $bodybg;
+        &[style*="background:#fff"] {
+            background-color: $bodybg-l !important;
+        }
     }
 
     .tl {
@@ -945,6 +1019,7 @@ body.night-style {
         /*红色主题*/ "#EE1B2E": #f99,
         "#ff0000": #f99,
         "#FF0000": #f99,
+        "#CC0000": #f99,
         /*橙色主题*/ "#EE5023": #d97f26,
         /*褐色主题*/ "#996600": #e6a219,
         "#663300": #d97f26,

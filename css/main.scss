@@ -54,9 +54,9 @@ body {
             }
         }
     }
-    #toptb {
-        opacity: 0;
-    }
+    // #toptb {
+    //     opacity: 0;
+    // }
 }
 // 查看警告记录按钮
 .pmwarn {
@@ -273,4 +273,22 @@ textarea.pt {
     min-height: 1.25 * 4em;
     max-height: 1.25 * 30em;
     @include scroll(8px);
+}
+// 如果顶栏没有移动到左侧
+.linksStillOnTopBar {
+    width: 100%;
+    text-align: center;
+    > a {
+        display: inline-block;
+        width: 90%;
+        padding: 4px 6px;
+        border-radius: 4px;
+        &:hover {
+            background: var(--MExtBtnClr, #e91e63);
+            color: white;
+        }
+    }
+}
+#toptb {
+    transition: opacity 0.3s ease;
 }
