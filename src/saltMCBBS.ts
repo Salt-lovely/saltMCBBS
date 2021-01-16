@@ -1,15 +1,3 @@
-'use strict';
-// ==UserScript==
-// @name         saltMCBBS
-// @namespace    http://salt.is.lovely/
-// @description  salt's MCBBS 拓展
-// @author       salt
-// @match        https://*.mcbbs.net/*
-// @grant        none
-// @version      0.1.6
-// @license      CC BY-NC-SA 4.0
-// @run-at       document-body
-// ==/UserScript==
 /* 
 设置面板
 
@@ -513,8 +501,6 @@
                     this.imgProxyOP()
                     // 帖子分类
                     this.threadClassifyOP()
-                    // 反水帖功能
-                    this.antiWater()
                     // 关闭安全锁
                     autoRunLock = false
                     // 整理配置项
@@ -569,7 +555,7 @@
                 this.write('SaltAntiWater', ck)
                 this.message('"水帖检测机制"配置项需要刷新生效<br>点击刷新', () => { location.reload() }, 3)
             }, '水帖检测机制', 41)
-            if (enableAntiWater) { this.antiWater() }
+            if (enableAntiWater) { this.docReady(() => { this.antiWater() }) }
         }
         /**movePageHead 移动顶栏到页面左侧*/
         movePageHead() {
@@ -1455,11 +1441,9 @@
             let enabled = this.readWithDefault<boolean>('saltMCBBSconfiectFix', true)
             this.addCheckSetting('冲突修复功能<br><small>尝试修复与其他脚本的冲突</small>', enabled, (ck, ev) => {
                 this.write('saltMCBBSconfiectFix', ck)
-                sub(ck)
+                if (ck) sub()
             }, '冲突修复功能', 21)
-            sub(enabled)
-            function sub(enabled: boolean) {
-                if (!enabled) { return }
+            function sub() {
                 let links = obj.links
                 let ul = document.querySelector('.user_info_menu_btn'); if (!ul || !(ul instanceof HTMLElement)) { return }
                 let a = ul.querySelectorAll('a'), othersArchor: HTMLElement[] = []
@@ -1471,7 +1455,33 @@
                     obj.log(othersArchor) // 仅在侦测到其他锚点时启用
                 }
             }
-            window.addEventListener('load', () => { sub(enabled) })
+            function MExtFix() {
+                // 勋章栏重复修复
+                if (document.querySelector('.md_ctrl .hoverable-medal')) {
+                    window.saltMCBBSCSS.putStyle(`
+/*修复勋章栏的偏移*/
+p.md_ctrl{padding-left: 0;}
+                `, 'MExtConfiectFixCSS1')
+                }
+                window.saltMCBBSCSS.putStyle(`
+/*修复同时出现两个警告按钮*/
+.pmwarn + .view_warns_inposts,
+.view_warns_inposts + .pmwarn{
+    display: none;
+}
+                `, 'MExtConfiectFixCSS2')
+            }
+            if (enabled) {
+                sub()
+                setTimeout(() => { sub() }, 500)
+                window.addEventListener('load', () => { sub() })
+            }
+            // MCBBS Extender冲突修复
+            setTimeout(() => {
+                if (typeof window.MExt != 'undefined') {
+                    MExtFix()
+                }
+            }, 500)
         }
         // ==========================================================
         // ========== 以上直到另一个分割线之前, 都是内部代码 ==========

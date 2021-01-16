@@ -24,6 +24,8 @@ interface Window {
     thumbImg: (obj: Element, method?: any) => void,
     /**BBS自带的懒加载 */
     lazyload?: { imgs?: HTMLImageElement[] },
+    /**MCBBS Extender instance */
+    MExt?: any,
 }
 interface HTMLElement {
     /**
