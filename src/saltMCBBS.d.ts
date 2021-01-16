@@ -14,7 +14,7 @@ interface saltMCBBSOriginClassNew {
     /**
      * 将页面平滑地滚动到某个位置
      * @param targetY 目标高度
-     * @param step 每一步 20ms, 默认25步, 即 500ms
+     * @param step 自定义步数, 每一步 20ms, 默认25步, 即 500ms
      */
     scrollTo(targetY: number, step: number),
     /**

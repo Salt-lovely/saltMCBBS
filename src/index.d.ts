@@ -23,7 +23,7 @@ interface Window {
      */
     thumbImg: (obj: Element, method?: any) => void,
     /**BBS自带的懒加载 */
-    lazyload?: { imgs: HTMLImageElement[] },
+    lazyload?: { imgs?: HTMLImageElement[] },
 }
 interface HTMLElement {
     /**
