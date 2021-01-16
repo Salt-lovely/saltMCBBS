@@ -27,6 +27,29 @@ $droplight: drop-shadow(0 0 4px #fff);
 @mixin whiteTextStroke {
     text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff;
 }
+@mixin scroll($width: 4px, $bgcolor: #eee, $thumbcolor: #999) {
+    scrollbar-width: thin;
+    scrollbar-color: $bgcolor $thumbcolor;
+    &::-webkit-scrollbar {
+        /*滚动条整体*/
+        width: $width;
+        height: $width;
+    }
+    &::-webkit-scrollbar-thumb {
+        /*滚动条中可滑动部分*/
+        border-radius: $width;
+        box-shadow: inset 0 0 4px
+            rgba($color: darken($thumbcolor, 20%), $alpha: 0.25);
+        background: $thumbcolor;
+    }
+    &::-webkit-scrollbar-track {
+        /*滚动条轨道*/
+        box-shadow: inset 0 0 4px
+            rgba($color: darken($bgcolor, 20%), $alpha: 0.25);
+        border-radius: $width;
+        background: $bgcolor;
+    }
+}
 // 大体更改
 body.night-style {
     --bodybg: $bodybg;
@@ -636,9 +659,31 @@ body.night-style {
                 }
             }
         }
+        // 直播主题
+        #livethread {
+            border-color: $table-border-color;
+            #livereplycontentout {
+                background-color: $bodybg;
+                @include scroll(8px);
+            }
+            #livereplycontent {
+                background-color: $bodybg;
+                > div {
+                    background-color: $bodybg-l;
+                }
+            }
+            #livefastcomment {
+                border-color: $table-border-color;
+                background-color: $bodybg;
+                textarea {
+                    background-color: $bodybg-l;
+                    color: $fontcolor !important;
+                }
+            }
+        }
     }
 }
-// home.php misc.php
+// home.php misc.php search.php
 body.night-style {
     #ct {
         // 左侧
@@ -724,6 +769,17 @@ body.night-style {
                     }
                 }
             }
+        }
+    }
+    #threadlist .pbw {
+        h3 a {
+            color: #69f;
+            &:visited {
+                color: #b54dff;
+            }
+        }
+        p {
+            color: $fontcolor;
         }
     }
 }
@@ -878,60 +934,62 @@ body.night-style {
     }
 }
 // 处理各色的a/font
-$colormap: (
-    "#333333": #e0e0e0,
-    "#663399": #de90df,
-    "#8f2a90": #de90df,
-    /*大区版主色*/ "#660099": #bf8cd9,
-    /*版主色*/ "#660000": #c66,
-    "#993333": #f99,
-    /*红色主题*/ "#EE1B2E": #f99,
-    "#ff0000": #f99,
-    "#FF0000": #f99,
-    /*橙色主题*/ "#EE5023": #d97f26,
-    /*褐色主题*/ "#996600": #e6a219,
-    "#663300": #d97f26,
-    "#006666": #6cc,
-    /*绿色主题*/ "#3C9D40": #8f8,
-    "#009900": #9f9,
-    "#3366ff": #6af,
-    "#2b65b7": #6af,
-    "#003399": #6af,
-    "#2B65B7": #6af,
-    "#330066": #b28cd9,
-    /*紫色主题*/ "#8F2A90": #cf61d1,
-);
-$fontcolormap: (
-    /*版主色*/ "#660000": #c66,
-    "#8b0000": #c66,
-    "#ff0000": #f99,
-    "red": #f99,
-    "Red": #f99,
-    "#000080": #8af,
-    "#0000ff": #8af,
-    "#3366ff": #8af,
-    "#003399": #8af,
-    "blue": #8af,
-    "Blue": #8af,
-    "#339933": #9f9,
-    "#009900": #9f9,
-    "#008000": #9f9,
-    "#006400": #9f9,
-    "green": #9f9,
-    "Green": #9f9,
-    "#000000": #fff,
-    "black": #fff,
-    "Black": #fff,
-    /*大区版主色*/ "#660099": #bf8cd9,
-    "#4b0082": #b54dff,
-    "Indigo": #b54dff,
-    "DarkOrchid": #c57ce9,
-    "Purple": #ff4dff,
-    "#2d76c4": #5c97d6,
-    "Olive": #ffff33
-);
-$backcolormap: ("#FFFFFF", "Wheat");
 body.night-style {
+    $colormap: (
+        "#333333": #e0e0e0,
+        "#663399": #de90df,
+        "#8f2a90": #de90df,
+        /*大区版主色*/ "#660099": #bf8cd9,
+        /*版主色*/ "#660000": #c66,
+        "#993333": #f99,
+        /*红色主题*/ "#EE1B2E": #f99,
+        "#ff0000": #f99,
+        "#FF0000": #f99,
+        /*橙色主题*/ "#EE5023": #d97f26,
+        /*褐色主题*/ "#996600": #e6a219,
+        "#663300": #d97f26,
+        "#006666": #6cc,
+        /*绿色主题*/ "#3C9D40": #8f8,
+        "#009900": #9f9,
+        "#3366ff": #6af,
+        "#2b65b7": #6af,
+        "#003399": #6af,
+        "#2B65B7": #6af,
+        "#330066": #b28cd9,
+        /*紫色主题*/ "#8F2A90": #cf61d1,
+    );
+    $fontcolormap: (
+        "#333333": #e0e0e0,
+        /*版主色*/ "#660000": #c66,
+        "#8b0000": #c66,
+        "#ff0000": #f99,
+        "red": #f99,
+        "Red": #f99,
+        "#000080": #8af,
+        "#0000ff": #8af,
+        "#3366ff": #8af,
+        "#003399": #8af,
+        "blue": #8af,
+        "Blue": #8af,
+        "#339933": #9f9,
+        "#009900": #9f9,
+        "#008000": #9f9,
+        "#006400": #9f9,
+        "#0640": #9f9,
+        "green": #9f9,
+        "Green": #9f9,
+        "#000000": #fff,
+        "black": #fff,
+        "Black": #fff,
+        /*大区版主色*/ "#660099": #bf8cd9,
+        "#4b0082": #b54dff,
+        "Indigo": #b54dff,
+        "DarkOrchid": #c57ce9,
+        "Purple": #ff4dff,
+        "#2d76c4": #5c97d6,
+        "Olive": #ffff33,
+    );
+    $backcolormap: ("#FFFFFF", "Wheat");
     .xl label,
     .xl label a {
         // 论坛页 最新求助 里面的(+??)

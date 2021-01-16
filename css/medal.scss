@@ -169,7 +169,7 @@ body {
         margin-left: 44px;
         pointer-events: none !important;
         overflow: hidden;
-        background-color: rgba($color: #222, $alpha: 0.75);
+        background-color: rgba($color: #999, $alpha: 0.75);
         box-shadow: 0px 10px 25px -4px #000;
         image-rendering: pixelated; /*用临近插值法放大图像*/
         &::before {
@@ -195,15 +195,15 @@ body {
             background-image: linear-gradient(
                 142deg,
                 #fff0 0%,
-                #fff7 5%,
-                #fff5 28%,
+                #fff4 5%,
+                #fff2 28%,
                 #fff0 29%,
                 #fff0 70%,
-                #fff5 70.5%,
-                #fff5 73%,
+                #fff2 70.5%,
+                #fff2 73%,
                 #fff0 74%,
-                #fff7 75%,
-                #fff7 85%,
+                #fff4 75%,
+                #fff2 85%,
                 #fff0 85.1%
             ); /*诡异的光*/
             padding: 20px 15px 0 15px;
@@ -213,8 +213,8 @@ body {
             > h4 {
                 color: #222;
                 text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
-                    0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff,
-                    0 0 3px #fff, 0 0 3px #fff !important;
+                    0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 2px #fff,
+                    0 0 2px #fff, 0 0 2px #fff !important;
             }
             h4 {
                 /*说明窗口的标题栏*/
@@ -415,12 +415,11 @@ body {
         249: "m_g_rmg.png",
         252: "m_g_tml.png",
     );
-    div[id*="_menu"]:before {
+    div[id$="_menu"]:before {
         background-repeat: no-repeat;
     }
     @each $key, $name in $medalmap {
-        #md_#{$key}_menu:before,
-        #medal_#{$key}_menu:before {
+        div[id$="_#{$key}_menu"]:before {
             background: url(static/image/common/#{$name});
         }
     }
