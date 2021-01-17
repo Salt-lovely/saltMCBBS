@@ -4,6 +4,8 @@ interface saltMCBBSOriginClass {
     new(): saltMCBBSOriginClassNew
 }
 interface saltMCBBSOriginClassNew {
+    /**获取当前时间戳 */
+    getTime(): number,
     getData(key: 'antiWaterRegExp'): RegExp[],
     getData(key: 'noticImgUrl'): String[],
     /**
@@ -51,6 +53,11 @@ interface saltMCBBSOriginClassNew {
      * @param key 键值
      *  */
     readWithDefault<T>(key: string, defaultValue: T): T,
+    /**
+     * 数组中随机挑选一个返回
+     * @param arr 数组
+     */
+    randomChoice<T>(arr: T[]): T,
     /**
      * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
      * @param str 要分割的字符串

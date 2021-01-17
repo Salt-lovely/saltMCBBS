@@ -26,13 +26,14 @@
 夜间模式下的背景图片 211
 主体部分的透明度 212
 
+自定义水帖匹配正则 220
+
 打算实装的功能
-帖子颜色标记
 控制台功能
 */
 (function () {
     /**版本 */
-    const myversion = '0.1.6'
+    const myversion = '0.1.7'
     /**历史 */
     const myhistory = ``
     /**前缀 */
@@ -83,6 +84,10 @@
                 cc.className = 'consolePanel'
                 // document.body.append(cc)
             }
+        }
+        /**获取当前时间戳 */
+        getTime() {
+            return (new Date()).getTime()
         }
         getData(key: 'antiWaterRegExp'): RegExp[];
         getData(key: 'noticImgUrl'): String[];
@@ -414,13 +419,13 @@
             else if (t == 'undefined') { console.log(p + 'undefined') }
             else { console.log(p); console.log(msg) }
         }
-        /**history: 显示更新历史*/
-        history() {
-            this.log(myhistory)
-        }
+        // /**history: 显示更新历史*/
+        // history() {
+        //     console.log('%c ' + myprefix + ' %c 开源地址: https://github.com/Salt-lovely/saltMCBBS ', 'background-color:Wheat;color:Sienna;font-size:1rem;font-weight:bold;padding:4px;', 'font-size:1rem')
+        // }
         /**version: 显示版本*/
         version() {
-            this.log('版本-' + myversion)
+            console.log('%c ' + myprefix + ' %c ' + myversion + ' 开源地址: https://github.com/Salt-lovely/saltMCBBS ', 'background-color:Wheat;color:Sienna;font-size:1rem;font-weight:bold;padding:4px;', 'font-size:1rem')
         }
         /**
          * sleep 返回一个延迟一定ms的promise
@@ -440,7 +445,7 @@
         constructor(autorun = false) {
             super()
             window.saltMCBBSCSS.setStyle( // 主要更改
-                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warned::after{content:"已制裁";color:#2c4}.pl .blockcode{position:relative}.pl .blockcode>em{top:2px;right:2px;position:absolute;margin:0 0 0 0}.pl .blockcode>em:hover{outline:1px dashed}.pl .blockcode ol{overflow:auto;max-height:45em;max-width:750px;scrollbar-width:thin;scrollbar-color:#eee #999}.pl .blockcode ol::-webkit-scrollbar{width:10px;height:10px}.pl .blockcode ol::-webkit-scrollbar-thumb{border-radius:10px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.pl .blockcode ol::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:10px;background:#eee}.pl .blockcode ol li{color:#444;margin-left:29px;line-height:1.8em;height:1.8em;white-space:pre}.settingPanel{width:40vw;min-width:360px;left:30vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel>*:first-child{background-color:#fbf2db;position:sticky;top:0}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;color:#000000;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:37.5em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.linksStillOnTopBar{width:100%;text-align:center}.linksStillOnTopBar>a{display:inline-block;width:90%;padding:4px 6px;border-radius:4px}.linksStillOnTopBar>a:hover{background:var(--MExtBtnClr, #e91e63);color:white}#toptb{transition:opacity 0.3s ease}
+                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warned::after{content:"已制裁";color:#2c4}.pl .blockcode{position:relative}.pl .blockcode>em{top:2px;right:2px;position:absolute;margin:0 0 0 0}.pl .blockcode>em:hover{outline:1px dashed}.pl .blockcode ol{overflow:auto;max-height:45em;max-width:750px;scrollbar-width:thin;scrollbar-color:#eee #999}.pl .blockcode ol::-webkit-scrollbar{width:10px;height:10px}.pl .blockcode ol::-webkit-scrollbar-thumb{border-radius:10px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.pl .blockcode ol::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:10px;background:#eee}.pl .blockcode ol li{color:#444;margin-left:29px;line-height:1.8em;height:1.8em;white-space:pre}.settingPanel{width:50vw;min-width:360px;left:25vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel>*:first-child{background-color:#fbf2db;position:sticky;top:0}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;color:#000000;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:37.5em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.linksStillOnTopBar{width:100%;text-align:center}.linksStillOnTopBar>a{display:inline-block;width:90%;padding:4px 6px;border-radius:4px}.linksStillOnTopBar>a:hover{background:var(--MExtBtnClr, #e91e63);color:white}#toptb{transition:opacity 0.3s ease}
 `
                 , 'main'
             )
@@ -465,20 +470,21 @@
 `, 'threadClassify'
             )
             if (autorun) {
-                this.log('运行saltMCBBS主过程')
+                // 显示版本 // 与更新历史
+                this.version() // this.history()
                 // 创建事件
                 let ev = new CustomEvent('saltMCBBSload', { detail: { name: 'saltMCBBS', version: myversion } })
                 // 初始化
+                let timeBeforeInit = this.getTime()
+                console.log('%c ' + myprefix + ': 开始初始化', 'font-size:1rem')
                 this.init()
-                // 显示版本与更新历史
-                this.version(); this.history()
-                // 使用主要CSS
-                window.saltMCBBSCSS.putStyle('', 'main')
-                // 启用夜间模式
-                let isNight = this.readWithDefault<boolean>('isNightStyle', false)
-                this.nightStyle(isNight, false)
+                let timeAfterInit = this.getTime()
+                console.log('%c ' + myprefix + ': 初始化完毕, 耗时 %c' + (timeAfterInit - timeBeforeInit) + ' %cms', 'font-size:1rem', 'font-size:1rem;color:yellow', 'font-size:1rem')
                 // 以下部分需要在文档加载完毕后执行
                 this.docReady(() => {
+                    // 统计用时
+                    let timeBeforeMainFunc = this.getTime()
+                    console.log('%c ' + myprefix + ': 开始加载脚本', 'font-size:1rem')
                     // 移动顶部栏到左侧
                     this.movePageHead()
                     // 检查警告记录
@@ -511,12 +517,20 @@
                     this.sortSetting()
                     // 触发事件
                     window.dispatchEvent(ev)
+                    // 统计用时
+                    let timeAfterMainFunc = this.getTime()
+                    console.log('%c ' + myprefix + ': 脚本加载完毕, 耗时 %c' + (timeAfterMainFunc - timeBeforeMainFunc) + ' %cms', 'font-size:1rem', 'font-size:1rem;color:yellow', 'font-size:1rem')
                 })
             }
         }
         /**初始化 */
         init() {
             let obj = this
+            // 使用主要CSS
+            window.saltMCBBSCSS.putStyle('', 'main')
+            // 启用夜间模式
+            let isNight = this.readWithDefault<boolean>('isNightStyle', false)
+            this.nightStyle(isNight, false)
             // 初始化设置面板
             let sp = this.settingPanel
             sp.id = techprefix + 'settingPanel'
@@ -528,6 +542,7 @@
             <a class="sslct_btn" onclick="extstyle('./template/mcbbs/style/winter')" title="冬季"><i style="background:#4d82ff"></i></a>
             <a class="sslct_btn" onclick="extstyle('./template/mcbbs/style/default')" title="经典"><i style="background:#70ba5e"></i></a>
             <a class="sslct_btn" onclick="extstyle('./template/mcbbs/style/nether')" title="下界"><i style="background:#ae210f"></i></a>
+            <a href="javascript:;" onclick="window.saltMCBBS.toggleNightStyle()" title="点击切换夜间/正常模式">切换夜间模式</a>
             <a href="https://github.com/Salt-lovely/saltMCBBS/releases" target="_blank" title="前往GitHub下载最新版">下载最新版SaltMCBBS</a>
             <a href="javascript:;" class="flbc" onclick="saltMCBBS.hideSettingPanel()" title="关闭">关闭</a>
             </span></h3>`;
@@ -553,6 +568,10 @@
                     document.body.style.setProperty('--mcmapwpOpacity', vl + '')
                 }, '主体部分的透明度', 212)
             this.updateBackground()
+            // 顶栏相关优化
+            if (this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true)) {
+                window.saltMCBBSCSS.putStyle('#toptb{opacity:0}')
+            }
         }
         /**movePageHead 移动顶栏到页面左侧*/
         movePageHead() {
@@ -1403,7 +1422,39 @@
                 this.write('SaltAntiWater', ck)
                 this.message('"水帖检测机制"配置项需要刷新生效<br>点击刷新', () => { location.reload() }, 3)
             }, '水帖检测机制', 41)
-            if (enableAntiWater) { this.antiWater() } // 叠buff
+            /**存起来的内容 */
+            let antiWaterRegExpRaw = this.readWithDefault<string>('SaltAntiWaterRegExp',
+                '// 写法: /表达式/标记 -- 表达式: 正则表达式 -- 标记: i-忽略大小写 g-多次匹配 m-多行匹配 -- 示例: /[6六six]{3,}/i' +
+                '\n' + /^[\s\S]{0,2}([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*[\s\S]?\s?$/ +
+                '\n' + /^[\s\S]{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务)[\s\S]{0,3}$/)
+            /**整理成正则表达式数组 */
+            let antiWaterRegExp = string2RegExp(
+                this.cleanStringArray(
+                    this.formatToStringArray(antiWaterRegExpRaw)
+                )
+            )
+            this.addTextareaSetting('自定义水帖匹配正则<small> 匹配水帖，一行一个，开头添加“//”暂时禁用</small>', antiWaterRegExpRaw, (el, ev) => {
+                this.write('SaltAntiWaterRegExp', el.value)
+                antiWaterRegExp = string2RegExp(
+                    this.cleanStringArray(
+                        this.formatToStringArray(el.value)
+                    )
+                )
+                if (enableAntiWater) { this.antiWater(antiWaterRegExp) }
+            }, '自定义水帖匹配正则', 220)
+            // 如果启用
+            if (enableAntiWater) { this.antiWater(antiWaterRegExp) }
+            function string2RegExp(str: string[]): RegExp[] {
+                let r: RegExp[] = []
+                for (let s of str) {
+                    if (s.indexOf('/') != 0) { continue }
+                    s = s.slice(1)
+                    if (s.indexOf('/') < 1) { continue }
+                    let p = s.slice(0, s.lastIndexOf('/')), a = s.slice(s.lastIndexOf('/')).replace(/[^igm]/g, '')
+                    r.push(new RegExp(p, a))
+                }
+                return r
+            }
         }
         /**动画效果 */
         animationOP() {
@@ -1473,6 +1524,7 @@
                 this.write('saltMCBBSconfiectFix', ck)
                 if (ck) sub()
             }, '冲突修复功能', 21)
+            /**移动顶栏的情况下导致的问题 */
             function sub() {
                 let links = obj.links
                 let ul = document.querySelector('.user_info_menu_btn'); if (!ul || !(ul instanceof HTMLElement)) { return }
@@ -1485,6 +1537,7 @@
                     obj.log(othersArchor) // 仅在侦测到其他锚点时启用
                 }
             }
+            /**MCBBS Extender专项兼容 */
             function MExtFix() {
                 // 勋章栏重复修复
                 if (document.querySelector('.md_ctrl .hoverable-medal')) {
