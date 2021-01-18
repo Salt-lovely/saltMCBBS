@@ -69,7 +69,7 @@ $droplight: drop-shadow(0 0 4px #fff);
     }
 }
 // 大体更改
-body.night-style {
+body.nightS {
     --bodybg: $bodybg;
     --bodybg-l: $bodybg;
     --bodybg-l-t: rgba($color: $bodybg, $alpha: 0);
@@ -114,8 +114,12 @@ body.night-style {
         background-color: $bodybg-l;
         border-color: $table-border-color;
         background-image: none;
-        a:hover {
-            background-color: $table-border-color;
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+                background-color: $table-border-color;
+            }
         }
     }
     // 面包屑
@@ -239,9 +243,14 @@ body.night-style {
             }
         }
     }
+    // 一些蓝色字
+    .tl th em,
+    .tl th em a {
+        color: darken($a-highlight, 5%);
+    }
 }
 // 门户、论坛、小组
-body.night-style {
+body.nightS {
     #diy_chart {
         // > div,
         // .frame,
@@ -411,7 +420,7 @@ body.night-style {
     }
 }
 // 看帖页面
-body.night-style {
+body.nightS {
     .pgb a {
         // 最近浏览
         background-color: transparent;
@@ -649,7 +658,7 @@ body.night-style {
     }
 }
 // 版块页面
-body.night-style {
+body.nightS {
     #ct {
         .bm.bml.pbn,
         .bm.bmw.fl {
@@ -744,7 +753,7 @@ body.night-style {
     }
 }
 // home.php misc.php search.php
-body.night-style {
+body.nightS {
     #ct {
         // 左侧
         .appl {
@@ -847,7 +856,7 @@ body.night-style {
     }
 }
 // 顶部5个按钮
-body.night-style {
+body.nightS {
     #nv > ul {
         background-color: $bodybg;
         background-image: none;
@@ -879,7 +888,7 @@ body.night-style {
     }
 }
 // 用户页
-body.night-style {
+body.nightS {
     #uhd {
         background-color: $bodybg-l;
         border-color: $bodybg;
@@ -929,7 +938,7 @@ body.night-style {
     }
 }
 // 编辑器
-body.night-style {
+body.nightS {
     // 选择主题分类的弹出菜单
     #typeid_ctrl_menu {
         background-color: $bodybg-l;
@@ -947,48 +956,54 @@ body.night-style {
         .tb .current a {
             background-color: $bodybg-l-l;
         }
-        .ftid a {
-            background-color: $bodybg-l-l;
-            color: $fontcolor !important; // MCBBS的CSS里有一个important导致我也不得不写一个
-        }
-        // 顶部小工具栏
-        #e_controls {
-            background-color: $bodybg-l-l;
-            .b1r a,
-            .b2r a {
-                border: none;
-                border-width: 0px;
-                &:not(.dp) {
-                    @include glow();
-                }
-                &.dp {
-                    background-color: $bodybg-l-l;
-                    color: $fontcolor;
-                }
-            }
-        }
-        // 纯文本模式
-        #e_textarea {
+        #e_body .area,
+        .area {
             background-color: $bodybg;
         }
-        // 编辑器边框
-        #rstnotice, // 这个是提示
-        #e_bbar,
-        .area {
+    }
+    // 下拉框
+    .ftid {
+        a {
             background-color: $bodybg-l;
             border-color: $table-border-color;
+            color: $fontcolor !important; // MCBBS的CSS里有一个important导致我也不得不写一个
         }
+    }
+    // 帖子模板(淡蓝色部分) + 底部提示栏
+    .exfm {
+        background-color: $bodybg-l-l;
+        border-color: $table-border-color;
+    }
+    // 顶部小工具栏
+    #e_controls {
+        background-color: $bodybg-l-l;
+        .b1r a,
+        .b2r a {
+            border: none;
+            border-width: 0px;
+            &:not(.dp) {
+                @include glow();
+            }
+            &.dp {
+                background-color: $bodybg-l-l;
+                color: $fontcolor;
+            }
+        }
+    }
+    // 纯文本模式
+    #e_textarea {
+        background-color: $bodybg;
+    }
+    // 编辑器边框
+    #rstnotice, // 这个是提示
+        #e_bbar,
         .area {
-            background-color: $bodybg;
-        }
-        // 底部提示栏
-        .exfm {
-            background-color: $bodybg-l-l;
-        }
+        background-color: $bodybg-l;
+        border-color: $table-border-color;
     }
 }
 // 网站地图
-body.night-style {
+body.nightS {
     #nav,
     #content > *,
     li,
@@ -1008,7 +1023,7 @@ body.night-style {
     }
 }
 // 处理各色的a/font
-body.night-style {
+body.nightS {
     $colormap: (
         "#333333": #e0e0e0,
         "#663399": #de90df,
@@ -1026,12 +1041,14 @@ body.night-style {
         "#006666": #6cc,
         /*绿色主题*/ "#3C9D40": #8f8,
         "#009900": #9f9,
+        /*蓝色主题*/ "#2897C5": #52b6e0,
         "#3366ff": #6af,
         "#2b65b7": #6af,
         "#003399": #6af,
         "#2B65B7": #6af,
         "#330066": #b28cd9,
         /*紫色主题*/ "#8F2A90": #cf61d1,
+        "#EC1282": #f655a8,
     );
     $fontcolormap: (
         "#333333": #e0e0e0,
@@ -1046,6 +1063,7 @@ body.night-style {
         "#003399": #8af,
         "blue": #8af,
         "Blue": #8af,
+        "Navy": #8af,
         "#339933": #9f9,
         "#009900": #9f9,
         "#008000": #9f9,
@@ -1060,11 +1078,13 @@ body.night-style {
         "#4b0082": #b54dff,
         "Indigo": #b54dff,
         "DarkOrchid": #c57ce9,
-        "Purple": #ff4dff,
+        "#800080": #e830e8,
+        "Purple": #e830e8,
         "#2d76c4": #5c97d6,
         "Olive": #ffff33,
+        "Sienna": #d28460,
     );
-    $backcolormap: ("#FFFFFF", "Wheat");
+    $backcolormap: ("#FFFFFF", "Wheat", "white", "#ffffff");
     .xl label,
     .xl label a {
         // 论坛页 最新求助 里面的(+??)
@@ -1072,14 +1092,18 @@ body.night-style {
     }
     a,
     font {
-        &[style*="color"] {
+        // &[style*="color:"] { // 这个CSS太长了, 能省一点是一点
+        &[style*="or:"] {
             @each $key, $color in $colormap {
                 &[style*="#{$key}"] {
                     color: $color !important;
                 }
             }
         }
-        &[style*="background-color"] {
+    }
+    a {
+        // &[style*="background-color"] { // 这个CSS太长了, 能省一点是一点
+        &[style*="nd-co"] {
             @each $key in $backcolormap {
                 &[style*="#{$key}"] {
                     background-color: transparent !important;
@@ -1093,13 +1117,21 @@ body.night-style {
                 color: $color !important;
             }
         }
+        // &[style*="background-color"] { // 这个CSS太长了, 能省一点是一点
+        &[style*="nd-co"] {
+            @each $key in $backcolormap {
+                &[style*="#{$key}"] {
+                    background-color: transparent !important;
+                }
+            }
+        }
     }
     .t_f[style*="background-color"][style*="#FBF2DB"] {
         background-color: transparent !important;
     }
 }
 // 设置面板夜间模式
-body.night-style {
+body.nightS {
     .settingPanel {
         background-color: $bodybg;
         color: $fontcolor;
