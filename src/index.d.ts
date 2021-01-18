@@ -1,4 +1,4 @@
-/// <reference path="saltMCBBS.d.ts"/>
+/// <reference path="sm.d.ts"/>
 
 interface Window {
     saltMCBBSCSS: saltMCBBScss,
