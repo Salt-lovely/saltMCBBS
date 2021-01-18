@@ -1059,7 +1059,7 @@
             /**主过程 */
             function main() {
                 if (obj.getUID() < 1) {
-                    obj.message('未检测到UID<br>点击重试', (f) => {
+                    obj.message('未检测到UID<br>点击重试 <a href="https://www.mcbbs.net/member.php?mod=logging&action=login">点击登录</a> <a href="https://www.mcbbs.net/bilibili_connect.php?mod=auth&op=login">B站登录</a>', (f) => {
                         f()
                         main()
                     })
@@ -1264,7 +1264,7 @@
                 obj.write('LoadImgProxyEnable', ck)
                 obj.message('代理加载配置需要刷新页面生效', (f) => { f() }, 3)
             }, '启用代理加载图片', 47)
-            this.addCheckSetting('启用反反盗链功能<br><small>访问微博、贴吧等后来启用反盗链的图床</small>', enableProxy, (ck, ev) => {
+            this.addCheckSetting('启用反反盗链功能<br><small>访问微博、贴吧等后来启用反盗链的图床</small>', enableAntiASL, (ck, ev) => {
                 enableAntiASL = ck
                 obj.write('antiAntiStealingLinkEnable', ck)
                 obj.message('反反盗链配置需要刷新页面生效', (f) => { f() }, 3)
@@ -1308,15 +1308,63 @@
             /**反反盗链 */
             function antiAntiStealingLink(img: HTMLImageElement) {
                 if (img.hasAttribute('referrerpolicy')) { return }
-                let src = img.src
+                let src = '', attr = 'src' // attr: 要处理的属性, 默认src, 没有则处理file
                 /**需要反反盗链的图床网址 */
-                let antiStealingLinkWebSite = ['sinaimg.cn', 'tiebapic.baidu.com', 'qpic.cn']
+                let antiStealingLinkWebSite = ['sinaimg.cn', 'tiebapic.baidu.com', 'qpic.cn', /*'bvimg.com',*/]
+                /**需要特殊反反盗链的图床网址 */
+                let advancedAntiStealingLinkWebSite = ['hiphotos.bdimg.com',]
+                src = img.getAttribute(attr) || ''
+                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
+                    attr = 'file'
+                    src = img.getAttribute(attr) || ''
+                }
+                for (let s of advancedAntiStealingLinkWebSite) {
+                    if (src.indexOf(s) != -1) {
+                        iframeSet(img, s, src)
+                        return
+                    }
+                }
                 for (let s of antiStealingLinkWebSite) {
                     if (src.indexOf(s) != -1) {
-                        img.setAttribute('referrerpolicy', 'no-referrer')
-                        // img.setAttribute('referrerPolicy', 'no-referrer')
-                        obj.log('检查到需要反反盗链的图床: ' + s + '\n - 链接: ' + src)
+                        noRefSet(img, s)
+                        return
                     }
+                }
+                /**取消请求头中的来源以绕过反盗链 */
+                function noRefSet(img: HTMLImageElement, tuChuang: string) {
+                    img.setAttribute('referrerpolicy', 'no-referrer')
+                    // img.setAttribute('referrerPolicy', 'no-referrer')
+                    obj.log('检查到需要反反盗链的图床: ' + tuChuang + '\n - 链接: ' + src)
+                }
+                /**使用iframe加载来绕过反盗链 */
+                function iframeSet(img: HTMLImageElement, tuChuang: string, src: string) {
+                    img.setAttribute('referrerpolicy', 'no-referrer')
+                    // let id = 'iframeimg' + Math.floor(Math.random() * 1e16)
+                    let iframe = document.createElement('iframe')
+                    // iframe.id = id
+                    iframe.style.border = 'none'
+                    iframe.style.borderWidth = '0px'
+                    img.parentElement!.appendChild(iframe)
+                    if (!iframe.contentDocument) { console.log('dasdasdasdada'); return }
+                    // 写入img
+                    iframe.contentDocument.body.innerHTML = `
+<!-- SaltMCBBS -->
+<img id="img" src="${src}" style="max-width: 750px"
+${img.getAttribute('width') ? ' width="' + img.getAttribute('width') + '"' : ''}
+${img.getAttribute('height') ? ' height="' + img.getAttribute('height') + '"' : ''}>
+`
+                    // <script>
+                    // /*(function() { 
+                    //     img = document.getElementById("img")
+                    //     img.onload = function(){
+                    //         parent.document.getElementById("${id}").height = img.offsetHeight+"px";
+                    //         parent.document.getElementById("${id}").width = img.offsetWidth+"px";
+                    //     }
+                    // })*/
+                    // </script>
+                    // img.style.display = 'none'
+                    iframe.style.display = 'none'
+                    obj.log('检查到需要反反盗链的图床: ' + tuChuang + '\n - 链接: ' + src)
                 }
             }
         }
@@ -1594,14 +1642,21 @@ p.md_ctrl{padding-left: 0;}
                 /**复制了td的HTML, 实现隔离 */
                 let tempEl: Element | null = document.createElement('div')
                 tempEl.innerHTML = td.innerHTML
-                for (let img of Array.from(tempEl.querySelectorAll('img[smilieid]'))) {
-                    if (img instanceof HTMLImageElement) {
+                for (let img of Array.from(tempEl.querySelectorAll('img[smilieid]')))
+                    if (img instanceof HTMLImageElement)
                         img.replaceWith('/meme/') // 表情包会被处理成'/meme/'的文字形式
-                    }
-                } for (let font0 of Array.from(tempEl.querySelectorAll('font[style*="font-size:0px"]'))) {
-                    if (font0 instanceof HTMLImageElement) {
+                for (let font0 of Array.from(tempEl.querySelectorAll('font[style*="font-size:0px"]')))
+                    if (font0 instanceof HTMLImageElement)
                         font0.remove() // 不可见的节点将被忽略
-                    }
+                {
+                    let quote = tempEl.querySelector('div.quote')
+                    if (!quote)
+                        return
+                    let a = quote.querySelector('a')
+                    if (!a)
+                        return
+                    if (/.*\s?发表于.*\d{4}/.test(a.textContent || ''))
+                        quote.remove() // 忽略引用回帖
                 }
                 let t = tempEl.textContent || ''
                 for (let aw of RegExps) {
