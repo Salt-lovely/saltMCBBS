@@ -96,32 +96,6 @@ ul.xl.xl2.o.cl .pmwarn {
         color: #2c4;
     }
 }
-// 代码块
-.pl .blockcode {
-    position: relative;
-    > em {
-        top: 2px;
-        right: 2px;
-        position: absolute;
-        margin: 0 0 0 0;
-        &:hover {
-            outline: 1px dashed;
-        }
-    }
-    ol {
-        overflow: auto;
-        max-height: 45em;
-        max-width: 750px;
-        @include scroll(10px);
-        li {
-            color: #444;
-            margin-left: 29px;
-            line-height: 1.8em;
-            height: 1.8em;
-            white-space: pre;
-        }
-    }
-}
 // 设置面板
 .settingPanel {
     width: 50vw;
@@ -271,8 +245,20 @@ textarea.pt {
     line-height: 1.25em;
     resize: vertical;
     min-height: 1.25 * 4em;
-    max-height: 1.25 * 30em;
+    max-height: 1.25 * 45em;
     @include scroll(8px);
+}
+#ct .mn .bm .tdats {
+    .alt.h th {
+        padding-top: 0;
+        padding-bottom: 0;
+        border-top: 0;
+        border-bottom: 0;
+    }
+    .tb {
+        // 用户组权限页面
+        margin-top: 0;
+    }
 }
 // 如果顶栏没有移动到左侧
 .linksStillOnTopBar {
@@ -292,3 +278,67 @@ textarea.pt {
 #toptb {
     transition: opacity 0.3s ease;
 }
+// 代码块
+// .pl .blockcode {
+//     position: relative;
+//     background-image: none;
+//     > div {
+//         position: relative;
+//         max-height: 1.2rem * 50; // 最多显示50行
+//         @include scroll(10px);
+//         z-index: 10;
+//         &::after {
+//             content: "01.\A 02.\A";
+//             position: absolute;
+//             overflow: hidden;
+//             width: 33px;
+//             height: 100%;
+//             top: 0;
+//             left: 0;
+//             font-size: 1rem;
+//             line-height: 1.2rem;
+//             text-align: right;
+//         }
+//     }
+//     > em {
+//         top: 2px;
+//         right: 2px;
+//         position: absolute;
+//         margin: 0 0 0 0;
+//         z-index: 12;
+//         &:hover {
+//             outline: 1px dashed;
+//         }
+//     }
+//     ol {
+//         overflow: auto;
+//         max-width: 750px;
+//         //margin-left: 0 !important; // MCBBS加了important我也只好加了
+//         // 左侧的深色区域宽度43px，ol左边距10px
+//         margin-left: 33px !important; // calc(33px + 0.5rem);
+//         font-size: 1rem;
+//         @include scroll(10px);
+//         list-style: none;
+//         li {
+//             color: #333;
+//             height: 1.2rem;
+//             padding-left: 1rem;
+//             margin-left: 0;
+//             font-size: 1rem;
+//             line-height: 1.2rem;
+//             list-style: none;
+//             white-space: pre;
+//         }
+//     }
+//     &::after {
+//         content: "";
+//         position: absolute;
+//         width: 42px;
+//         height: 100%;
+//         top: 0;
+//         left: 0;
+//         border-right: 1px solid #ccc;
+//         background-color: #ededed;
+//         z-index: 14;
+//     }
+// }

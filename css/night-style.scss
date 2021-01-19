@@ -651,9 +651,22 @@ body.nightS {
     }
     // 代码块
     .blockcode {
-        filter: invert(0.8) hue-rotate(170deg); // 阴间滤镜
+        // filter: invert(0.9) hue-rotate(170deg); // 阴间滤镜
+        background-color: $bodybg-l-l;
+        background-image: none;
+        border-color: #999;
+        color: $fontcolor;
         ol li {
-            color: #222;
+            color: $fontcolor-l;
+            &:hover {
+                background: #706b5c;
+                color: #d9e6f2;
+            }
+        }
+        &::after {
+            content: "";
+            border-color: #999;
+            background-color: #484a55;
         }
     }
 }
@@ -837,6 +850,29 @@ body.nightS {
                         background-color: $bodybg-l;
                     }
                 }
+                // 一些表格
+                .tdats {
+                    th,
+                    td {
+                        background-color: $bodybg;
+                        &.alt {
+                            background-color: $bodybg-l;
+                        }
+                    }
+                    .alt {
+                        th,
+                        td {
+                            background-color: $bodybg-l;
+                        }
+                        &.h {
+                            th,
+                            td {
+                                color: $bodybg-l;
+                                background-color: $fontcolor;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -956,7 +992,6 @@ body.nightS {
         .tb .current a {
             background-color: $bodybg-l-l;
         }
-        #e_body .area,
         .area {
             background-color: $bodybg;
         }
@@ -995,9 +1030,10 @@ body.nightS {
         background-color: $bodybg;
     }
     // 编辑器边框
+    #e_body .area,
     #rstnotice, // 这个是提示
-        #e_bbar,
-        .area {
+    #e_bbar,
+    .area {
         background-color: $bodybg-l;
         border-color: $table-border-color;
     }
@@ -1035,7 +1071,7 @@ body.nightS {
         "#ff0000": #f99,
         "#FF0000": #f99,
         "#CC0000": #f99,
-        /*橙色主题*/ "#EE5023": #d97f26,
+        /*橙色主题*/ "#EE5023": #e97c5d,
         /*褐色主题*/ "#996600": #e6a219,
         "#663300": #d97f26,
         "#006666": #6cc,

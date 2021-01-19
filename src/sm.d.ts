@@ -4,6 +4,10 @@ interface saltMCBBSOriginClass {
     new(): saltMCBBSOriginClassNew
 }
 interface saltMCBBSOriginClassNew {
+    /**相当于setInterval */
+    tick(handler: Function, second?: number): number,
+    /**相当于clearInterval */
+    clearTick(handlerNum: number),
     /**获取当前时间戳 */
     getTime(): number,
     getData(key: 'antiWaterRegExp'): RegExp[],
@@ -246,6 +250,10 @@ interface saltMCBBScss {
      * @param key css标记
      */
     replaceStyle(css: string, key: string): boolean,
+    /**根据key获取style元素, 没找到的话返回null */
+    getStyleElement(key: string): Element | null,
+    /**根据key对指定元素设置属性 */
+    setStyleElement(key: string, el: Element): boolean,
 }
 /**saltMCBBScss里面存放的样式记录 */
 interface styleMap {
