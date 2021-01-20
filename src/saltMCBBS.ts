@@ -67,6 +67,10 @@
         /^[\s\S]{0,2}([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*[\s\S]?\s?$/, // 刷同一个字/表情包
         /^[\s\S]{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务)[\s\S]{0,3}$/, // "水水水"、"完成任务"之类的无意义回帖
     ]
+    const randomStringGen = [
+        'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'.split(''),
+        'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789'.split('')
+    ]
     /**原始类，包含各种基础方法*/
     class saltMCBBSOriginClass implements saltMCBBSOriginClass {
         messagePanel: HTMLElement = document.querySelector('#messagePanel') || document.createElement('div') // 右侧消息框
@@ -86,6 +90,16 @@
                 // document.body.append(cc)
             }
         }
+        /**随机生成字母数字组合, 可以用于id */
+        randomID(len = 16): string {
+            let s = this.randomChoice(randomStringGen[0])
+            for (let i = 1; i < len; i++)
+                s += this.randomChoice(randomStringGen[1])
+            if (document.getElementById(s)) // 不与现成的id冲突
+                return this.randomID(len)
+            else
+                return s
+        }
         /**相当于setInterval, 不过第二个参数是秒 */
         tick(handler: Function, second = 1) {
             this.assert(second > 0, '时间间隔不能小于0!')
@@ -102,6 +116,7 @@
         getData(key: 'antiWaterRegExp'): RegExp[];
         getData(key: 'noticImgUrl'): String[];
         getData(key: 'medalLinkPrefix'): String;
+        getData(key: 'randomStringGen'): String[][];
         /**
          * 获取一些由于闭包而不能直接访问的数据
          * @param key 默认返回空字符串
@@ -109,9 +124,10 @@
         getData(key: string): any {
             let temp: any // 做一下简单的隔离
             switch (key) {
-                case 'antiWaterRegExp': temp = antiWaterRegExp; break
-                case 'noticImgUrl': temp = noticimgurl; break
-                case 'medalLinkPrefix': temp = medalLinkPrefix; break
+                case 'antiWaterRegExp': return antiWaterRegExp
+                case 'noticImgUrl': return noticimgurl
+                case 'medalLinkPrefix': return medalLinkPrefix
+                case 'randomStringGen': return randomStringGen
                 default: temp = ''
             }
             return temp
@@ -458,7 +474,7 @@
         constructor(autorun = false) {
             super()
             window.saltMCBBSCSS.setStyle( // 主要更改
-                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warned::after{content:"已制裁";color:#2c4}.settingPanel{width:50vw;min-width:360px;left:25vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel>*:first-child{background-color:#fbf2db;position:sticky;top:0}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;color:#000000;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:56.25em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}#ct .mn .bm .tdats .alt.h th{padding-top:0;padding-bottom:0;border-top:0;border-bottom:0}#ct .mn .bm .tdats .tb{margin-top:0}.linksStillOnTopBar{width:100%;text-align:center}.linksStillOnTopBar>a{display:inline-block;width:90%;padding:4px 6px;border-radius:4px}.linksStillOnTopBar>a:hover{background:var(--MExtBtnClr, #e91e63);color:white}#toptb{transition:opacity 0.3s ease}
+                `body{background-image:var(--bodyimg-day);background-attachment:fixed;background-size:cover}body>div[style]:not([id]):not([class]){float:left}body:hover>.mc_map_wp{transition-delay:0s}body>.mc_map_wp{padding-top:0;margin-top:0;overflow:visible;display:inline-block;margin-left:calc(50% - 565px);transition:0.3s ease;transition-delay:0.5s}body>.mc_map_wp:hover{transition-delay:0s}body>.mc_map_wp>.new_wp{padding-top:0 !important;padding-bottom:0 !important}body>.mc_map_wp>.new_wp h2 img{max-height:74px}.pmwarn{width:auto !important;background-size:16px !important}ul.xl.xl2.o.cl .pmwarn{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px}#uhd>.mn>ul .pmwarn a{background:url(template/mcbbs/image/warning.gif) no-repeat 0px 2px !important;background-size:16px !important}.warned{opacity:0.2;transition:0.3s ease}.warned:hover{opacity:0.9}.reported{position:relative}.reported::after{content:"已举报";top:57px;left:400px;font-size:3rem;font-weight:bold;color:#c32;position:absolute;opacity:0.5;pointer-events:none}.reported.warned::after{content:"已制裁";color:#2c4}.settingPanel{width:50vw;min-width:360px;left:25vw;max-height:80vh;top:10vh;position:fixed;background-color:#fbf2db;background-clip:padding-box;padding:0 8px 8px 8px;border:8px solid;border-radius:8px;border-color:rgba(0,0,0,0.2);box-sizing:border-box;overflow-y:auto;transition:0.3s ease, opacity 0.2s ease;z-index:999999;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel::-webkit-scrollbar{width:4px;height:4px}.settingPanel::-webkit-scrollbar-thumb{border-radius:4px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:4px;background:#eee}.settingPanel.visible{opacity:1;top:10vh}.settingPanel.hidden{opacity:0;top:-90vh;transition-timing-function:ease-in}.settingPanel>*{width:100%;box-sizing:border-box;margin-bottom:8px;float:left}.settingPanel>*:first-child{background-color:#fbf2db;position:sticky;top:0;z-index:99}.settingPanel .flb span>a{color:#3a74ad}.settingPanel .flb span>a:hover{color:#6cf}.settingPanel h3{font-size:0.875rem}.settingPanel h3 small{font-size:0.5em;color:grey}.settingPanel h3.half-h3{width:calc(50% - 14px);padding:0 10px 0 0;float:left;text-align:right}.settingPanel textarea{resize:vertical;line-height:1.2em;height:3.6em;min-height:2.4em;max-height:24em;width:calc(100% - 8px);border:none;border-width:0;scrollbar-width:thin;scrollbar-color:#eee #999}.settingPanel textarea::-webkit-scrollbar{width:8px;height:8px}.settingPanel textarea::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.settingPanel textarea::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}.settingPanel input{width:calc(50% - 4px);float:left;text-align:center}.settingPanel input[type="range"]{width:calc(100% - 8px)}.settingPanel input[type="checkbox"]{display:none}.messagePanel{position:fixed;width:calc(15rem + 16px);padding:8px;max-height:100vh;bottom:0;right:0;font-size:1rem;color:#000000;box-sizing:content-box}.messagePanel>div{width:100%;min-height:16px;bottom:0;padding:8px;margin:4px 0;border-radius:4px;opacity:0.75;box-sizing:border-box;float:left;transition:0.3s ease;position:relative;z-index:99999}.messagePanel>div.normal{background-color:#efefef}.messagePanel>div.info{background-color:#b7d9ff}.messagePanel>div.warn{background-color:#fff8b7}.messagePanel>div.success{background-color:#b7ffbb}.messagePanel>div.error{background-color:#ffc2b7}.messagePanel>div:hover{opacity:1}.messagePanel>div>.close-button{width:16px;height:16px;top:0;right:0;position:absolute;transition:0.3s ease;transform-origin:50% 50%}.messagePanel>div>.close-button::after{content:"×";font-size:16px;line-height:16px;color:#000000}.messagePanel>div>.close-button:hover{transform:scale(1.2)}input[type="checkbox"]+label.checkbox{position:relative;width:48px;height:24px;margin-left:calc(25% - 24px);background:#999;float:left;border-radius:12px;cursor:pointer;transition:background 0.3s;z-index:1}input[type="checkbox"]+label.checkbox[disabled]{cursor:not-allowed;opacity:0.75}input[type="checkbox"]+label.checkbox::before,input[type="checkbox"]+label.checkbox::after{transition:0.3s ease;position:absolute}input[type="checkbox"]+label.checkbox::before{content:"关";top:2px;left:28px;color:#fff;line-height:20px}input[type="checkbox"]+label.checkbox::after{content:"";top:2px;left:2px;width:20px;height:20px;border-radius:10px;background:#fff}input[type="checkbox"]:checked+label.checkbox{background-color:var(--MExtBtnClr, #e91e63)}input[type="checkbox"]:checked+label.checkbox::before{content:"开";left:8px}input[type="checkbox"]:checked+label.checkbox::after{left:26px}input[type="checkbox"]:active+label.checkbox::after{width:28px}input[type="checkbox"]:checked:active+label.checkbox::after{left:18px}textarea.pt{line-height:1.25em;resize:vertical;min-height:5em;max-height:56.25em;scrollbar-width:thin;scrollbar-color:#eee #999}textarea.pt::-webkit-scrollbar{width:8px;height:8px}textarea.pt::-webkit-scrollbar-thumb{border-radius:8px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}textarea.pt::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:8px;background:#eee}#ct .mn .bm .tdats .alt.h th{padding-top:0;padding-bottom:0;border-top:0;border-bottom:0}#ct .mn .bm .tdats .tb{margin-top:0}.linksStillOnTopBar{width:100%;text-align:center}.linksStillOnTopBar>a{display:inline-block;width:90%;padding:4px 6px;border-radius:4px}.linksStillOnTopBar>a:hover{background:var(--MExtBtnClr, #e91e63);color:white}#toptb{transition:opacity 0.3s ease}
 `
                 , 'main'
             )
@@ -1835,20 +1851,67 @@ body.nightS .pl .blockcode div[id]{
         }
         /**
          * 添加配置项
-         * @param div 一个元素，里面的东西自己写
-         * @param id 元素的名字，删除的时候用
-         * @param priority 配置项排序优先级
          */
-        addSetting(div: Element, id?: string, priority?: number) {
-            if (typeof id == 'string' && id.length > 0) {
-                div.setAttribute('name', id)
+        addSetting(div: settingOptions): void;
+        addSetting(div: Element, id?: string, priority?: number): void;
+        addSetting(div: settingOptions | Element, id?: string, priority?: number) {
+            if (div instanceof Element) {
+                if (typeof id == 'string' && id.length > 0) {
+                    div.setAttribute('name', id)
+                }
+                if (!priority) {
+                    priority = myPriority
+                    myPriority += 500
+                }
+                div.setAttribute('priority', priority + '')
+                this.settingPanel.appendChild(div)
+            } else if (typeof div.type == 'string') {
+                switch (div.type) {
+                    case 'check':
+                        return this.addCheckSetting(
+                            div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
+                            div.checked,
+                            div.callback,
+                            div.name || div.title,
+                            div.priority
+                        )
+                    case 'input':
+                        return this.addInputSetting(
+                            div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
+                            div.text,
+                            div.callback,
+                            div.name || div.title,
+                            div.priority
+                        )
+                    case 'textarea':
+                        return this.addTextareaSetting(
+                            div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
+                            div.text,
+                            div.callback,
+                            div.name || div.title,
+                            div.priority
+                        )
+                    case 'range':
+                        return this.addRangeSetting(
+                            div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
+                            div.value,
+                            div.range,
+                            div.callback,
+                            div.name || div.title,
+                            div.priority
+                        )
+                    case 'normal':
+                        return this.addSetting(
+                            div.element,
+                            div.name,
+                            div.priority
+                        )
+                    default:
+                        return this.assert(false, '配置项类型错误: 未知的类型' + div)
+                }
+            } else {
+                return this.assert(false, '参数错误: ' + div)
             }
-            if (!priority) {
-                priority = myPriority
-                myPriority += 500
-            }
-            div.setAttribute('priority', priority + '')
-            this.settingPanel.appendChild(div)
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个 textarea
@@ -1892,12 +1955,17 @@ body.nightS .pl .blockcode div[id]{
         addCheckSetting(h3: string, checked: boolean, callback: (ck: boolean, ev: Event) => void, id?: string, priority?: number) {
             let newsetting = document.createElement('div')
             newsetting.innerHTML = '<h3 class="half-h3">' + h3 + '</h3>'
-            let inputEl = document.createElement('input')
+            let inputEl = document.createElement('input'), inputId = this.randomID()
             // inputEl.value = text
+            inputEl.id = inputId
             inputEl.type = 'checkbox'
             inputEl.checked = checked
             inputEl.addEventListener('click', function (this: HTMLInputElement, e: Event) { callback(this.checked, e) })
             newsetting.appendChild(inputEl)
+            let label = document.createElement('label')
+            label.className = 'checkbox'
+            label.htmlFor = inputId
+            newsetting.appendChild(label)
             this.addSetting(newsetting, id || h3, priority)
         }
         /**

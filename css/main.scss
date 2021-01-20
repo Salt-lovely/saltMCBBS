@@ -1,4 +1,5 @@
 $bgcolor: #fbf2db;
+$MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
 
 @mixin scroll($width: 4px, $bgcolor: #eee, $thumbcolor: #999) {
     scrollbar-width: thin;
@@ -134,6 +135,7 @@ ul.xl.xl2.o.cl .pmwarn {
             background-color: #fbf2db;
             position: sticky;
             top: 0;
+            z-index: 99;
         }
     }
     .flb {
@@ -174,6 +176,9 @@ ul.xl.xl2.o.cl .pmwarn {
         text-align: center;
         &[type="range"] {
             width: calc(100% - 8px);
+        }
+        &[type="checkbox"] {
+            display: none;
         }
     }
 }
@@ -239,6 +244,67 @@ ul.xl.xl2.o.cl .pmwarn {
         }
     }
 }
+// checkbox
+input[type="checkbox"] {
+    $label-h: 24px;
+    + label.checkbox {
+        position: relative;
+        width: $label-h * 2;
+        height: $label-h;
+        margin-left: calc(25% - #{$label-h});
+        background: #999;
+        float: left;
+        border-radius: $label-h / 2;
+        cursor: pointer;
+        transition: background 0.3s;
+        z-index: 1;
+        &[disabled] {
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+        &::before,
+        &::after {
+            transition: 0.3s ease;
+            position: absolute;
+        }
+        &::before {
+            content: "关";
+            top: 2px;
+            left: $label-h + 4px; // 3/3width + 4px
+            color: #fff;
+            line-height: $label-h - 4px;
+        }
+        &::after {
+            content: "";
+            top: 2px;
+            left: 2px;
+            width: $label-h - 4px;
+            height: $label-h - 4px;
+            border-radius: ($label-h - 4px)/2;
+            background: #fff;
+        }
+    }
+    &:checked + label.checkbox {
+        background-color: $MExtBtnClr;
+        &::before {
+            content: "开";
+            left: $label-h / 3;
+        }
+        &::after {
+            left: $label-h + 2px;
+        }
+    }
+    &:active + label.checkbox {
+        &::after {
+            width: $label-h + 4px;
+        }
+    }
+    &:checked:active + label.checkbox {
+        &::after {
+            left: $label-h - 6px;
+        }
+    }
+}
 // 优化
 textarea.pt {
     // textarea 可以拉长
@@ -270,7 +336,7 @@ textarea.pt {
         padding: 4px 6px;
         border-radius: 4px;
         &:hover {
-            background: var(--MExtBtnClr, #e91e63);
+            background: $MExtBtnClr;
             color: white;
         }
     }

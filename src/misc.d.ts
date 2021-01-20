@@ -7,6 +7,50 @@ interface AnchorObj {
     class?: string,
     title?: string,
 }
+type settingOptions = settingOptionsCheck | settingOptionsNormal | settingOptionsInput | settingOptionsTextarea | settingOptionsRange
+interface settingOptionsNormal {
+    type: 'normal',
+    element: Element,
+    name?: string,
+    priority?: number,
+}
+interface settingOptionsCheck {
+    type: 'check',
+    title: string,
+    subtitle?: string,
+    checked: boolean,
+    callback: (ck: boolean, ev: Event) => void,
+    name?: string,
+    priority?: number,
+}
+interface settingOptionsInput {
+    type: 'input',
+    title: string,
+    subtitle?: string,
+    text: string,
+    callback: (el: HTMLInputElement, ev: Event) => void,
+    name?: string,
+    priority?: number,
+}
+interface settingOptionsTextarea {
+    type: 'textarea',
+    title: string,
+    subtitle?: string,
+    text: string,
+    callback: (el: HTMLTextAreaElement, ev: Event) => void,
+    name?: string,
+    priority?: number,
+}
+interface settingOptionsRange {
+    type: 'range',
+    title: string,
+    subtitle?: string,
+    value: number,
+    range: [number, number, number] | { max: number, min: number, step: number },
+    callback: (vl: number, ev: Event) => void,
+    name?: string,
+    priority?: number,
+}
 /**MCBBS的API返回中.data的部分内容 */
 interface BBSAPIResponceData { Variables: BBSAPIResponceDataVariables; }
 /**MCBBS的API返回中.data.Variables的部分内容 */

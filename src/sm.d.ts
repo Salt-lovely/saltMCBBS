@@ -4,14 +4,18 @@ interface saltMCBBSOriginClass {
     new(): saltMCBBSOriginClassNew
 }
 interface saltMCBBSOriginClassNew {
+    /**随机生成字母数字组合, 可以用于id */
+    randomID(len?: number): string,
     /**相当于setInterval */
     tick(handler: Function, second?: number): number,
     /**相当于clearInterval */
     clearTick(handlerNum: number),
     /**获取当前时间戳 */
     getTime(): number,
-    getData(key: 'antiWaterRegExp'): RegExp[],
-    getData(key: 'noticImgUrl'): String[],
+    getData(key: 'antiWaterRegExp'): RegExp[];
+    getData(key: 'noticImgUrl'): String[];
+    getData(key: 'medalLinkPrefix'): String;
+    getData(key: 'randomStringGen'): String[][];
     /**
      * 获取一些由于闭包而不能直接访问的数据
      * @param key 键值, 详见方法重载, 默认返回空字符串
@@ -127,6 +131,8 @@ interface saltMCBBSOriginClassNew {
 }
 /**saltMCBBS接口 */
 interface saltMCBBS extends saltMCBBSOriginClassNew {
+    /**配置框 */
+    settingPanel: HTMLElement,
     /**
      * 夜间模式
      * @param night boolean切换为夜晚还是白天；
@@ -149,8 +155,14 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
         callback?: (el: HTMLElement, ts: HTMLElement, text: string) => void): Promise<void>,
     /**
      * 添加配置项
+     * @param div 一个settingOptions，里面的东西看misc.d.ts
+     */
+    addSetting(div: settingOptions): void,
+    /**
+     * 添加配置项
      * @param div 一个元素，里面的东西自己写
      * @param id 元素的名字，删除的时候用
+     * @param priority 配置项排序优先级
      */
     addSetting(div: Element, id?: string, priority?: number): void,
     /**
