@@ -7,6 +7,7 @@ interface AnchorObj {
     class?: string,
     title?: string,
 }
+/**使用JSON来生成配置项 */
 type settingOptions = settingOptionsCheck | settingOptionsNormal | settingOptionsInput | settingOptionsTextarea | settingOptionsRange
 interface settingOptionsNormal {
     type: 'normal',
@@ -51,6 +52,7 @@ interface settingOptionsRange {
     name?: string,
     priority?: number,
 }
+//type supportDataType = 'string' | 'number' | 'boolean' | ''
 /**MCBBS的API返回中.data的部分内容 */
 interface BBSAPIResponceData { Variables: BBSAPIResponceDataVariables; }
 /**MCBBS的API返回中.data.Variables的部分内容 */

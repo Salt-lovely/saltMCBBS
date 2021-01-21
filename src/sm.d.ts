@@ -4,6 +4,8 @@ interface saltMCBBSOriginClass {
     new(): saltMCBBSOriginClassNew
 }
 interface saltMCBBSOriginClassNew {
+    /**筛除数组中的重复元素 */
+    unique<T>(arr: T[]): T[],
     /**随机生成字母数字组合, 可以用于id */
     randomID(len?: number): string,
     /**相当于setInterval */
@@ -266,6 +268,35 @@ interface saltMCBBScss {
     getStyleElement(key: string): Element | null,
     /**根据key对指定元素设置属性 */
     setStyleElement(key: string, el: Element): boolean,
+}
+/**saltMCBBSDataBaseHandler 类接口 */
+interface saltMCBBSDataBaseHandler {
+    new(database: string, mainStoreName?: string, prefix?: string): saltMCBBSDataBaseHandlerInstance
+}
+/**saltMCBBSDataBaseHandler 实例 */
+interface saltMCBBSDataBaseHandlerInstance {
+    /**数据库 */
+    // db: IDBDatabase, // 万分不推荐去读取这个，用getStore()
+    /**是否处于可交互状态 */
+    readable: boolean,
+    prefix: string,
+    /**
+     * 读取
+     * @param key 键
+     * @param defaultValue 默认值
+     */
+    read<T>(key: string, defaultValue: T): Promise<T>,
+    /**
+     * 写入或覆盖
+     * @param key 键
+     * @param value 值
+     */
+    write<T>(key: string, value: T): Promise<void>,
+    /**获取store
+     * 
+     * store存活时间很短，请立即使用
+     */
+    getStore(): IDBObjectStore,
 }
 /**saltMCBBScss里面存放的样式记录 */
 interface styleMap {

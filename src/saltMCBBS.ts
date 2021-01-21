@@ -1,7 +1,11 @@
+// 咳咳，我把四个类写一起是因为VSCODE有代码折叠，大家不要学我
 /* 
 设置面板
 
 顶栏移动到页面左侧 5
+
+显示MCBBS的LOGO 10
+显示右上角广告栏 11
 
 冲突修复功能 21
 左侧用户信息跟随 22
@@ -20,14 +24,14 @@
 启用勋章栏功能 50
 勋章大图高斯模糊 51
 勋章栏高度 52
-举报记录功能 61
+举报记录功能 61 数字记录在本地/pid记录在数据库
 自定义评分理由 201
 自定义举报理由 202
 昼间模式下的背景图片 210
 夜间模式下的背景图片 211
 主体部分的透明度 212
 
-自定义水帖匹配正则 220
+自定义水帖匹配正则 220 数据库
 
 打算实装的功能
 控制台功能
@@ -61,6 +65,8 @@
     let autoRunLock = true
     /**配置项优先级操作 */
     let myPriority = 0
+    /**数据库处理 */
+    let dbHandler: saltMCBBSDataBaseHandlerInstance
     /**反水帖小工具判定正则 */
     const antiWaterRegExp = [
         // 表情包会被处理成'/meme/'的文字形式
@@ -89,6 +95,20 @@
                 cc.className = 'consolePanel'
                 // document.body.append(cc)
             }
+        }
+        /**筛除数组中的重复元素 */
+        unique<T>(arr: T[]): T[] {
+            if (!Array.isArray(arr)) {
+                console.log('type error!')
+                return arr
+            }
+            let array: T[] = [];
+            for (var i = 0; i < arr.length; i++) {
+                if (array.indexOf(arr[i]) == -1) {
+                    array.push(arr[i]);
+                }
+            }
+            return array
         }
         /**随机生成字母数字组合, 可以用于id */
         randomID(len = 16): string {
@@ -468,6 +488,7 @@
         settingPanel: HTMLElement = document.createElement('div') // 配置框
         links: HTMLElement = document.createElement('div') // 左侧栏底部的一大堆链接
         moveTopBarToLeft: boolean = this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true)
+        dataBaseHandler: saltMCBBSDataBaseHandlerInstance = dbHandler // 数据库读写代理
         // ==========================================================
         // ========== 以下直到另一个分割线之前, 都是内部代码 ==========
         // ==========================================================
@@ -619,7 +640,7 @@
                 document.querySelector('#user_info_menu')?.appendChild(this.links)
                 this.addSideBarLink('切换夜间模式', () => { obj.toggleNightStyle() })
                 this.addSideBarLink('SaltMCBBS 设置', () => { obj.showSettingPanel() })
-                window.saltMCBBSCSS.putStyle('body>.mc_map_wp{margin-top: 50px;}')
+                window.saltMCBBSCSS.putStyle('body>.mc_map_wp{margin-top:50px;}#e_controls[style*="fixed"]{top:47px !important;}')
                 this.links.className = 'linksStillOnTopBar'
                 return
             }
@@ -1083,13 +1104,14 @@
         /**记忆用户举报过的帖子 */
         reportRememberOP() {
             this.assert(autoRunLock, '不在页面初始运行状态')
+            // pid数组记录在数据库，最大显示数量记录在localstorage
             let obj = this
             let saveKey = 'saltReportRemember'
             let numSaveKey = 'saltReportRememberLength'
             // let enable = true
             main()
             /**主过程 */
-            function main() {
+            async function main() {
                 if (obj.getUID() < 1) {
                     obj.message('未检测到UID<br>点击重试 <a href="https://www.mcbbs.net/member.php?mod=logging&action=login">点击登录</a> <a href="https://www.mcbbs.net/bilibili_connect.php?mod=auth&op=login">B站登录</a>', (f) => {
                         f()
@@ -1098,18 +1120,34 @@
                     return
                 }
                 saveKey += '-' + obj.getUID()
+                await update()
                 // 检测帖子
                 check()
                 // 添加配置项
-                obj.addInputSetting('帖子举报历史记录长度<br><small>建议在4w以内, 设为 0 关闭此功能</small>',
-                    '' + obj.readWithDefault<number>(numSaveKey, 1024),
-                    (el, ev) => {
+                // obj.addInputSetting('帖子举报历史记录长度<br><small>建议在4w以内, 设为 0 关闭此功能</small>',
+                //     '' + obj.readWithDefault<number>(numSaveKey, 1024),
+                //     (el, ev) => {
+                //         let len = parseInt(el.value)
+                //         if (isNaN(len)) { return }
+                //         if (len < 0) { len = 0 }
+                //         if (len > 1048576) { len = 1048576 }
+                //         obj.write(numSaveKey, len)
+                //     }, '举报记录功能', 61)
+                obj.addSetting({
+                    type: 'input',
+                    title: '帖子举报历史记录长度',
+                    subtitle: '建议在4w以内, 设为 0 关闭此功能',
+                    text: '' + obj.readWithDefault<number>(numSaveKey, 1024),
+                    callback: (el, ev) => {
                         let len = parseInt(el.value)
                         if (isNaN(len)) { return }
                         if (len < 0) { len = 0 }
                         if (len > 1048576) { len = 1048576 }
                         obj.write(numSaveKey, len)
-                    }, '举报记录功能', 61)
+                    },
+                    name: '举报记录功能',
+                    priority: 61,
+                })
                 // 监听用户点击举报
                 let obs = obj.saltObserver('append_parent', () => {
                     // 获取举报按钮
@@ -1124,8 +1162,6 @@
                             reportBtn.addEventListener('click', () => {
                                 obj.log('检测到举报: pid-' + pid)
                                 push(pid)
-                                // 刷新检测
-                                check()
                             })
                         }
                     }
@@ -1149,41 +1185,44 @@
                     }
                 }
                 // 获取PID列表
-                let pidList = obj.readWithDefault<number[]>(saveKey, [])
+                let pidList = await obj.dataBaseHandler.read<number[]>(saveKey, [])
                 pidList.push(pid)
                 // 记录
-                obj.write(saveKey, pidList)
+                await obj.dataBaseHandler.write(saveKey, pidList)
                 obj.log('已记录举报: pid-' + pid)
-            }
-            /**去除某个历史记录 */
-            async function remove(pid: number | string) {
-                // 管理PID
-                if (typeof pid == 'string') {
-                    pid = parseInt(pid)
-                    if (isNaN(pid) || pid < 1) {
-                        return
-                    }
-                } else if (typeof pid == 'number') {
-                    if (pid < 1) {
-                        return
-                    }
-                } else if (typeof pid == 'bigint') {
-                    if (pid < 1) {
-                        return
-                    }
-                }
-                // 获取PID列表
-                let pidList = obj.readWithDefault<number[]>(saveKey, [])
-                let inedx = pidList.indexOf(pid)
-                if (inedx != -1) {
-                    pidList.splice(inedx, 1)
-                }
                 // 刷新检测
                 check()
             }
+            /**去除某个历史记录 */
+            // async function remove(pid: number | string) {
+            //     // 管理PID
+            //     if (typeof pid == 'string') {
+            //         pid = parseInt(pid)
+            //         if (isNaN(pid) || pid < 1) {
+            //             return
+            //         }
+            //     } else if (typeof pid == 'number') {
+            //         if (pid < 1) {
+            //             return
+            //         }
+            //     } else if (typeof pid == 'bigint') {
+            //         if (pid < 1) {
+            //             return
+            //         }
+            //     }
+            //     // 获取PID列表
+            //     let pidList = obj.readWithDefault<number[]>(saveKey, [])
+            //     let inedx = pidList.indexOf(pid)
+            //     if (inedx != -1) {
+            //         pidList.splice(inedx, 1)
+            //     }
+            //     // 刷新检测
+            //     check()
+            // }
             /**给已举报的帖子添加标记 */
             async function check() {
-                let pidList = cut(obj.readWithDefault<number[]>(saveKey, []), obj.readWithDefault<number>(numSaveKey, 1024))
+                // let pidList = cut(obj.readWithDefault<number[]>(saveKey, []), obj.readWithDefault<number>(numSaveKey, 1024))
+                let pidList = cut(await obj.dataBaseHandler.read<number[]>(saveKey, []), obj.readWithDefault<number>(numSaveKey, 1024))
                 // 检查是不是有帖子被错误打上了标记
                 for (let div of Array.from(document.querySelectorAll('#postlist > div.reported'))) {
                     if (!(div instanceof HTMLElement)) { continue }
@@ -1208,6 +1247,16 @@
                 if (diff < 1) { return newlist }
                 newlist = newlist.slice(diff)
                 return newlist
+            }
+            /**升级数据到0.1.7 */
+            async function update() {
+                let oldData = obj.read<number[]>(saveKey)
+                if (!oldData || oldData.length == 0) return
+                let newData = obj.unique([...oldData, ...(await obj.dataBaseHandler.read<number[]>(saveKey, []))])
+                obj.log(oldData)
+                obj.log(newData)
+                // localStorage.removeItem(techprefix + saveKey)
+                await obj.dataBaseHandler.write(saveKey, newData)
             }
         }
         /**替代Discuz的图片懒加载 */
@@ -1499,33 +1548,40 @@
         /**内置反水帖 */
         antiWaterOP() {
             this.assert(autoRunLock, '不在页面初始运行状态')
+            let obj = this
             let enableAntiWater = this.readWithDefault<boolean>('SaltAntiWater', false)
             this.addCheckSetting('水帖检测机制<br><small>只会检测页面中的漏网水帖</small>', enableAntiWater, (ck, ev) => {
                 this.write('SaltAntiWater', ck)
                 this.message('"水帖检测机制"配置项需要刷新生效<br>点击刷新', () => { location.reload() }, 3)
-            }, '水帖检测机制', 41)
-            /**存起来的内容 */
-            let antiWaterRegExpRaw = this.readWithDefault<string>('SaltAntiWaterRegExp',
-                '// 写法: /表达式/标记 -- 表达式: 正则表达式 -- 标记: i-忽略大小写 g-多次匹配 m-多行匹配 -- 示例: /[6六six]{3,}/i' +
-                '\n' + /^[\s\S]{0,2}([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*[\s\S]?\s?$/ +
-                '\n' + /^[\s\S]{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务)[\s\S]{0,3}$/)
-            /**整理成正则表达式数组 */
-            let antiWaterRegExp = string2RegExp(
-                this.cleanStringArray(
-                    this.formatToStringArray(antiWaterRegExpRaw)
-                )
-            )
-            this.addTextareaSetting('自定义水帖匹配正则<small> 匹配水帖，一行一个，开头添加“//”暂时禁用</small>', antiWaterRegExpRaw, (el, ev) => {
-                this.write('SaltAntiWaterRegExp', el.value)
-                antiWaterRegExp = string2RegExp(
-                    this.cleanStringArray(
-                        this.formatToStringArray(el.value)
+            }, '水帖检测机制', 41);
+            (async function () { // 涉及到数据库读写，因此是异步
+                /**存起来的内容 */
+                let antiWaterRegExpRaw = await obj.dataBaseHandler.read<string>('SaltAntiWaterRegExp',
+                    '// 写法: /表达式/标记 -- 表达式: 正则表达式 -- 标记: i-忽略大小写 g-多次匹配 m-多行匹配 -- 示例: /[6六six]{3,}/i' +
+                    '\n' + /^[\s\S]{0,2}([\.\*\s]|\/meme\/)*(\S|\/meme\/)\s*(\2([\.\*\s]|\/meme\/)*)*([\.\*\s]|\/meme\/)*[\s\S]?\s?$/ +
+                    '\n' + /^[\s\S]{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务)[\s\S]{0,3}$/)
+                /**整理成正则表达式数组 */
+                let antiWaterRegExp = string2RegExp(
+                    obj.cleanStringArray(
+                        obj.formatToStringArray(antiWaterRegExpRaw)
                     )
                 )
-                if (enableAntiWater) { this.antiWater(antiWaterRegExp) }
-            }, '自定义水帖匹配正则', 220)
-            // 如果启用
-            if (enableAntiWater) { this.antiWater(antiWaterRegExp) }
+                obj.addTextareaSetting('自定义水帖匹配正则<small> 匹配水帖，一行一个，开头添加“//”暂时禁用</small>', antiWaterRegExpRaw, (el, ev) => {
+                    obj.dataBaseHandler.write('SaltAntiWaterRegExp', el.value)
+                    antiWaterRegExp = string2RegExp(
+                        obj.cleanStringArray(
+                            obj.formatToStringArray(el.value)
+                        )
+                    )
+                    if (enableAntiWater) { obj.antiWater(antiWaterRegExp) }
+                }, '自定义水帖匹配正则', 220)
+                // 如果启用
+                if (enableAntiWater) {
+                    setTimeout(() => {
+                        obj.antiWater(antiWaterRegExp)
+                    }, 500);
+                }
+            })()
             function string2RegExp(str: string[]): RegExp[] {
                 let r: RegExp[] = []
                 for (let s of str) {
@@ -1661,6 +1717,46 @@
                     return 12
                 else
                     return fs
+            }
+
+            // 显示MCBBS的LOGO 与 右上角广告栏
+            let showLOGO = this.readWithDefault<boolean>('showMCBBSLogo', true), showRightTopAd = this.readWithDefault<boolean>('showRightTopAd', true)
+            let showTopObjectsCSSKey = 'showTopObjectsCSSKey'
+            showTopObjects(showLOGO, showRightTopAd)
+            this.addSetting({
+                type: 'check',
+                title: '显示MCBBS的LOGO',
+                subtitle: '显示页面顶部的MCBBS LOGO',
+                checked: showLOGO,
+                callback: (ck, ev) => {
+                    showLOGO = ck
+                    this.write('showMCBBSLogo', ck)
+                    showTopObjects(showLOGO, showRightTopAd)
+                },
+                priority: 10
+            })
+            this.addSetting({
+                type: 'check',
+                title: '显示右上角广告栏',
+                subtitle: '显示页面顶部右上角的广告栏',
+                checked: showLOGO,
+                callback: (ck, ev) => {
+                    showRightTopAd = ck
+                    this.write('showRightTopAd', ck)
+                    showTopObjects(showLOGO, showRightTopAd)
+                },
+                priority: 11
+            })
+            function showTopObjects(logo: boolean, ad: boolean) {
+                let css = '/*显示/隐藏顶部LOGO的css*/'
+                if (!logo && !ad) {
+                    css += '.new_wp .hdc{display:none;}'
+                } else if (!logo) {
+                    css += '.new_wp .hdc h2{display:none;}'
+                } else if (!ad) {
+                    css += '.new_wp .hdc #um + .y{display:none;}'
+                }
+                window.saltMCBBSCSS.putStyle(css, showTopObjectsCSSKey)
             }
         }
         /**其他脚本冲突修复 */
@@ -1868,31 +1964,34 @@ body.nightS .pl .blockcode div[id]{
             } else if (typeof div.type == 'string') {
                 switch (div.type) {
                     case 'check':
-                        return this.addCheckSetting(
+                        this.addCheckSetting(
                             div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
                             div.checked,
                             div.callback,
                             div.name || div.title,
                             div.priority
                         )
+                        return this.sortSetting()
                     case 'input':
-                        return this.addInputSetting(
+                        this.addInputSetting(
                             div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
                             div.text,
                             div.callback,
                             div.name || div.title,
                             div.priority
                         )
+                        return this.sortSetting()
                     case 'textarea':
-                        return this.addTextareaSetting(
+                        this.addTextareaSetting(
                             div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
                             div.text,
                             div.callback,
                             div.name || div.title,
                             div.priority
                         )
+                        return this.sortSetting()
                     case 'range':
-                        return this.addRangeSetting(
+                        this.addRangeSetting(
                             div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
                             div.value,
                             div.range,
@@ -1900,14 +1999,17 @@ body.nightS .pl .blockcode div[id]{
                             div.name || div.title,
                             div.priority
                         )
+                        return this.sortSetting()
                     case 'normal':
-                        return this.addSetting(
+                        this.addSetting(
                             div.element,
                             div.name,
                             div.priority
                         )
+                        return this.sortSetting()
                     default:
-                        return this.assert(false, '配置项类型错误: 未知的类型' + div)
+                        this.assert(false, '配置项类型错误: 未知的类型' + div)
+                        return this.sortSetting()
                 }
             } else {
                 return this.assert(false, '参数错误: ' + div)
@@ -2235,6 +2337,74 @@ body.nightS .pl .blockcode div[id]{
             return true
         }
     }
+    /**数据操作的类 */
+    class saltMCBBSDataBaseHandler implements saltMCBBSDataBaseHandler {
+        db!: IDBDatabase
+        readable: boolean = false
+        prefix: string
+        getStore: () => IDBObjectStore
+        constructor(database: string, mainStoreName = 'mainStore', prefix = '[saltMCBBSDataBaseHandler]') {
+            this.prefix = prefix
+            let obj = this
+            let dbRequest = indexedDB.open(database, 1) // 1 是版本号，别改
+            dbRequest.onupgradeneeded = function (this: IDBRequest, ev: Event) {
+                console.log(`%c${obj.prefix}: 创建数据库 ${database}`, 'font-size:1rem;')
+                obj.db = this.result
+                console.log(`%c${obj.prefix}: 创建仓库 ${database}`, 'font-size:1rem;')
+                let s = obj.db.createObjectStore(mainStoreName, {
+                    keyPath: 'mainKey' // 主键一律命名为 mainKey
+                })
+                s.createIndex('indexByKey', 'mainKey', {
+                    unique: true
+                })
+            }
+            dbRequest.onsuccess = function (ev) {
+                obj.readable = true
+                obj.db = dbRequest.result
+            }
+            this.getStore = function () {
+                return this.db.transaction(mainStoreName, 'readwrite').objectStore(mainStoreName)
+            }
+        }
+        read<T>(key: string, defaultValue: T): Promise<T> {
+            this.assertReadable()
+            let obj = this
+            return new Promise<T>(function (resolve, reject) {
+                let request = obj.getStore().get(key)
+                request.onsuccess = function () {
+                    if (typeof request.result != 'undefined' && typeof request.result.value != 'undefined')
+                        resolve(request.result.value)
+                    else {
+                        obj.write(key, defaultValue)
+                        resolve(defaultValue)
+                    }
+                }
+                request.onerror = function (ev) {
+                    obj.write(key, defaultValue)
+                    console.log(ev)
+                    resolve(defaultValue)
+                }
+            })
+        }
+        write<T>(key: string, value: T): Promise<void> {
+            this.assertReadable()
+            let obj = this
+            return new Promise<void>(function (resolve, reject) {
+                let request = obj.getStore().put({ mainKey: key, value: value })
+                request.onsuccess = function () {
+                    resolve()
+                }
+                request.onerror = function (ev) {
+                    reject(ev)
+                }
+            })
+            // request.onsuccess
+        }
+        /**断言数据库已经准备完毕 */
+        assertReadable() {
+            if (!this.readable || !this.db) { throw new Error(this.prefix + ': 你不能访问一个尚未准备完毕的数据库') }
+        }
+    }
     // 开始给HTMLElement添加奇怪的方法
     (function () {
         if (!HTMLElement.prototype.addClass) {
@@ -2307,9 +2477,21 @@ body.nightS .pl .blockcode div[id]{
                 }
             }
         }
-    })()
+    })();
+    // 兼容性检查
+    (function () {
+        if (!window.indexedDB) {
+            let s = myprefix + myversion + ': 您的浏览器并不支持**完整**的 IndexedDB 功能, 请使用 0.1.6 版本\n'
+                + 'Your browser does not support a STABLE version of IndexedDB, please work at ver-0.1.6.'
+            // console.log(s)
+            setTimeout(function () { alert(s) }, 0) // 防止程序挂起
+            throw new Error(s)
+        }
+    })();
     // ??????
     window['saltMCBBSCSS'] = new saltMCBBSCSS(); // saltMCBBSCSS 实例
+    dbHandler = new saltMCBBSDataBaseHandler('saltMCBBSlvPJIXr13EqdD67b') // 不信能撞车
     window['saltMCBBS'] = new saltMCBBS(true); // saltMCBBS 实例
     window['saltMCBBSOriginClass'] = saltMCBBSOriginClass; // saltMCBBSOriginClass 类
+    window['saltMCBBSDataBaseHandler'] = saltMCBBSDataBaseHandler // saltMCBBSDataBaseHandler 类
 })()

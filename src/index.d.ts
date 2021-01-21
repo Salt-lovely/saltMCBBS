@@ -1,9 +1,14 @@
 /// <reference path="sm.d.ts"/>
 
 interface Window {
+    /**saltMCBBSCSS 实例 */
     saltMCBBSCSS: saltMCBBScss,
+    /**saltMCBBS 实例 */
     saltMCBBS: saltMCBBS,
+    /**saltMCBBSOriginClass 类 */
     saltMCBBSOriginClass: saltMCBBSOriginClass,
+    /**saltMCBBSDataBaseHandler 类 */
+    saltMCBBSDataBaseHandler: saltMCBBSDataBaseHandler,
     // jQuery: any, // 有需要的话请自行导入jQuery的定义文件
     /**用户的uid，未登录则为0 */
     discuz_uid: string,
