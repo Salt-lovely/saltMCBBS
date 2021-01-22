@@ -611,6 +611,9 @@ body.nightS {
     #myskinannouncement, // 皮肤提示
     #mytextureannouncement, // 材质提示
     #my16modannouncement, // 软件提示
+    #announcement, // 服务器整合包提示1
+    #announcement1, // 服务器整合包提示2
+    #announcement2, // 服务器整合包提示3
     .cgtl caption,
     .locked {
         background-color: $bodybg;
@@ -679,36 +682,6 @@ body.nightS {
                 background-color: $bodybg-l !important;
             }
         }
-        #pgt {
-            background-color: transparent !important;
-        }
-        #thread_types > li a,
-        #separatorline th,
-        #separatorline td,
-        #forumnewshow, // 新主题
-        #f_pst .bm_c {
-            background-color: $bodybg-l !important;
-        }
-        // 主题列表
-        // 改了鼠标移上去高亮
-        #threadlist .th,
-        #threadlisttableid {
-            background-color: transparent;
-            tr {
-                // background-color: transparent;
-                th,
-                td {
-                    background-color: transparent;
-                    border: none;
-                }
-                &:hover {
-                    > th,
-                    > td {
-                        background-color: $bodybg-l-l;
-                    }
-                }
-            }
-        }
         // 下一页按钮
         .mn a.bm_h {
             background-color: $bodybg-l !important;
@@ -716,21 +689,6 @@ body.nightS {
             color: $fontcolor;
             &:hover {
                 color: $a-highlight;
-            }
-        }
-        // 瀑布流的版块
-        #waterfall {
-            li {
-                background-image: none;
-                background-color: $bodybg-l;
-                transition: 0.3 ease;
-                &:hover {
-                    background-color: $bodybg-l-l;
-                }
-                > * {
-                    background-image: none;
-                    background-color: transparent;
-                }
             }
         }
         .fastpreview {
@@ -741,28 +699,89 @@ body.nightS {
                 }
             }
         }
-        // 直播主题
-        #livethread {
-            border-color: $table-border-color;
-            #livereplycontentout {
-                background-color: $bodybg;
-                @include scroll(8px);
+    }
+    // 主题列表
+    // 改了鼠标移上去高亮
+    #threadlist .th,
+    #threadlisttableid {
+        background-color: transparent;
+        tr {
+            // background-color: transparent;
+            th,
+            td {
+                background-color: transparent;
+                border: none;
             }
-            #livereplycontent {
-                background-color: $bodybg;
-                > div {
-                    background-color: $bodybg-l;
-                }
-            }
-            #livefastcomment {
-                border-color: $table-border-color;
-                background-color: $bodybg;
-                textarea {
-                    background-color: $bodybg-l;
-                    color: $fontcolor !important;
+            &:hover {
+                > th,
+                > td {
+                    background-color: $bodybg-l-l;
                 }
             }
         }
+    }
+    #pgt {
+        background-color: transparent !important;
+    }
+    #thread_types > li a,
+    #separatorline th,
+    #separatorline td,
+    #forumnewshow, // 新主题
+    #f_pst .bm_c {
+        background-color: $bodybg-l !important;
+    }
+    // 直播主题
+    #livethread {
+        border-color: $table-border-color;
+        #livereplycontentout {
+            background-color: $bodybg;
+            @include scroll(8px);
+        }
+        #livereplycontent {
+            background-color: $bodybg;
+            > div {
+                background-color: $bodybg-l;
+            }
+        }
+        #livefastcomment {
+            border-color: $table-border-color;
+            background-color: $bodybg;
+            textarea {
+                background-color: $bodybg-l;
+                color: $fontcolor !important;
+            }
+        }
+    }
+    // 瀑布流的版块
+    #waterfall {
+        li {
+            background-image: none;
+            background-color: $bodybg-l;
+            transition: 0.3 ease;
+            &:hover {
+                background-color: $bodybg-l-l;
+            }
+            > * {
+                background-image: none;
+                background-color: transparent;
+            }
+        }
+    }
+    .area .frame {
+        background-color: $bodybg-l;
+    }
+    // 论坛的奇葩CSS影响
+    #portal_block_857, // MOD发布版版头
+    #portal_block_873, // 联机教程版版头
+    #portal_block_871 // 服务端插件版版头
+    {
+        background-color: $bodybg-l !important;
+    }
+    #framet3reHb, // MOD发布版版头
+    #framecpjFn1, // 联机教程版版头
+    #framecvgTv9 // 服务端插件版版头
+    {
+        border-color: $table-border-color !important;
     }
 }
 // home.php misc.php search.php
