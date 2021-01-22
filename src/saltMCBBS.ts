@@ -1823,13 +1823,16 @@ p.md_ctrl{padding-left: 0;}
                 if (document.querySelector('.blockcode .line-counter')) {
                     window.saltMCBBSCSS.putStyle(`
 /*代码行数*/
-.pl .blockcode .line-counter + ol{
+.pl .blockcode ol{
     margin-left: 0 !important;
 }
 .pl .blockcode > div::after{
     width: 35px;
     height: calc(100% - 15px);
     margin-top: 10px;
+}
+.pl .blockcode div[id]{
+    max-height: 999rem;
 }
 body.nightS .pl .blockcode div[id]{
     background: none;
