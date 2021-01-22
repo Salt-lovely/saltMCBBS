@@ -655,8 +655,8 @@ body.nightS {
     // 代码块
     .blockcode {
         // filter: invert(0.9) hue-rotate(170deg); // 阴间滤镜
-        background-color: $bodybg-l-l;
-        background-image: none;
+        background-color: $bodybg;
+        background-image: url(https://attachment.mcbbs.net/forum/202101/22/221225qf7ml74pmu2rggmz.png);
         border-color: #999;
         color: $fontcolor;
         ol li {
@@ -666,11 +666,11 @@ body.nightS {
                 color: #d9e6f2;
             }
         }
-        &::after {
-            content: "";
-            border-color: #999;
-            background-color: #484a55;
-        }
+        // &::after {
+        //     content: "";
+        //     border-color: #999;
+        //     background-color: #484a55;
+        // }
     }
 }
 // 版块页面
@@ -1200,6 +1200,11 @@ body.nightS {
         }
         *:first-child {
             background-color: $bodybg;
+        }
+        div h3 {
+            > small {
+                color: #aaa;
+            }
         }
     }
 }

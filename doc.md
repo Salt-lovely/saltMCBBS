@@ -87,22 +87,39 @@ function medalLineOP() {
 这个方法会快速添加一个带标题的，仅有一个输入框的设置项，这个方法的第三个参数是输入框触发 `change` 事件的回调函数。
 
 ```
-window.saltMCBBS.addInputSetting('勋章栏高度', window.saltMCBBS.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
-    window.saltMCBBS.write('medalLine', parseInt(el.value)) // 储存用户的配置
-    medalLineOP()
+window.saltMCBBS.addSetting({
+    type: 'input',       // 这是一个文本输入框型的配置项
+    title: '勋章栏高度',  // 主标题
+    subtitle: '',        // 副标题
+    text: '' + window.saltMCBBS.readWithDefault<number>('medalLine', 3), // 显示的文字
+    callback: (el, e) => { // 回调函数 参数分别是：input元素、事件
+        window.saltMCBBS.write('medalLine', parseInt(el.value)) // 储存用户的配置
+        medalLineOP() // 调用函数
+    },
+    name: '勋章栏高度',   // 内部识别用的名字
+    priority: 555,       // 优先级，SaltMCBBS自带的配置项优先级一般在500以内
 })
+
 ```
 
 考虑到用户可能会输入不合法的配置，所以我们的代码还要继续改改。
 
 ```
-window.saltMCBBS.addInputSetting('勋章栏高度', window.saltMCBBS.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
-    let line = parseInt(el.value)
-    if (isNaN(line)) { return } // 输入无法解析的字符
-    if (line < 1) { line = 1 } // 不能小于1
-    if (line > 15) { line = 15 } // 不能大于15
-    window.saltMCBBS.write('medalLine', line)
-    medalLineOP()
+window.saltMCBBS.addSetting({
+    type: 'input',       // 这是一个文本输入框型的配置项
+    title: '勋章栏高度',  // 主标题
+    subtitle: '',        // 副标题
+    text: '' + window.saltMCBBS.readWithDefault<number>('medalLine', 3), // 显示的文字
+    callback: (el, e) => { // 回调函数 参数分别是：input元素、事件
+        let line = parseInt(el.value)
+        if (isNaN(line)) { return } // 输入无法解析的字符
+        if (line < 1) { line = 1 } // 不能小于1
+        if (line > 15) { line = 15 } // 不能大于15
+        window.saltMCBBS.write('medalLine', parseInt(el.value)) // 储存用户的配置
+        medalLineOP() // 调用函数
+    },
+    name: '勋章栏高度',   // 内部识别用的名字
+    priority: 555,       // 优先级，SaltMCBBS自带的配置项优先级一般在500以内
 })
 ```
 
@@ -112,13 +129,21 @@ window.saltMCBBS.addInputSetting('勋章栏高度', window.saltMCBBS.readWithDef
 
 ```
 function myMod() {
-    window.saltMCBBS.addInputSetting('勋章栏高度', window.saltMCBBS.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
-        let line = parseInt(el.value)
-        if (isNaN(line)) { return } // 输入无法解析的字符
-        if (line < 1) { line = 1 } // 不能小于1
-        if (line > 15) { line = 15 } // 不能大于15
-        window.saltMCBBS.write('medalLine', line)
-        medalLineOP()
+    window.saltMCBBS.addSetting({
+        type: 'input',       // 这是一个文本输入框型的配置项
+        title: '勋章栏高度',  // 主标题
+        subtitle: '',        // 副标题
+        text: '' + window.saltMCBBS.readWithDefault<number>('medalLine', 3), // 显示的文字
+        callback: (el, e) => { // 回调函数 参数分别是：input元素、事件
+            let line = parseInt(el.value)
+            if (isNaN(line)) { return } // 输入无法解析的字符
+            if (line < 1) { line = 1 } // 不能小于1
+            if (line > 15) { line = 15 } // 不能大于15
+            window.saltMCBBS.write('medalLine', parseInt(el.value)) // 储存用户的配置
+            medalLineOP() // 调用函数
+        },
+        name: '勋章栏高度',   // 内部识别用的名字
+        priority: 555,       // 优先级，SaltMCBBS自带的配置项优先级一般在500以内
     })
     function medalLineOP() {
         let line = window.saltMCBBS.readWithDefault<number>('medalLine', 3)
@@ -159,13 +184,21 @@ async function Trigger() {
 }
 function myMod() {
     medalLineOP()
-    window.saltMCBBS.addInputSetting('勋章栏高度', window.saltMCBBS.readWithDefault<number>('medalLine', 3) + '', (el, e) => {
-        let line = parseInt(el.value)
-        if (isNaN(line)) { return } // 输入无法解析的字符
-        if (line < 1) { line = 1 } // 不能小于1
-        if (line > 15) { line = 15 } // 不能大于15
-        window.saltMCBBS.write('medalLine', line)
-        medalLineOP()
+    window.saltMCBBS.addSetting({
+        type: 'input',       // 这是一个文本输入框型的配置项
+        title: '勋章栏高度',  // 主标题
+        subtitle: '',        // 副标题
+        text: '' + window.saltMCBBS.readWithDefault<number>('medalLine', 3), // 显示的文字
+        callback: (el, e) => { // 回调函数 参数分别是：input元素、事件
+            let line = parseInt(el.value)
+            if (isNaN(line)) { return } // 输入无法解析的字符
+            if (line < 1) { line = 1 } // 不能小于1
+            if (line > 15) { line = 15 } // 不能大于15
+            window.saltMCBBS.write('medalLine', parseInt(el.value)) // 储存用户的配置
+            medalLineOP() // 调用函数
+        },
+        name: '勋章栏高度',   // 内部识别用的名字
+        priority: 555,       // 优先级，SaltMCBBS自带的配置项优先级一般在500以内
     })
     function medalLineOP() {
         let line = this.readWithDefault<number>('medalLine', 3)
