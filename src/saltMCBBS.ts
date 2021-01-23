@@ -1503,7 +1503,7 @@ div.tip[id^="g_up"] {
                 /**需要代理的网站列表 */
                 let needProxyWebSite = ['imgur.com/', 'upload.cc/']
                 src = img.getAttribute(attr) ?? ''
-                if (src.indexOf('static/image/common/none.gif') != -1 ?? src.length < 4) {
+                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
                     attr = 'file'
                     src = img.getAttribute(attr) ?? ''
                 }
@@ -1526,7 +1526,7 @@ div.tip[id^="g_up"] {
                 /**需要特殊反反盗链的图床网址 */
                 let advancedAntiStealingLinkWebSite = ['hiphotos.bdimg.com', 'minecraftxz.com',]
                 src = img.getAttribute(attr) ?? ''
-                if (src.indexOf('static/image/common/none.gif') != -1 ?? src.length < 4) {
+                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
                     attr = 'file'
                     src = img.getAttribute(attr) ?? ''
                 }
