@@ -119,7 +119,7 @@ interface saltMCBBSOriginClassNew {
      * @param condition 为假时报错
      * @param msg 报错语句，默认为“发生错误”
      */
-    assert(condition: any, msg?: string): void,
+    assert(condition: any, msg?: string): asserts condition,
     /**
      * 带前缀打印
      * @param msg 要打印的内容

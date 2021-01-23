@@ -79,8 +79,8 @@
     ]
     /**原始类，包含各种基础方法*/
     class saltMCBBSOriginClass implements saltMCBBSOriginClass {
-        messagePanel: HTMLElement = document.querySelector('#messagePanel') || document.createElement('div') // 右侧消息框
-        consolePanel: HTMLElement = document.querySelector('#consolePanel') || document.createElement('div') // 右侧消息框
+        messagePanel: HTMLElement = document.querySelector('#messagePanel') ?? document.createElement('div') // 右侧消息框
+        consolePanel: HTMLElement = document.querySelector('#consolePanel') ?? document.createElement('div') // 右侧消息框
         constructor() {
             // 初始化消息框和控制台
             let mg = this.messagePanel
@@ -98,10 +98,11 @@
         }
         /**筛除数组中的重复元素 */
         unique<T>(arr: T[]): T[] {
-            if (!Array.isArray(arr)) {
-                console.log('type error!')
-                return arr
-            }
+            // if (!Array.isArray(arr)) {
+            //     console.log('type error!')
+            //     return arr
+            // }
+            this.assert(Array.isArray(arr))
             let array: T[] = [];
             for (var i = 0; i < arr.length; i++) {
                 if (array.indexOf(arr[i]) == -1) {
@@ -401,7 +402,7 @@
         }
         /**获取当前页面的TID，没有则返回0*/
         getTID() {
-            return parseInt((window.tid ? window.tid + '' : null) || (window.location.href.match(/thread-([\d]+)/) || window.location.href.match(/tid\=([\d]+)/) || ['0', '0'])[1])
+            return parseInt((window.tid ? window.tid + '' : null) ?? (window.location.href.match(/thread-([\d]+)/) ?? window.location.href.match(/tid\=([\d]+)/) ?? ['0', '0'])[1])
         }
         /**
          * 在屏幕右下角输出提示信息
@@ -451,7 +452,7 @@
          * @param condition 为假时报错
          * @param msg 报错语句，默认为“发生错误”
          */
-        assert(condition: any, msg: string = '发生错误'): void {
+        assert(condition: any, msg: string = '发生错误'): asserts condition {
             if (!condition) throw new Error(myprefix + ': ' + msg)
         }
         /**
@@ -620,10 +621,6 @@
                     document.body.style.setProperty('--mcmapwpOpacity', vl + '')
                 }, '主体部分的透明度', 212)
             this.updateBackground()
-            // 顶栏相关优化
-            if (this.moveTopBarToLeft) {
-                window.saltMCBBSCSS.putStyle('#toptb{opacity:0}')
-            }
             // 注入CSS
             initCSSOP()
             /**初始化的时候就要注入CSS的功能
@@ -631,6 +628,12 @@
              * 不能添加需要读取数据库的/读取DOM元素的功能
              */
             function initCSSOP() {
+                // 顶栏移动与否
+                if (obj.moveTopBarToLeft) {
+                    window.saltMCBBSCSS.putStyle('#toptb{opacity:0}')
+                } else {
+                    window.saltMCBBSCSS.putStyle('body>.mc_map_wp{margin-top:50px;}#e_controls[style*="fixed"]{top:47px !important;}')
+                }
                 // 帖子页面左侧层主信息跟随页面滚动
                 let isUserInfoSticky = obj.readWithDefault('userInfoSticky', true)
                 window.saltMCBBSCSS.setStyle(`
@@ -765,7 +768,6 @@ div.tip[id^="g_up"] {
                 document.querySelector('#user_info_menu')?.appendChild(this.links)
                 this.addSideBarLink('切换夜间模式', () => { obj.toggleNightStyle() })
                 this.addSideBarLink('SaltMCBBS 设置', () => { obj.showSettingPanel() })
-                window.saltMCBBSCSS.putStyle('body>.mc_map_wp{margin-top:50px;}#e_controls[style*="fixed"]{top:47px !important;}')
                 this.links.className = 'linksStillOnTopBar'
                 return
             }
@@ -856,10 +858,10 @@ div.tip[id^="g_up"] {
                         space.extcredits8,
                     ]
                     let uid = space.uid // uid
-                    let uname = space.username || ''  //用户名
+                    let uname = space.username ?? ''  //用户名
                     let group = space.group; //用户组信息
                     let lowc = parseInt(group.creditslower), highc = parseInt(group.creditshigher)
-                    let grouptitle = space.group.grouptitle || ''; //用户组
+                    let grouptitle = space.group.grouptitle ?? ''; //用户组
                     let progress = Math.round((parseInt(credits) - highc) / (lowc - highc) * 10000) / 100
                     let progresstitle = highc + ' -> ' + lowc + ' | 还需: ' + (lowc - parseInt(credits)) + ' | 进度: ' + progress + '%'
                     el.innerHTML = `
@@ -939,7 +941,7 @@ div.tip[id^="g_up"] {
                 let uid: string = '0'
                 let uname = el.querySelector('.authi .xw1')
                 if (uname) {
-                    uid = (/uid=(\d+)/.exec(uname.getAttribute('href') || '') || ['', '0'])[1]
+                    uid = (/uid=(\d+)/.exec(uname.getAttribute('href') ?? '') ?? ['', '0'])[1]
                 }
                 if (uid != '0') {
                     // 添加按钮
@@ -964,7 +966,7 @@ div.tip[id^="g_up"] {
                 let uname = el.querySelector('.h .avt a')
                 if (uname) {
                     console.log(uname)
-                    uid = (/uid=(\d+)/.exec(uname.getAttribute('href') || '') || ['', '0'])[1]
+                    uid = (/uid=(\d+)/.exec(uname.getAttribute('href') ?? '') ?? ['', '0'])[1]
                 }
                 // 添加按钮
                 let a = el.querySelector('.mn ul')
@@ -1010,7 +1012,7 @@ div.tip[id^="g_up"] {
                         li.onmouseout = function () { li.className = '' }
                         li.onclick = function () {
                             let r: HTMLElement | null = document.getElementById('reason')
-                            if (r instanceof HTMLInputElement) { r.value = li.textContent || '' }
+                            if (r instanceof HTMLInputElement) { r.value = li.textContent ?? '' }
                         }
                         rateUl.appendChild(li)
                     }
@@ -1188,7 +1190,7 @@ div.tip[id^="g_up"] {
                         el.setAttribute('saltAntiSniff-check-done', '') // 标记为已处理
                         if (el.hasAttribute('src')) {
                             if (el.src.indexOf('home.php?') != -1 &&
-                                !/\&additional\=removevlog(\&|$)/.test(el.src)) {
+                                !/(\&additional\=removevlog|mod\=task\&do\=apply)(\&|$)/.test(el.src)) {
                                 if (tellme)
                                     obj.message('侦测到<img>探针: <br>' + el.src + '<br>类型: Discuz!访客探针', (f) => { f() })
                                 console.log(el)
@@ -1203,12 +1205,12 @@ div.tip[id^="g_up"] {
                             }
                         }
                         if (el.hasAttribute('file')) {
-                            if ((el.getAttribute('file') || '').indexOf('home.php?') != -1 &&
-                                !/\&additional\=removevlog(\&|$)/.test((el.getAttribute('file') || ''))) {
+                            if ((el.getAttribute('file') ?? '').indexOf('home.php?') != -1 &&
+                                !/\&additional\=removevlog(\&|$)/.test((el.getAttribute('file') ?? ''))) {
                                 if (tellme)
-                                    obj.message('侦测到<img>探针: <br>' + (el.getAttribute('file') || '') + '<br>类型: Discuz!访客探针', (f) => { f() })
+                                    obj.message('侦测到<img>探针: <br>' + (el.getAttribute('file') ?? '') + '<br>类型: Discuz!访客探针', (f) => { f() })
                                 console.log(el)
-                                el.setAttribute('file', (el.getAttribute('file') || '') + '&additional=removevlog')
+                                el.setAttribute('file', (el.getAttribute('file') ?? '') + '&additional=removevlog')
                                 // obj.log('已处理<img>探针')
                             }
                         }
@@ -1282,7 +1284,7 @@ div.tip[id^="g_up"] {
                         /**举报理由列表 */
                         reportBtn.setAttribute('done', '')
                         /**提取PID, 没提取到则为0 */
-                        let pid = ((reportBtn.getAttribute('fwin') || '0').match(/\d+/) || ['0'])[0]
+                        let pid = ((reportBtn.getAttribute('fwin') ?? '0').match(/\d+/) ?? ['0'])[0]
                         if (pid != '0') {
                             reportBtn.addEventListener('click', () => {
                                 obj.log('检测到举报: pid-' + pid)
@@ -1351,7 +1353,7 @@ div.tip[id^="g_up"] {
                 // 检查是不是有帖子被错误打上了标记
                 for (let div of Array.from(document.querySelectorAll('#postlist > div.reported'))) {
                     if (!(div instanceof HTMLElement)) { continue }
-                    let pid = parseInt(((div.getAttribute('id') || '0').match(/\d+/) || ['0'])[0])
+                    let pid = parseInt(((div.getAttribute('id') ?? '0').match(/\d+/) ?? ['0'])[0])
                     if (pidList.indexOf(pid) == -1) {
                         div.removeClass('reported')
                     }
@@ -1359,7 +1361,7 @@ div.tip[id^="g_up"] {
                 // 检查是不是有帖子没有打上标记
                 for (let div of Array.from(document.querySelectorAll('#postlist > div:not(.reported)'))) {
                     if (!(div instanceof HTMLElement)) { continue }
-                    let pid = parseInt(((div.getAttribute('id') || '0').match(/\d+/) || ['0'])[0])
+                    let pid = parseInt(((div.getAttribute('id') ?? '0').match(/\d+/) ?? ['0'])[0])
                     if (pidList.indexOf(pid) != -1) {
                         div.addClass('reported')
                     }
@@ -1398,7 +1400,7 @@ div.tip[id^="g_up"] {
             // 获取页面上尚未被discuz懒加载的图片
             let imgs: HTMLImageElement[]
             if (window.lazyload) { // 如果页面中已有BBS的lazyload
-                imgs = HTMLImgFliter(window.lazyload.imgs || [])
+                imgs = HTMLImgFliter(window.lazyload.imgs ?? [])
                 window.lazyload.imgs = [] // 劫持
             } else {
                 imgs = HTMLImgFliter([
@@ -1411,9 +1413,9 @@ div.tip[id^="g_up"] {
                 let img = entries[0].target
                 obs.unobserve(img)
                 if (!(img instanceof HTMLImageElement)) { return } // 可能监听错了？
-                img.setAttribute('src', img.getAttribute('file') || '')
+                img.setAttribute('src', img.getAttribute('file') ?? '')
                 img.setAttribute('alt', '图片加载中, 请稍作等待......')
-                obj.log('加载图片: ' + (img.getAttribute('file') || ''))
+                obj.log('加载图片: ' + (img.getAttribute('file') ?? ''))
                 // 控制图片大小
                 setTimeout(() => { if (!(img.hasAttribute('loaded')) && img.hasAttribute('lazyloadthumb')) { window.thumbImg(img) } }, 500)
                 // 不放心, 所以1.5s、5s、10s后再处理一次
@@ -1443,12 +1445,12 @@ div.tip[id^="g_up"] {
                         img.removeAttribute('waitRetry') // 去除等待重新加载的标记
                         img.numAttribute('retry').add(1)
                         // 重新加载
-                        img.src = img.getAttribute('file') || img.getAttribute('src') || ''
+                        img.src = img.getAttribute('file') ?? img.getAttribute('src') ?? ''
                     }
                 })
                 // 监听
                 obs.observe(img)
-                obj.log('劫持图片: ' + (img.getAttribute('file') || ''))
+                obj.log('劫持图片: ' + (img.getAttribute('file') ?? ''))
             }
             /**过滤一个元素数组, 返回一个图片元素数组 */
             function HTMLImgFliter(elems: Element[]): HTMLImageElement[] {
@@ -1467,6 +1469,7 @@ div.tip[id^="g_up"] {
             /**选择器 */
             let cssSelector = window.location.href.indexOf('action=printable') == -1 ? '.t_fsz .t_f img, .img img' : 'body > img, body > * > img'
             cssSelector += window.location.href.indexOf('/forum.php') != -1 ? ', .common p > img' : ''// 带预览图的格式浏览版块
+            cssSelector += window.location.href.indexOf('thread') != -1 ? ', .plhin .sign img' : ''// 浏览帖子时检查一下签名框
             this.addCheckSetting('启用代理加载图片<br><small>访问imgur等现在访问困难的图床</small>', enableProxy, (ck, ev) => {
                 enableProxy = ck
                 obj.write('LoadImgProxyEnable', ck)
@@ -1499,10 +1502,10 @@ div.tip[id^="g_up"] {
                 ])
                 /**需要代理的网站列表 */
                 let needProxyWebSite = ['imgur.com/', 'upload.cc/']
-                src = img.getAttribute(attr) || ''
-                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
+                src = img.getAttribute(attr) ?? ''
+                if (src.indexOf('static/image/common/none.gif') != -1 ?? src.length < 4) {
                     attr = 'file'
-                    src = img.getAttribute(attr) || ''
+                    src = img.getAttribute(attr) ?? ''
                 }
                 for (let s of needProxyWebSite) {
                     if (src.indexOf(s) != -1) {
@@ -1522,10 +1525,10 @@ div.tip[id^="g_up"] {
                 let antiStealingLinkWebSite = ['sinaimg.cn', 'tiebapic.baidu.com', 'qpic.cn', 'planetminecraft.com', 'hdslb.com',/*'bvimg.com',*/]
                 /**需要特殊反反盗链的图床网址 */
                 let advancedAntiStealingLinkWebSite = ['hiphotos.bdimg.com', 'minecraftxz.com',]
-                src = img.getAttribute(attr) || ''
-                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
+                src = img.getAttribute(attr) ?? ''
+                if (src.indexOf('static/image/common/none.gif') != -1 ?? src.length < 4) {
                     attr = 'file'
-                    src = img.getAttribute(attr) || ''
+                    src = img.getAttribute(attr) ?? ''
                 }
                 for (let s of advancedAntiStealingLinkWebSite) {
                     if (src.indexOf(s) != -1) {
@@ -1614,11 +1617,11 @@ div.tip[id^="g_up"] {
                 obj.saltQuery('#threadlisttableid > tbody:not([classified])', (i, el) => {
                     if (!(el instanceof HTMLElement)) { return }
                     el.setAttribute('classified', '') // 添加标记
-                    el.setAttribute('type', el.querySelector('th > em a')?.textContent || '') // 主题分类
-                    el.setAttribute('author', (el.querySelector('.by cite')?.textContent || '').replace(/^\s|\s$/g, '')) // 作者昵称
+                    el.setAttribute('type', el.querySelector('th > em a')?.textContent ?? '') // 主题分类
+                    el.setAttribute('author', (el.querySelector('.by cite')?.textContent ?? '').replace(/^\s|\s$/g, '')) // 作者昵称
                     /**帖子图标的title */
-                    let title = el.querySelector('.icn a')?.getAttribute('title') || ''
-                    let thread = el.querySelector('th a.s.xst')?.textContent || ''
+                    let title = el.querySelector('.icn a')?.getAttribute('title') ?? ''
+                    let thread = el.querySelector('th a.s.xst')?.textContent ?? ''
                     // 判断置顶
                     if (title.indexOf('全局置顶') != -1) { el.addClass('top-3') }
                     else if (title.indexOf('分类置顶') != -1) { el.addClass('top-2') }
@@ -1629,7 +1632,7 @@ div.tip[id^="g_up"] {
                     // 悬赏
                     if (title.indexOf('悬赏') != -1) {
                         el.addClass('reward')
-                        let pirce = parseInt(((el.querySelector('a[title="只看进行中的"]')?.textContent || '').match(/\d+/) || ['30'])[0])
+                        let pirce = parseInt(((el.querySelector('a[title="只看进行中的"]')?.textContent ?? '').match(/\d+/) ?? ['30'])[0])
                         if (pirce >= 100) { el.addClass('big-reward') }
                         if (pirce >= 500) { el.addClass('great-reward') }
                     }
@@ -1780,7 +1783,7 @@ div.tip[id^="g_up"] {
                 return max
             }
             function getRootFontSize(): number {
-                let style = document.defaultView?.getComputedStyle(document.body, '') || { fontSize: '12px' }
+                let style = document.defaultView?.getComputedStyle(document.body, '') ?? { fontSize: '12px' }
                 let fs = parseInt(style.fontSize);
                 if (isNaN(fs))
                     return 12
@@ -1900,15 +1903,15 @@ body.nightS .pl .blockcode div[id]{
                     /**回复别人帖子的引用框总是存在一个anchor */
                     let a = quote.querySelector('a')
                     if (a) // 同时这个anchor的内容是 xxx 发表于 xxxx-xx-xx xx:xx
-                        if (/.*\s?发表于.*\d{4}/.test(a.textContent || ''))
+                        if (/.*\s?发表于.*\d{4}/.test(a.textContent ?? ''))
                             quote.remove() // 忽略引用回帖
                 }
                 /**最后编辑时间 */
                 let pstatus = tempEl.querySelector('i.pstatus')
                 if (pstatus)
-                    if (/./.test(pstatus.textContent || ''))
+                    if (/./.test(pstatus.textContent ?? ''))
                         pstatus.remove() // 忽略最后编辑时间
-                let t = tempEl.textContent || ''
+                let t = tempEl.textContent ?? ''
                 for (let aw of RegExps) {
                     if (aw.test(t)) {
                         if (callback) {
@@ -2002,7 +2005,7 @@ body.nightS .pl .blockcode div[id]{
                             div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
                             div.checked,
                             div.callback,
-                            div.name || div.title,
+                            div.name ?? div.title,
                             div.priority
                         )
                         if (!autoRunLock) { this.sortSetting() }
@@ -2012,7 +2015,7 @@ body.nightS .pl .blockcode div[id]{
                             div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
                             div.text,
                             div.callback,
-                            div.name || div.title,
+                            div.name ?? div.title,
                             div.priority
                         )
                         if (!autoRunLock) { this.sortSetting() }
@@ -2022,7 +2025,7 @@ body.nightS .pl .blockcode div[id]{
                             div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
                             div.text,
                             div.callback,
-                            div.name || div.title,
+                            div.name ?? div.title,
                             div.priority
                         )
                         if (!autoRunLock) { this.sortSetting() }
@@ -2033,7 +2036,7 @@ body.nightS .pl .blockcode div[id]{
                             div.value,
                             div.range,
                             div.callback,
-                            div.name || div.title,
+                            div.name ?? div.title,
                             div.priority
                         )
                         if (!autoRunLock) { this.sortSetting() }
@@ -2069,7 +2072,7 @@ body.nightS .pl .blockcode div[id]{
             textareaEl.value = textarea
             textareaEl.addEventListener('change', function (this: HTMLTextAreaElement, e: Event) { callback(this, e) })
             newsetting.appendChild(textareaEl)
-            this.addSetting(newsetting, id || h3, priority)
+            this.addSetting(newsetting, id ?? h3, priority)
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
@@ -2085,7 +2088,7 @@ body.nightS .pl .blockcode div[id]{
             inputEl.value = text
             inputEl.addEventListener('change', function (this: HTMLInputElement, e: Event) { callback(this, e) })
             newsetting.appendChild(inputEl)
-            this.addSetting(newsetting, id || h3, priority)
+            this.addSetting(newsetting, id ?? h3, priority)
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个 input
@@ -2108,7 +2111,7 @@ body.nightS .pl .blockcode div[id]{
             label.className = 'checkbox'
             label.htmlFor = inputId
             newsetting.appendChild(label)
-            this.addSetting(newsetting, id || h3, priority)
+            this.addSetting(newsetting, id ?? h3, priority)
         }
         /**
          * 一种快速生成配置项的预设，结构是一个 h3 加一个滑动条 input
@@ -2122,13 +2125,13 @@ body.nightS .pl .blockcode div[id]{
             /**范围控制: 最小值, 最大值, 步长 */
             let rg: [number, number, number] = [0, 0, 0]
             if (range instanceof Array) {
-                rg[0] = range[0] || 0
-                rg[1] = range[1] || 100
-                rg[2] = range[2] || 1
+                rg[0] = range[0] ?? 0
+                rg[1] = range[1] ?? 100
+                rg[2] = range[2] ?? 1
             } else {
-                rg[0] = range.min || 0
-                rg[1] = range.max || 100
-                rg[2] = range.step || 1
+                rg[0] = range.min ?? 0
+                rg[1] = range.max ?? 100
+                rg[2] = range.step ?? 1
             }
             // 最小值小于最大值
             if (rg[0] > rg[1]) {
@@ -2151,7 +2154,7 @@ body.nightS .pl .blockcode div[id]{
             })
             // 写入元素
             newsetting.appendChild(inputEl)
-            this.addSetting(newsetting, id || h3, priority)
+            this.addSetting(newsetting, id ?? h3, priority)
         }
         /**
          * 删除配置项
@@ -2174,12 +2177,12 @@ body.nightS .pl .blockcode div[id]{
             for (let div of divs) {
                 if (!div.hasAttribute('priority')) {
                     div.setAttribute('priority', '99999999')
-                } else if (isNaN(parseInt(div.getAttribute('priority') || ''))) {
+                } else if (isNaN(parseInt(div.getAttribute('priority') ?? ''))) {
                     div.setAttribute('priority', '99999998')
                 }
             }
             divs.sort((a, b) => {
-                return parseInt(a.getAttribute('priority') || '') - parseInt(b.getAttribute('priority') || '')
+                return parseInt(a.getAttribute('priority') ?? '') - parseInt(b.getAttribute('priority') ?? '')
             })
             this.addChildren(this.settingPanel, divs)
         }
@@ -2483,7 +2486,7 @@ body.nightS .pl .blockcode div[id]{
                 if (!this.getClientRects().length)
                     return { top: 0, left: 0 };
                 var rect = this.getBoundingClientRect();
-                var win = this.ownerDocument.defaultView || { pageYOffset: 0, pageXOffset: 0 };
+                var win = this.ownerDocument.defaultView ?? { pageYOffset: 0, pageXOffset: 0 };
                 return {
                     top: rect.top + win.pageYOffset,
                     left: rect.left + win.pageXOffset
@@ -2494,7 +2497,7 @@ body.nightS .pl .blockcode div[id]{
             HTMLElement.prototype.numAttribute = function (key: string) {
                 let value: number
                 if (this.hasAttribute(key)) {
-                    value = parseInt(this.getAttribute(key) || '')
+                    value = parseInt(this.getAttribute(key) ?? '')
                 } else {
                     value = 0
                     this.setAttribute(key, value + '')
