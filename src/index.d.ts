@@ -9,6 +9,8 @@ interface Window {
     saltMCBBSOriginClass: saltMCBBSOriginClass,
     /**saltMCBBSDataBaseHandler 类 */
     saltMCBBSDataBaseHandler: saltMCBBSDataBaseHandler,
+    /**saltMCBBSConsole 实例 */
+    saltMCBBSConsole: any,
     // jQuery: any, // 有需要的话请自行导入jQuery的定义文件
     /**用户的uid，未登录则为0 */
     discuz_uid: string,

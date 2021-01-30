@@ -3,7 +3,7 @@ $MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
 
 @mixin scroll($width: 4px, $bgcolor: #eee, $thumbcolor: #999) {
     scrollbar-width: thin;
-    scrollbar-color: $bgcolor $thumbcolor;
+    scrollbar-color: $thumbcolor $bgcolor;
     &::-webkit-scrollbar {
         /*滚动条整体*/
         width: $width;
@@ -26,9 +26,7 @@ $MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
 }
 
 body {
-    background-image: var(--bodyimg-day);
     background-attachment: fixed;
-    background-size: cover;
     > div[style]:not([id]):not([class]) {
         float: left;
     }
@@ -97,6 +95,55 @@ ul.xl.xl2.o.cl .pmwarn {
         color: #2c4;
     }
 }
+// 控制面板
+.consolePanel {
+    width: 50vw;
+    min-width: 360px;
+    left: 25vw;
+    max-height: 80vh;
+    top: 10vh;
+    position: fixed;
+    background-color: $bgcolor;
+    background-clip: padding-box;
+    padding: 0 8px 8px 8px;
+    border: 8px solid;
+    border-radius: 8px;
+    border-color: rgba($color: #000000, $alpha: 0.2);
+    box-sizing: border-box;
+    overflow-y: auto;
+    transition: 0.3s ease, opacity 0.2s ease;
+    z-index: 999999;
+    // -ms-overflow-style: none; // IE上直接取消滚动条
+    @include scroll(4px);
+    &.visible {
+        opacity: 1;
+        left: 25vw;
+    }
+    &.hidden {
+        opacity: 0;
+        left: -90vw;
+        transition-timing-function: ease-in;
+    }
+    > div {
+        margin: 42px 0 5px 0;
+        min-height: 10vh;
+        max-height: calc(80vh - 6rem - 46px);
+        // background-color: transparent;
+        @include scroll(4px);
+    }
+    > textarea {
+        resize: vertical;
+        font-size: 1rem;
+        line-height: 1.2rem;
+        height: 1.2 * 2rem;
+        min-height: 1.2 * 1rem;
+        max-height: 1.2 * 20rem;
+        width: calc(100% - 8px);
+        border: none;
+        border-width: 0;
+        @include scroll(8px);
+    }
+}
 // 设置面板
 .settingPanel {
     width: 50vw;
@@ -149,7 +196,7 @@ ul.xl.xl2.o.cl .pmwarn {
     h3 {
         font-size: 0.875rem;
         small {
-            font-size: 0.5em;
+            font-size: 0.75rem;
             color: grey;
         }
     }
@@ -325,6 +372,10 @@ textarea.pt {
         // 用户组权限页面
         margin-top: 0;
     }
+}
+// 签名档
+.plhin .sign {
+    @include scroll();
 }
 // 如果顶栏没有移动到左侧
 .linksStillOnTopBar {

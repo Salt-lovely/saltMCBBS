@@ -53,6 +53,28 @@ interface settingOptionsRange {
     priority?: number,
 }
 //type supportDataType = 'string' | 'number' | 'boolean' | ''
+/**表情包 */
+interface MemePack {
+    /**表情包名 */
+    name: string,
+    /**表情 */
+    memes: Meme[]
+    /**作者 */
+    author?: string,
+    /**版本 */
+    version?: string,
+    /**是否启用 */
+    // enable?: boolean,
+    /**其他信息 */
+    others?: string,
+}
+/**单个表情 */
+interface Meme {
+    /**表情的URL */
+    url: string,
+    /**表情的名字（描述） */
+    name: string,
+}
 /**MCBBS的API返回中.data的部分内容 */
 interface BBSAPIResponceData { Variables: BBSAPIResponceDataVariables; }
 /**MCBBS的API返回中.data.Variables的部分内容 */

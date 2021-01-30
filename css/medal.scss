@@ -1,3 +1,10 @@
+@mixin text-stroke($width: 1px, $color: #fff) {
+    -webkit-text-stroke: $width $color;
+    text-stroke: $width $color;
+}
+@mixin whiteTextStroke {
+    text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff;
+}
 // 勋章
 p.md_ctrl {
     // max-height: calc(64px * 4.5); /*限制为5行*/
@@ -187,11 +194,49 @@ body {
     }
 
     .tip {
+        //说明窗口下面的小尖尖
         .tip_horn {
-            /*说明窗口下面的小尖尖*/
             display: none;
         }
         .tip_c {
+            padding: 20px 15px 0 15px;
+            height: 165px;
+            color: #222;
+            line-height: 1.2em;
+            > p,
+            > h4 {
+                color: #222;
+                // @include text-stroke();
+            }
+            h4 {
+                /*说明窗口的标题栏*/
+                border-bottom: 1px solid #fff;
+                text-align: center;
+            }
+        }
+        // 勋章栏
+        &[id$="_menu"][id^="m"] {
+            display: flex;
+            .tip_c {
+                height: auto;
+                margin: auto;
+                padding: 0 0 5px 0;
+                background-color: rgba($color: #fff, $alpha: 0.4);
+                // text-shadow: #fff 1px, #fff 1px, #fff 1px;
+                @include whiteTextStroke;
+                > p,
+                > h4 {
+                    padding: 5px 10px 0;
+                }
+            }
+        }
+        &::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
             background-image: linear-gradient(
                 142deg,
                 #fff0 0%,
@@ -206,20 +251,7 @@ body {
                 #fff2 85%,
                 #fff0 85.1%
             ); /*诡异的光*/
-            padding: 20px 15px 0 15px;
-            height: 165px;
-            color: #222;
-            > p,
-            > h4 {
-                color: #222;
-                text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff,
-                    0 0 1px #fff, 0 0 1px #fff, 0 0 2px #fff, 0 0 2px #fff,
-                    0 0 2px #fff, 0 0 2px #fff !important;
-            }
-            h4 {
-                /*说明窗口的标题栏*/
-                border-bottom: 1px solid #fff;
-            }
+            z-index: -1;
         }
     }
 }
@@ -417,10 +449,12 @@ body {
     );
     div[id$="_menu"]:before {
         background-repeat: no-repeat;
+        background: var(--bgimg, transparent);
+        z-index: -1;
     }
     @each $key, $name in $medalmap {
         div[id$="_#{$key}_menu"]:before {
-            background: url(static/image/common/#{$name});
+            --bgimg: url(static/image/common/#{$name});
         }
     }
 }

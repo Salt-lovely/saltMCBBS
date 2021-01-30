@@ -68,6 +68,10 @@ $droplight: drop-shadow(0 0 4px #fff);
         }
     }
 }
+@mixin text-stroke($width: 1px, $color: #fff) {
+    -webkit-text-stroke: $width $color;
+    text-stroke: $width $color;
+}
 // 大体更改
 body.nightS {
     --bodybg: $bodybg;
@@ -523,7 +527,7 @@ body.nightS {
             // 正文里的table
             table {
                 color: #444;
-                @include whiteTextStroke();
+                // @include whiteTextStroke();
             }
             //
             .spoilerbutton {
@@ -991,6 +995,20 @@ body.nightS {
             }
         }
     }
+    // 个人空间
+    #visitor_content,
+    #friend_content,
+    .emp,
+    .blocktitle {
+        color: $fontcolor;
+        a {
+            color: $fontcolor;
+            &:hover {
+                color: $a-highlight;
+                background-color: $table-border-color;
+            }
+        }
+    }
 }
 // 编辑器
 body.nightS {
@@ -1106,36 +1124,37 @@ body.nightS {
         "#EC1282": #f655a8,
     );
     $fontcolormap: (
-        "#333333": #e0e0e0,
-        /*版主色*/ "#660000": #c66,
-        "#8b0000": #c66,
-        "#ff0000": #f99,
+        "#000": #fff,
+        "black": #fff,
+        "Black": #fff,
+        "333333": #e0e0e0,
+        "353535": #e0e0e0,
+        /*版主色*/ "660000": #c66,
+        "8b0000": #c66,
+        "ff0000": #f99,
         "red": #f99,
         "Red": #f99,
-        "#000080": #8af,
-        "#0000ff": #8af,
-        "#3366ff": #8af,
-        "#003399": #8af,
+        "000080": #8af,
+        "0000ff": #8af,
+        "3366ff": #8af,
+        "003399": #8af,
         "blue": #8af,
         "Blue": #8af,
         "Navy": #8af,
-        "#339933": #9f9,
-        "#009900": #9f9,
-        "#008000": #9f9,
-        "#006400": #9f9,
+        "339933": #9f9,
+        "009900": #9f9,
+        "008000": #9f9,
+        "006400": #9f9,
         "#0640": #9f9,
         "green": #9f9,
         "Green": #9f9,
-        "#000000": #fff,
-        "black": #fff,
-        "Black": #fff,
-        /*大区版主色*/ "#660099": #bf8cd9,
-        "#4b0082": #b54dff,
+        /*大区版主色*/ "660099": #bf8cd9,
+        "4b0082": #b54dff,
         "Indigo": #b54dff,
         "DarkOrchid": #c57ce9,
-        "#800080": #e830e8,
+        "800080": #e830e8,
         "Purple": #e830e8,
-        "#2d76c4": #5c97d6,
+        "2d76c4": #5c97d6,
         "Olive": #ffff33,
         "Sienna": #d28460,
     );
@@ -1187,9 +1206,11 @@ body.nightS {
 }
 // 设置面板夜间模式
 body.nightS {
+    .consolePanel,
     .settingPanel {
         background-color: $bodybg;
         color: $fontcolor;
+        border-color: rgba($color: #999999, $alpha: 0.2);
         textarea {
             background-color: $bodybg-l;
             border: none;
@@ -1207,4 +1228,10 @@ body.nightS {
             }
         }
     }
+
+    // .consolePanel {
+    //     > div {
+    //         background-color: $bodybg-l;
+    //     }
+    // }
 }

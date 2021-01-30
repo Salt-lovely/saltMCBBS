@@ -4,6 +4,11 @@ interface saltMCBBSOriginClass {
     new(): saltMCBBSOriginClassNew
 }
 interface saltMCBBSOriginClassNew {
+    consolePanel: HTMLElement;
+    /**将字符串转换为MemePack */
+    resolveMemePack(s: string): MemePack,
+    /**将字符串转换为Meme数组 */
+    formatMeme(s: string): Meme[],
     /**筛除数组中的重复元素 */
     unique<T>(arr: T[]): T[],
     /**随机生成字母数字组合, 可以用于id */
@@ -34,6 +39,11 @@ interface saltMCBBSOriginClassNew {
      * @param callback 要执行的代码
      */
     docReady(callback: () => void): void,
+    /**
+     * 在文档即将加载完毕时执行代码，执行时间可能早于jQuery的$(function)
+     * @param callback 要执行的代码
+     */
+    async docNearlyReady(callback: () => void): void,
     /**
      * 根据选择器遍历元素
      * @param selector 字符串，选择器
@@ -292,6 +302,12 @@ interface saltMCBBSDataBaseHandlerInstance {
      * @param value 值
      */
     write<T>(key: string, value: T): Promise<void>,
+    /**获取数据库里的所有值 */
+    readAll<T>(): Promise<{ mainKey: string; value: T; }[]>,
+    /**获取数据库里的所有键 */
+    readAllKey(): Promise<string[]>,
+    /**等待数据库准备完毕 */
+    waitForReady(): Promise<void>,
     /**获取store
      * 
      * store存活时间很短，请立即使用
