@@ -77,7 +77,7 @@ interface saltMCBBSOriginClassNew {
      * 数组中随机挑选一个返回
      * @param arr 数组
      */
-    randomChoice<T>(arr: T[]): T,
+    randomChoice<T>(arr: T[]): T | null,
     /**
      * 将字符串分割成字符串数组，去掉空项与每一项的两侧空格
      * @param str 要分割的字符串

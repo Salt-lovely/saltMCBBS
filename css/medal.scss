@@ -3,7 +3,7 @@
     text-stroke: $width $color;
 }
 @mixin whiteTextStroke {
-    text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff;
+    text-shadow: 0 0 6px #fff, 0 0 6px #fff, 0 0 6px #fff, 0 0 6px #fff;
 }
 // 勋章
 p.md_ctrl {

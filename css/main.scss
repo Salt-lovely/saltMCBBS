@@ -11,7 +11,7 @@ $MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
     }
     &::-webkit-scrollbar-thumb {
         /*滚动条中可滑动部分*/
-        border-radius: $width;
+        border-radius: $width / 2;
         box-shadow: inset 0 0 4px
             rgba($color: darken($thumbcolor, 20%), $alpha: 0.25);
         background: $thumbcolor;
@@ -20,7 +20,7 @@ $MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
         /*滚动条轨道*/
         box-shadow: inset 0 0 4px
             rgba($color: darken($bgcolor, 20%), $alpha: 0.25);
-        border-radius: $width;
+        border-radius: $width / 4;
         background: $bgcolor;
     }
 }
@@ -29,9 +29,6 @@ body {
     background-attachment: fixed;
     > div[style]:not([id]):not([class]) {
         float: left;
-    }
-    &:hover > .mc_map_wp {
-        transition-delay: 0s;
     }
     > .mc_map_wp {
         padding-top: 0;
@@ -50,6 +47,26 @@ body {
             padding-bottom: 0 !important;
             h2 img {
                 max-height: 74px;
+            }
+        }
+    }
+    &:hover {
+        > .mc_map_wp {
+            transition-delay: 0s;
+        }
+    }
+    // 有背景图时使用特殊的透明度
+    &.hasBackgroundImage {
+        .mc_map_wp,
+        #scrolltop,
+        #toptb {
+            opacity: var(--mcmapwpOpacity, 1);
+        }
+        &:hover {
+            .mc_map_wp,
+            #scrolltop,
+            #toptb {
+                opacity: var(--mcmapwpCommonOpacity, 1);
             }
         }
     }

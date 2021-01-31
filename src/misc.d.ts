@@ -63,6 +63,8 @@ interface MemePack {
     author?: string,
     /**版本 */
     version?: string,
+    /**版权信息 */
+    license?: string,
     /**是否启用 */
     // enable?: boolean,
     /**其他信息 */
