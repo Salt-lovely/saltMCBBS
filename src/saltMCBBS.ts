@@ -1136,7 +1136,7 @@ div.tip[id^="g_up"] {
                     for (let rea of reportReasonList) {
                         let br = document.createElement('br')
                         let label = document.createElement('label')
-                        label.innerHTML = `<input type="radio" name="report_select" class="pr" onclick="$('report_other').style.display='none';$('report_msg').style.display='none';$('report_message').value='${rea}'" value="${rea}">${rea}`
+                        label.innerHTML = `<input type="radio" name="report_select" class="pr" onclick="$('report_other').style.display='none';$('report_msg').style.display='none';$('report_message').value='${rea}'" value="${rea}"> ${rea}`
                         reportUl.appendChild(label); reportUl.appendChild(br)
                     }
                     // 把那两个元素塞回去
@@ -2838,11 +2838,6 @@ body.nightS .pl .blockcode div[id]{
             ev.preventDefault()
         }
     })
-    // inputArea.addEventListener('keyup', function (this, ev) {
-    //     if (!ev.shiftKey && ev.code == 'Enter')
-    //         if (/^\n+$/.test(this.value))
-    //             this.value = ''
-    // })
     consolePanel.appendChild(logArea)
     consolePanel.appendChild(inputArea)
     document.body.appendChild(consolePanel)
