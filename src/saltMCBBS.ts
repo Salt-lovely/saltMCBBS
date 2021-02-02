@@ -44,6 +44,7 @@
 控制台功能
 */
 (function () {
+    if (window.self != window.top) { return }
     /**版本 */
     const myversion = '0.1.8'
     // /**历史 */
@@ -2699,6 +2700,7 @@ body.nightS .pl .blockcode div[id]{
 })();
 // 控制台部分
 (function () {
+    if (window.self != window.top) { return }
     // type mainCmd = 'tid' | 'uid' | 'fid' | 'runjs'
     interface SaltMCBBSCommand {
         // length: number,
@@ -2850,6 +2852,7 @@ body.nightS .pl .blockcode div[id]{
 })();
 // 表情包部分
 (async function () {
+    if (window.self != window.top) { return }
     const db = new window.saltMCBBSDataBaseHandler('saltMCBBSMemeGSU3Rk2ZWSAk0M8d')
     const sm = window.saltMCBBS
     await db.waitForReady()
