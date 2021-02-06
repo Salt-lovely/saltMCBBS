@@ -1207,10 +1207,15 @@ body.nightS {
 // 设置面板夜间模式
 body.nightS {
     .consolePanel,
-    .settingPanel {
+    .settingPanel,
+    .emoticonPanel,
+    .saltMCBBSinputbox {
         background-color: $bodybg;
         color: $fontcolor;
         border-color: rgba($color: #999999, $alpha: 0.2);
+    }
+    .consolePanel,
+    .settingPanel {
         textarea {
             background-color: $bodybg-l;
             border: none;
@@ -1228,7 +1233,6 @@ body.nightS {
             }
         }
     }
-
     // .consolePanel {
     //     > div {
     //         background-color: $bodybg-l;

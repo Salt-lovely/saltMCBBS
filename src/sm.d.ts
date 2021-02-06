@@ -5,6 +5,21 @@ interface saltMCBBSOriginClass {
 }
 interface saltMCBBSOriginClassNew {
     consolePanel: HTMLElement;
+    /**
+     * 当你担心HTML代码中含有script或者style之类的恶意内容时
+     * @param s HTML代码
+     */
+    simpleAntiXSS(s: string): string,
+    /**弹出一个类似于inputbox的弹窗
+     * 
+     * 有确定和取消按钮，分别触发两个不同的回调函数
+     */
+    inputBox(options: {
+        placeholder?: string,
+        defaultText?: string,
+        acceptCallback: (text: string) => void,
+        cancelCallback?: (text: string) => void,
+    }): void,
     /**将字符串转换为MemePack */
     resolveMemePack(s: string): MemePack,
     /**将字符串转换为Meme数组 */
@@ -290,6 +305,11 @@ interface saltMCBBSDataBaseHandlerInstance {
     /**是否处于可交互状态 */
     readable: boolean,
     prefix: string,
+    /**
+     * 判断是否存在记录，不存在或者undefined或者出错均会返回false
+     * @param key 键
+     */
+    has(key: string): Promise<boolean>,
     /**
      * 读取
      * @param key 键

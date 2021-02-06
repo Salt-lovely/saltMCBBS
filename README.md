@@ -31,3 +31,9 @@ SaltMCBBS 的一些功能受以下项目启发：
 -   [MCBBS 自定义表情](https://www.mcbbs.net/thread-969151-1-1.html)
     -   作者快乐小方
     -   使用类似于 Markdown 的格式添加表情
+
+## 工具
+
+-   sed 指令
+    -   [安装一个让 Windows 也能使用 sed 指令的软件](https://github.com/mbuilov/sed-windows)
+    -   或者下载一个 git 然后复制里面的 sed.exe

@@ -1,5 +1,5 @@
 $bgcolor: #fbf2db;
-$MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
+$skinColor: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
 
 @mixin scroll($width: 4px, $bgcolor: #eee, $thumbcolor: #999) {
     scrollbar-width: thin;
@@ -22,6 +22,41 @@ $MExtBtnClr: var(--MExtBtnClr, #e91e63); // 兼容MCBBS Extender
             rgba($color: darken($bgcolor, 20%), $alpha: 0.25);
         border-radius: $width / 4;
         background: $bgcolor;
+    }
+}
+@mixin panel(
+    $width: 50vw,
+    $minWidth: 360px,
+    $maxHeight: 80vh,
+    $minHeight: 10vh,
+    $padding: 8px,
+    $borderColor: rgba($color: #000000, $alpha: 0.2),
+    $scrollWidth: 4px
+) {
+    width: $width;
+    min-width: $minWidth;
+    left: 50vw - $width / 2;
+    max-height: $maxHeight;
+    min-height: $minHeight;
+    top: 50vh - $maxHeight / 2;
+    position: fixed;
+    background-color: $bgcolor;
+    background-clip: padding-box;
+    padding: 0 $padding $padding $padding;
+    border: 8px solid;
+    border-radius: 8px;
+    border-color: $borderColor;
+    box-sizing: border-box;
+    overflow-y: auto;
+    transition: 0.3s ease, opacity 0.2s ease;
+    z-index: 999999;
+    @include scroll($scrollWidth);
+    &.visible {
+        opacity: 1;
+    }
+    &.hidden {
+        opacity: 0;
+        transition-timing-function: ease-in;
     }
 }
 
@@ -74,6 +109,11 @@ body {
     //     opacity: 0;
     // }
 }
+@media screen and (max-width: 1130px) {
+    body > .mc_map_wp {
+        margin-left: 0;
+    }
+}
 // 查看警告记录按钮
 .pmwarn {
     width: auto !important;
@@ -112,34 +152,19 @@ ul.xl.xl2.o.cl .pmwarn {
         color: #2c4;
     }
 }
+// 面板
+.settingPanel,
+.consolePanel,
+.emoticonPanel {
+    @include panel();
+}
 // 控制面板
 .consolePanel {
-    width: 50vw;
-    min-width: 360px;
-    left: 25vw;
-    max-height: 80vh;
-    top: 10vh;
-    position: fixed;
-    background-color: $bgcolor;
-    background-clip: padding-box;
-    padding: 0 8px 8px 8px;
-    border: 8px solid;
-    border-radius: 8px;
-    border-color: rgba($color: #000000, $alpha: 0.2);
-    box-sizing: border-box;
-    overflow-y: auto;
-    transition: 0.3s ease, opacity 0.2s ease;
-    z-index: 999999;
-    // -ms-overflow-style: none; // IE上直接取消滚动条
-    @include scroll(4px);
     &.visible {
-        opacity: 1;
         left: 25vw;
     }
     &.hidden {
-        opacity: 0;
         left: -90vw;
-        transition-timing-function: ease-in;
     }
     > div {
         margin: 42px 0 5px 0;
@@ -163,32 +188,11 @@ ul.xl.xl2.o.cl .pmwarn {
 }
 // 设置面板
 .settingPanel {
-    width: 50vw;
-    min-width: 360px;
-    left: 25vw;
-    max-height: 80vh;
-    top: 10vh;
-    position: fixed;
-    background-color: $bgcolor;
-    background-clip: padding-box;
-    padding: 0 8px 8px 8px;
-    border: 8px solid;
-    border-radius: 8px;
-    border-color: rgba($color: #000000, $alpha: 0.2);
-    box-sizing: border-box;
-    overflow-y: auto;
-    transition: 0.3s ease, opacity 0.2s ease;
-    z-index: 999999;
-    // -ms-overflow-style: none; // IE上直接取消滚动条
-    @include scroll(4px);
     &.visible {
-        opacity: 1;
         top: 10vh;
     }
     &.hidden {
-        opacity: 0;
         top: -90vh;
-        transition-timing-function: ease-in;
     }
     > * {
         width: 100%;
@@ -246,6 +250,62 @@ ul.xl.xl2.o.cl .pmwarn {
         }
     }
 }
+// 表情包面板
+.emoticonPanel {
+    &.visible {
+        left: 25vw;
+    }
+    &.hidden {
+        left: -90vw;
+    }
+    .memelist {
+        margin-top: 42px;
+        > div {
+            width: 100%;
+            padding: 4px;
+            border-bottom: 1px solid #999;
+        }
+        .memeitem {
+            display: flex;
+            outline-offset: -1px;
+            > * {
+                margin-top: auto;
+                margin-bottom: auto;
+            }
+            img {
+                width: 30%;
+                margin-right: 8px;
+                max-width: 100px;
+                max-height: 100px;
+            }
+            p {
+                width: 70%;
+            }
+            &.selected {
+                outline: 2px solid #999;
+            }
+        }
+    }
+    .op {
+        width: calc(100% - 8px);
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        > div {
+            width: 100%;
+            padding: 4px;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s ease;
+            &:hover {
+                color: #f0f0f0;
+                background-color: $skinColor;
+            }
+        }
+    }
+}
 // 消息框
 .messagePanel {
     position: fixed;
@@ -257,6 +317,7 @@ ul.xl.xl2.o.cl .pmwarn {
     font-size: 1rem;
     color: #000000;
     box-sizing: content-box;
+    z-index: 1;
     > div {
         width: 100%;
         min-height: 16px;
@@ -306,6 +367,39 @@ ul.xl.xl2.o.cl .pmwarn {
                 transform: scale(1.2);
             }
         }
+        img {
+            max-width: 75%;
+        }
+    }
+}
+// 输入框
+.saltMCBBSinputbox {
+    @include panel($minHeight: 80vh, $padding: 0);
+    $btnHeight: 36px;
+    textarea {
+        width: 100%;
+        height: calc(80vh - #{16px + $btnHeight});
+        padding: 2px;
+        border: none;
+        box-sizing: border-box;
+        @include scroll();
+    }
+    .btn {
+        width: 100%;
+        height: $btnHeight;
+        display: flex;
+        > div {
+            width: 100%;
+            height: $btnHeight;
+            line-height: $btnHeight;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s ease;
+            &:hover {
+                color: #f0f0f0;
+                background-color: $skinColor;
+            }
+        }
     }
 }
 // checkbox
@@ -349,7 +443,7 @@ input[type="checkbox"] {
         }
     }
     &:checked + label.checkbox {
-        background-color: $MExtBtnClr;
+        background-color: $skinColor;
         &::before {
             content: "开";
             left: $label-h / 3;
@@ -404,7 +498,7 @@ textarea.pt {
         padding: 4px 6px;
         border-radius: 4px;
         &:hover {
-            background: $MExtBtnClr;
+            background: $skinColor;
             color: white;
         }
     }
