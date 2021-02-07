@@ -17,7 +17,7 @@ interface saltMCBBSOriginClassNew {
     inputBox(options: {
         placeholder?: string,
         defaultText?: string,
-        acceptCallback: (text: string) => void,
+        acceptCallback?: (text: string) => void,
         cancelCallback?: (text: string) => void,
     }): void,
     /**将字符串转换为MemePack */
@@ -36,7 +36,7 @@ interface saltMCBBSOriginClassNew {
     getTime(): number,
     getData(key: 'antiWaterRegExp'): RegExp[];
     getData(key: 'noticImgUrl'): String[];
-    getData(key: 'medalLinkPrefix'): String;
+    getData(key: 'medalLinkPrefix' | 'version'): String;
     getData(key: 'randomStringGen'): String[][];
     /**
      * 获取一些由于闭包而不能直接访问的数据
@@ -322,9 +322,11 @@ interface saltMCBBSDataBaseHandlerInstance {
      * @param value 值
      */
     write<T>(key: string, value: T): Promise<void>,
-    /**获取数据库里的所有值 */
+    /**获取数据库里所有的记录 */
     readAll<T>(): Promise<{ mainKey: string; value: T; }[]>,
-    /**获取数据库里的所有键 */
+    /**获取数据库里所有的值 */
+    readAllValue<T>(): Promise<T[]>,
+    /**获取数据库里所有的键 */
     readAllKey(): Promise<string[]>,
     /**等待数据库准备完毕 */
     waitForReady(): Promise<void>,

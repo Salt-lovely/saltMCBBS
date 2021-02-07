@@ -31,6 +31,8 @@ interface Window {
     thumbImg: (obj: Element, method?: any) => void,
     /**BBS自带的懒加载 */
     lazyload?: { imgs?: HTMLImageElement[] },
+    /**所见即所得编辑器所给出的接口 */
+    insertText?: (text: string, movestart?, moveend?, select?, sel?) => void,
     /**MCBBS Extender instance */
     MExt?: any,
 }
@@ -62,6 +64,10 @@ interface HTMLElement {
     offset(): { top: number, left: number },
     /**将元素的某个属性以数值形式返回 */
     numAttribute(key: string): numAttrReturn,
+    /**元素是否部分在可视区域中 */
+    inViewport(): boolean,
+    /**元素是否全部出现在可视区域中 */
+    allInViewport(): boolean,
 }
 interface numAttrReturn {
     /**值, 整数 */
