@@ -71,11 +71,22 @@ interface MemePack {
     others?: string,
 }
 /**单个表情 */
-interface Meme {
+type Meme = Meme1 | Meme2
+interface Meme1 {
     /**表情的URL */
     url: string,
     /**表情的名字（描述） */
     name: string,
+}
+interface Meme2 {
+    /**表情的URL */
+    url: string,
+    /**表情的名字（描述） */
+    name: string,
+    /**图片限宽 */
+    width: string,
+    /**图片限高 */
+    height: string,
 }
 /**MCBBS的API返回中.data的部分内容 */
 interface BBSAPIResponceData { Variables: BBSAPIResponceDataVariables; }

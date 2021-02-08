@@ -205,6 +205,14 @@
     <em>SaltMCBBS表情包管理</em>
     <span style="float:right">
     </span></h3><div class="memelist"></div>`
+        // 打开使用表情包面板按钮
+        let iep = document.createElement('a')
+        iep.href = 'javascript:void(0);'
+        iep.textContent = '使用表情包'
+        iep.onclick = function (this, ev) {
+            showPanel(ev.clientX, ev.clientY)
+        }
+        d.querySelector('h3 span')!.appendChild(iep)
         // 关闭按钮
         let a = document.createElement('a')
         a.href = 'javascript:void(0);'
@@ -228,15 +236,75 @@
         document.body.appendChild(d)
         return d
     })()
+    const insertEmoticonPanel = (function () {
+        let d = newDiv()
+        // let windowWidth = window.innerWidth || document.documentElement.clientWidth, windowHeight = window.innerHeight || document.documentElement.clientHeight
+        // let prop = sm.readWithDefault<{ width: number, height: number }>('insertEmoticonPanelProp', { width: Math.round(windowWidth * 0.3), height: Math.round(windowHeight * 0.3) })
+        // d.style.setProperty('width', /*Math.min(prop.width, windowWidth * 0.8)*/(windowWidth * 0.3) + 'px')
+        // d.style.setProperty('height', /*Math.min(prop.height, windowHeight * 0.8)*/(windowHeight * 0.3) + 'px')
+        d.className = 'insertEmoticonPanel'
+        d.id = 'insertEmoticonPanel'
+        d.style.display = 'none'
+        // 关闭按钮
+        let close = newDiv()
+        close.textContent = ' × '
+        close.className = 'close'
+        close.onclick = function () { d.style.display = 'none' }
+        d.appendChild(close)
+        document.body.appendChild(d)
+        // 拖动
+        let mousePos = { x: 0, y: 0 }, pos = { x: 0, y: 0 }, isDrag = false
+        d.addEventListener('mousedown', function (this, ev) {
+            if (ev.target != this) { isDrag = false; return }
+            mousePos.x = ev.clientX; mousePos.y = ev.clientY
+            pos.x = parseInt(this.style.getPropertyValue('--left') ?? '0'); pos.y = parseInt(this.style.getPropertyValue('--top') ?? '0')
+            isDrag = true
+        })
+        d.addEventListener('mousemove', function (this, ev) {
+            if (!isDrag) return
+            let dx = ev.clientX - mousePos.x
+            let dy = ev.clientY - mousePos.y
+            d.style.setProperty('--left', (pos.x + dx) + 'px')
+            d.style.setProperty('--top', (pos.y + dy) + 'px')
+        })
+        d.addEventListener('mouseout', function (this, ev) {
+            if (!isDrag) return
+            let dx = ev.clientX - mousePos.x
+            let dy = ev.clientY - mousePos.y
+            d.style.setProperty('--left', (pos.x + dx) + 'px')
+            d.style.setProperty('--top', (pos.y + dy) + 'px')
+        })
+        d.addEventListener('mouseup', function (this, ev) {
+            if (isDrag) isDrag = false
+        })
+        return d
+    })()
+    const insertEmoticonPanelMain = (function () {
+        let m = newDiv()
+        m.className = 'main'
+        insertEmoticonPanel.appendChild(m)
+        return m
+    })()
+    const insertEmoticonPanelBar = (function () {
+        let bar = newDiv()
+        bar.className = 'bar'
+        insertEmoticonPanel.appendChild(bar)
+        return bar
+    })()
     const memeList = emoticonPanel.querySelector('.memelist')!
     if (!(memeList instanceof HTMLElement)) { return }
     let chosenList: string[] = []
+    /**已经启用的表情包 */
     let enableList: string[] ///*因为reflashList()里面也要读一遍*/= sm.readWithDefault<string[]>('enableMemeList', [])
+    /**已经加载到内存中的表情包 */
     let memeLoadList: MemePack[] = []
-    let busyLock: [boolean] = [false]
+    let busyLock: [boolean, boolean] = [false, false]
+    // 添加CSS
+    window.saltMCBBSCSS.putStyle(
+        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fcf4e0;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:9}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fcf4e0;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbf2db;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbf2db;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fefaf2}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
+`, 'saltMCBBSEmoticon')
     // 等等数据库
     await db.waitForReady();
-    // console.log(db.has('a'))
     // 添加面板底部的删除、导入、导出按钮
     (function () {
         let op = newDiv()
@@ -271,10 +339,18 @@
         enableList = el
         sm.write('enableMemeList', el)
     }
-    /**删除 - TODO */
-    function deleteList() {
+    /**删除 */
+    async function deleteList() {
+        if (busyLock[1]) return
+        else busyLock[1] = true
         if (chosenList.length < 1) return
         if (!(confirm('你确定要删除这' + chosenList.length + '个表情包吗？\n' + chosenList.join('、') + '\n删除后将无法恢复！'))) return
+        for (let mp of chosenList) {
+            disableMeme(mp)
+            await db.delete(mp)
+        }
+        await reflashList()
+        busyLock[1] = false
     }
     /**导入 */
     function importMeme() {
@@ -382,7 +458,7 @@ ${p.others ? '<br>\n其他信息：' + simpleAntiXSS(p.others) : ''}`
         d.appendChild(img); d.appendChild(r); d.appendChild(div)
         return d
     }
-    /**刷新 */
+    /**刷新管理面板列表 */
     async function reflashList() {
         if (busyLock[0]) return
         else busyLock[0] = true
@@ -395,19 +471,86 @@ ${p.others ? '<br>\n其他信息：' + simpleAntiXSS(p.others) : ''}`
         for (let meme of allMemepackList) {
             memeList.appendChild(item(meme))
         }
+        reflashInsertEmoticonPanel()
         busyLock[0] = false
     }
+    function reflashInsertEmoticonPanel() {
+        insertEmoticonPanelBar.innerHTML = ''
+        for (let pack of memeLoadList) {
+            if (enableList.indexOf(pack.name) == -1) continue
+            let btn = newDiv()
+            btn.innerHTML = pack.name ?? '未命名的表情包'
+            btn.onclick = function () {
+                changePack(pack)
+                // 选中显示
+                let pre = insertEmoticonPanelBar.querySelector('.select')
+                if (pre) pre.classList.remove('select')
+                btn.addClass('select')
+            }
+            insertEmoticonPanelBar.appendChild(btn)
+        }
+        insertEmoticonPanelBar.querySelector('div')?.click()
+    }
+    /**在指定位置显示表情面板 */
+    function showPanel(x = 0, y = 0) {
+        let d = insertEmoticonPanel
+        let windowWidth = window.innerWidth || document.documentElement.clientWidth
+        let windowHeight = window.innerHeight || document.documentElement.clientHeight
+        // 定位
+        let panelWidth = Math.round(windowWidth * 0.3)
+        let panelHeight = Math.round(windowHeight * 0.3)
+        d.style.setProperty('--width', panelWidth + 'px')
+        d.style.setProperty('--height', panelHeight + 'px')
+        let left = (windowWidth - x) > panelWidth ? x : x - panelWidth
+        let top = (windowHeight - y) > panelHeight ? y : y - panelHeight
+        d.style.setProperty('--left', left + 'px')
+        d.style.setProperty('--top', top + 'px')
+        // 显示
+        d.style.display = 'block'
+        // 刷新bar的内容
+        if (insertEmoticonPanelBar.innerHTML == '')
+            reflashInsertEmoticonPanel()
+    }
+    //@ts-ignore
+    window.showPanel = showPanel
+    /**更换插入表情面板的表情栏 */
+    function changePack(pack: MemePack) {
+        insertEmoticonPanelMain.innerHTML = ''
+        let lazyload = 0
+        for (let meme of pack.memes) {
+            let a = newDiv(), b = newDiv(), img = document.createElement('img')
+            // 方格
+            a.title = meme.name
+            a.onclick = function () {
+                insertMeme(meme)
+            }
+            // 图片
+            img.alt = meme.name
+            setTimeout(() => {
+                img.src = meme.url
+            }, 10 * lazyload++);
+            // 显示
+            b.appendChild(img)
+            a.appendChild(b)
+            insertEmoticonPanelMain.appendChild(a)
+        }
+    }
     /**插入表情包到指定位置 */
-    // eval('window.insertMeme=insertMeme') // debug用
-    async function insertMeme(meme: Meme) {
-        // 将表情处理成字符串
-        let imgStr = '[img]' + meme.url + '[/img]'
-        let imgHTML = '<img src="' + meme.url.replace(/([\"\<\>\&])/g, '\\$1') + '" />'
+    function insertMeme(meme: Meme) {
+        let imgStr: string, imgHTML: string
+        //@ts-ignore 将表情处理成字符串
+        if (typeof meme['width'] == 'undefined') {
+            imgStr = `[img]${meme.url}[/img]`
+            imgHTML = '<img src="' + meme.url.replace(/([\"\<\>\&])/g, '\\$1') + '" />'
+        } else { //@ts-ignore
+            imgStr = `[img=${meme.width},${meme.height ?? meme.width}]${meme.url}[/img]` //@ts-ignore
+            imgHTML = `<img src="${meme.url.replace(/([\"\<\>\&])/g, '\\$1')}" width=${meme.width} height=${meme.height ?? meme.width} />`
+        }
         // 获取当前焦点位置
         let focus = getFocus()
         if (!focus) return
         // 插入字符串
-        if (focus instanceof HTMLBodyElement) { // 如果是所见即所得编辑框
+        if (focus instanceof HTMLBodyElement || focus.tagName.toUpperCase() == 'BODY') { // 如果是所见即所得编辑框
             if (!window.insertText) { // 手动补全一个insertText
                 (0, eval)(`function insertText(text, movestart, moveend, select, sel) {checkFocus();if(wysiwyg) {try {if(!editdoc.execCommand('insertHTML', false, text)) {throw 'insertHTML Err';}} catch(e) {try {if(!isUndefined(editdoc.selection) && editdoc.selection.type != 'Text' && editdoc.selection.type != 'None') {movestart = false;editdoc.selection.clear();}range = isUndefined(sel) ? editdoc.selection.createRange() : sel;range.pasteHTML(text);if(text.indexOf('\n') == -1) {if(!isUndefined(movestart)) {range.moveStart('character', -strlen(text) + movestart);range.moveEnd('character', -moveend);} else if(movestart != false) {range.moveStart('character', -strlen(text));}if(!isUndefined(select) && select) {range.select();}}} catch(e) {if(!sel) {var sel = editdoc.getSelection();var range = sel.getRangeAt(0);} else {var range = sel;}if(range && range.insertNode) {range.deleteContents();}var frag = range.createContextualFragment(text);range.insertNode(frag);}}} else {if(!isUndefined(editdoc.selectionStart)) {if(editdoc._selectionStart) {editdoc.selectionStart = editdoc._selectionStart;editdoc.selectionEnd = editdoc._selectionEnd;editdoc._selectionStart = 0;editdoc._selectionEnd = 0;}var opn = editdoc.selectionStart + 0;editdoc.value = editdoc.value.substr(0, editdoc.selectionStart) + text + editdoc.value.substr(editdoc.selectionEnd);if(!isUndefined(movestart)) {editdoc.selectionStart = opn + movestart;editdoc.selectionEnd = opn + strlen(text) - moveend;} else if(movestart !== false) {editdoc.selectionStart = opn;editdoc.selectionEnd = opn + strlen(text);}} else if(document.selection && document.selection.createRange) {if(isUndefined(sel)) {sel = document.selection.createRange();}if(editbox.sel) {sel = editbox.sel;editbox.sel = null;}sel.text = text.replace(/\r?\n/g, '\r\n');if(!isUndefined(movestart)) {sel.moveStart('character', -strlen(text) +movestart);sel.moveEnd('character', -moveend);} else if(movestart !== false) {sel.moveStart('character', -strlen(text));}sel.select();} else {editdoc.value += text;}}checkFocus();}`)
             }

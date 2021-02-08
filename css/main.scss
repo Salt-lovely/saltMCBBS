@@ -308,6 +308,14 @@ ul.xl.xl2.o.cl .pmwarn {
             }
         }
     }
+    .flb {
+        span > a {
+            color: rgb(58, 116, 173);
+            &:hover {
+                color: #6cf;
+            }
+        }
+    }
 }
 // 消息框
 .messagePanel {

@@ -322,6 +322,11 @@ interface saltMCBBSDataBaseHandlerInstance {
      * @param value 值
      */
     write<T>(key: string, value: T): Promise<void>,
+    /**
+     * 删除一条记录
+     * @param key 键
+     */
+    delete(key: string): Promise<void>,
     /**获取数据库里所有的记录 */
     readAll<T>(): Promise<{ mainKey: string; value: T; }[]>,
     /**获取数据库里所有的值 */
