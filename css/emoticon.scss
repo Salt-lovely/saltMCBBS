@@ -76,6 +76,19 @@ $barHeight: 40px;
                 transform: translateY(-50%);
                 transform-origin: 50% 50%;
             }
+            &::after {
+                content: attr(title);
+                position: absolute;
+                top: -100%;
+                left: 0;
+                width: 100%;
+                padding: 5px 0;
+                background-color: rgba($color: #fff, $alpha: 0.5);
+                transition: 0.3s ease;
+            }
+            &:hover::after {
+                top: 0;
+            }
         }
     }
     .bar {
@@ -131,6 +144,9 @@ $barHeight: 40px;
         .main {
             > div {
                 background-color: #444;
+                &::after {
+                    background-color: rgba($color: #222, $alpha: 0.5);
+                }
             }
         }
         .bar {

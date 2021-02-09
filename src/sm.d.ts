@@ -36,7 +36,7 @@ interface saltMCBBSOriginClassNew {
     getTime(): number,
     getData(key: 'antiWaterRegExp'): RegExp[];
     getData(key: 'noticImgUrl'): String[];
-    getData(key: 'medalLinkPrefix' | 'version'): String;
+    getData(key: 'medalLinkPrefix' | 'version' | 'prefix'): String;
     getData(key: 'randomStringGen'): String[][];
     /**
      * 获取一些由于闭包而不能直接访问的数据

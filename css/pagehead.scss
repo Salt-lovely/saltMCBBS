@@ -4,7 +4,7 @@ $bgcolor: #fbf2dc;
 $bordercolor: #ccc;
 $dropshadow: drop-shadow(0 3px 4px #222);
 $dropshadow-dark: drop-shadow(0 2px 2px #000);
-body.night-style {
+body.nightS {
     #saltNewPageHead {
         --saltNewPageHeadbgcolor-l-t: rgba($color: #444, $alpha: 0.5);
         --saltNewPageHeadbgcolor-l: #444;
@@ -81,8 +81,8 @@ body.night-style {
         width: 100%;
         margin: 0;
         margin-bottom: 0.75rem;
-        overflow: auto; // 触发BFC
-        border-bottom: #ccc;
+        overflow: hidden; // 触发BFC
+        // border-bottom: #ccc;
         font-size: 1rem;
     }
     // 移动过来的搜索框
@@ -184,7 +184,7 @@ body.night-style {
             height: 0.75rem;
             margin-left: auto;
             margin-right: auto;
-            outline: 1px solid #ccc;
+            border: 1px solid #999;
             background-color: var(--saltNewPageHeadbgcolor, $bgcolor);
             position: relative;
             display: block;
@@ -218,6 +218,7 @@ body.night-style {
         }
         .credit {
             position: relative;
+            margin-bottom: 0;
             font-size: 0.875rem;
             span {
                 width: calc(50% - 4px);
