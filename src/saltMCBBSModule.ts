@@ -195,8 +195,7 @@
     const sm = window.saltMCBBS
     const newDiv = () => { return document.createElement('div') }
     const simpleAntiXSS = sm.simpleAntiXSS
-    const myprefix = sm.getData('prefix')
-    console.time(myprefix + '表情包模块耗时')
+    // const myprefix = sm.getData('prefix')
     const emoticonPanel = (function () {
         let d = newDiv()
         d.className = 'emoticonPanel'
@@ -205,7 +204,7 @@
         d.innerHTML = `<h3 class="flb" style="width:100%;margin-left:-8px;padding-right:0;">
     <em>SaltMCBBS表情包管理</em>
     <span style="float:right">
-    </span></h3><div class="memelist"></div>`
+    </span></h3>`
         // 打开使用表情包面板按钮
         let iep = document.createElement('a')
         iep.href = 'javascript:void(0);'
@@ -235,6 +234,12 @@
         sm.addSideBarLink(o)
         // 添加到body
         document.body.appendChild(d)
+        return d
+    })()
+    const memeList = (function () {
+        let d = newDiv()
+        d.className = 'memelist'
+        emoticonPanel.appendChild(d)
         return d
     })()
     const insertEmoticonPanel = (function () {
@@ -298,8 +303,6 @@
         insertEmoticonPanel.appendChild(bar)
         return bar
     })()
-    const memeList = emoticonPanel.querySelector('.memelist')!
-    if (!(memeList instanceof HTMLElement)) { return }
     let chosenList: string[] = []
     /**已经启用的表情包 */
     let enableList: string[] ///*因为reflashList()里面也要读一遍*/= sm.readWithDefault<string[]>('enableMemeList', [])
@@ -308,7 +311,7 @@
     let busyLock: [boolean, boolean] = [false, false]
     // 添加CSS
     window.saltMCBBSCSS.putStyle(
-        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fcf4e0;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:9}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fcf4e0;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .main>div::after{content:attr(title);position:absolute;top:-100%;left:0;width:100%;padding:5px 0;background-color:rgba(255,255,255,0.5);transition:0.3s ease}.insertEmoticonPanel .main>div:hover::after{top:0}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbf2db;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbf2db;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fefaf2}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .main>div::after{background-color:rgba(34,34,34,0.5)}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
+        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fcf4e0;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:9}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fcf4e0;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .main>div::after{content:attr(title);position:absolute;top:-100%;left:0;width:100%;padding:5px 0;background-color:rgba(255,255,255,0.5);transition:0.3s ease}.insertEmoticonPanel .main>div:hover::after{top:0}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbf2db;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbf2db;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fefaf2}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.insertEmoticonPanel .topbar{position:absolute;top:0;height:24px;overflow:hidden;color:#3a74ad}.insertEmoticonPanel .topbar>a:hover{color:#6cf}.blockcode .importMemePack{top:calc(15px + 1rem)}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .main>div::after{background-color:rgba(34,34,34,0.5)}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
 `, 'saltMCBBSEmoticon')
     // 等等数据库
     await db.waitForReady();
@@ -318,6 +321,7 @@
         op.className = 'op'
         // addDiv('启用', enableList)
         // addDiv('禁用', disableList)
+        addDiv('编辑', editMeme)
         addDiv('删除', deleteList)
         addDiv('导入', importMeme)
         addDiv('导出', exportMeme, '一次只能导出一个')
@@ -327,10 +331,29 @@
             let d = newDiv(); d.textContent = text; if (tip) d.title = tip
             d.onclick = func; op.appendChild(d)
         }
-    })()
+    })();
     // 刷新列表
     reflashList()
-    console.timeEnd(myprefix + '表情包模块耗时')
+    // 审查页面中所有的代码栏，添加一键安装按钮
+    sm.docReady(() => {
+        sm.saltQuery('.blockcode', (i, el) => {
+            let li = el.querySelector('ol li')
+            if (!li) return
+            let s = li.textContent ?? ''
+            if (!(/^\s*\/[\/\*].*saltmcbbs\s*表情包/i.test(s))) return
+            let em = document.createElement('em')
+            em.textContent = '导入表情包'
+            em.className = 'importMemePack'
+            em.onclick = function () {
+                if (!confirm('确定要导入表情包吗?')) return
+                let x = ''
+                for (let li of Array.from(el.querySelectorAll('ol li'))) {
+                    x += (li.textContent ?? '').replace(/\n$/, '') + '\n'
+                }
+                importMeme(x)
+            }
+        })
+    })
     /**启用表情包 */
     function enableMeme(name: string) {
         let el: string[] = sm.readWithDefault<string[]>('enableMemeList', [])
@@ -349,10 +372,10 @@
     }
     /**删除 */
     async function deleteList() {
+        if (chosenList.length < 1) return alert('请先选中一个表情')
+        if (!(confirm('你确定要删除这' + chosenList.length + '个表情包吗？\n' + chosenList.join('、') + '\n删除后将无法恢复！'))) return
         if (busyLock[1]) return
         else busyLock[1] = true
-        if (chosenList.length < 1) return
-        if (!(confirm('你确定要删除这' + chosenList.length + '个表情包吗？\n' + chosenList.join('、') + '\n删除后将无法恢复！'))) return
         for (let mp of chosenList) {
             disableMeme(mp)
             await db.delete(mp)
@@ -360,8 +383,47 @@
         await reflashList()
         busyLock[1] = false
     }
-    /**导入 */
-    function importMeme() {
+    /**编辑 */
+    function editMeme() {
+        if (chosenList.length < 1) return alert('请先选中一个表情')
+        let target = chosenList[0]
+        for (let m of memeLoadList) {
+            if (m.name != target) continue
+            let cb = async function (text: string) {
+                /**新版本 */
+                let n = sm.resolveMemePack(text)
+                // 表情数量检查
+                if (n.memes.length < 1) {
+                    alert('表情数量为0，不可修改！')
+                    return
+                }
+                n.name = m.name
+                // 检查
+                if (
+                    !(
+                        confirm(`“${n.name}”表情包修改确认：
+老版本：作者 ${m.author ?? '佚名'}，版本 ${m.version ?? '未知版本'}，表情 ${m.memes.length}个
+新版本：作者 ${n.author ?? '佚名'}，版本 ${n.version ?? '未知版本'}，表情 ${n.memes.length}个\n注意：修改后将无法恢复，建议在GitHub存档你的表情包`)
+                    )
+                )
+                    return
+                // 存入数据库
+                await db.write(n.name, n)
+                // enableMeme(n.name)
+                reflashList()
+                alert('新版本的“' + n.name + '”已经存入数据库')
+            }
+            sm.inputBox({
+                defaultText: sm.formatMemePack(m),
+                acceptCallback: cb
+            })
+            return
+        }
+    }
+    /**导入
+     * @param text 可选，不填的话，会跳出编辑框
+     */
+    function importMeme(text?: string) {
         const cb = async function (text: string) {
             let m = sm.resolveMemePack(text)
             // 表情数量检查
@@ -371,8 +433,7 @@
             }/*if (!(confirm('导入的表情数量为0，是否导入？'))) return*/
             // 表情包总得有个名字
             m.name = m.name ?? '未命名的表情包'
-
-            // 冲突检查，不冲突则
+            // 冲突检查，不冲突也确认一遍
             let alreadyExist = await db.has(m.name)
             if (alreadyExist) {
                 let n = await db.read<MemePack>(m.name, m)
@@ -389,30 +450,26 @@
             } else if (!confirm(`表情包信息：\n表情包名 ${m.name}，作者 ${m.author ?? '佚名'}\n版本 ${m.version ?? '未知版本'}，表情 ${m.memes.length}个\n确认导入？`)) return
             // 存入数据库
             await db.write(m.name, m)
+            enableMeme(m.name)
             reflashList()
-            alert('新的表情包“' + m.name + '”已经存入数据库，默认不启用')
+            alert('新的表情包“' + m.name + '”已经存入数据库，默认启用')
         }
-        sm.inputBox({
-            placeholder: '一次只能导入一个表情包，表情包封面图是表情包最后一张图',
-            acceptCallback: cb
-        })
+        if (typeof text == 'string' && text.length > 0)
+            cb(text)
+        else
+            sm.inputBox({
+                placeholder: '一次只能导入一个表情包，表情包封面图是表情包最后一张图',
+                acceptCallback: cb
+            })
     }
     /**导出 */
     function exportMeme() {
-        if (chosenList.length < 1) return
+        if (chosenList.length < 1) return alert('请先选中一个表情')
         let target = chosenList[0]
         for (let m of memeLoadList) {
             if (m.name != target) continue
-            let memelist = ''
-            for (let meme of m.memes) {
-                memelist += `"![${meme.name}](${meme.url})",`
-            }
             sm.inputBox({
-                defaultText: `/* SaltMCBBS表情包导出 “${m.name}” */
-{"名字":"${m.name}",${m.author ? '"作者":"' + m.author + '",' : ''}${m.version ? '"版本":"' + m.version + '",' : ''}${m.license ? '"许可证":"' + m.license + '",' : ''}${m.others ? '"其他":"' + m.others + '",' : ''}
-"表情":[
-${memelist.replace(/\,$/, '')}]}
-/* SaltMCBBS${sm.getData('version')}导出，可能无法导入旧版的SaltMCBBS */`
+                defaultText: sm.formatMemePack(m)
             })
             return
         }
@@ -535,7 +592,7 @@ ${p.others ? '<br>\n其他信息：' + simpleAntiXSS(p.others) : ''}`
             img.alt = meme.name
             setTimeout(() => {
                 img.src = meme.url
-            }, 10 * lazyload++);
+            }, Math.floor((10 * lazyload++) ** 0.5));
             // 显示
             b.appendChild(img)
             a.appendChild(b)

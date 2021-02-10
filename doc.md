@@ -12,10 +12,10 @@
     -   Prettier - Code formatter —— 用于格式化 TypeScript 文件
     -   Live Sass Compiler —— 用于编译 Scss 文件
 -   常用操作：
-    -   <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> —— 调用任务 -> 监视（这样的话 ts 文件改变之后，会自动编译 js）
+    -   <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> —— 调用任务 -> 监视（这样的话 ts 文件保存之后，会自动编译为 js）
 -   需要下载：
     -   misc.d.ts
-    -   saltMCBBS.d.ts
+    -   sm.d.ts
     -   index.d.ts
     -   将这三个文件和你的 ts 代码文件放在一起（记得时常更新）
 
@@ -25,20 +25,27 @@
 
 -   对原生 JS 的扩展
     -   `HTMLElement` 对象上的新方法
-        -   `addClass(classes: string): void` —— **批量**添加 class
-        -   `toggleClass(classes: string): void` —— **批量**切换 class
-        -   `hasClass(OneClass: string): boolean` —— 判断是否存在**某个** class
-        -   `removeClass(classes: string): void` —— **批量**移除 class
-        -   `offset(): { top: number, left: number }` —— 返回元素到页面顶部与左侧的距离
+        -   `addClass(classes: string): void` —— **批量**添加 class。
+        -   `toggleClass(classes: string): void` —— **批量**切换 class。
+        -   `hasClass(OneClass: string): boolean` —— 判断是否存在**某个** class。
+        -   `removeClass(classes: string): void` —— **批量**移除 class。
+        -   `offset(): { top: number, left: number }` —— 返回元素到页面顶部与左侧的距离。
+        -   `numAttribute(key: string): numAttrReturn` —— 以类似数字的形式记录数据到元素，`.value`获取数字。
+        -   `inViewport(): boolean` —— 元素是否部分在可视区域中。
+        -   `allInViewport(): boolean` —— 元素是否**全部**出现在可视区域中。
     -   `window`对象上创建的东西
-        -   `saltMCBBS` —— 主要代码所在的**实例**，它会在创建之后即刻运行
-        -   `saltMCBBSCSS` —— 操作 CSS 的**实例**，它会在 `saltMCBBS` 之前创建
-        -   `saltMCBBSOriginClass` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它
+        -   `saltMCBBS` —— 主要代码所在的**实例**，它会在创建之后即刻运行。
+        -   `saltMCBBSCSS` —— 操作 CSS 的**实例**，它会在 `saltMCBBS` 之前创建。
+        -   `saltMCBBSOriginClass` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它。
+        -   `saltMCBBSDataBaseHandler` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它。
     -   自定义事件
-        -   `saltMCBBSload` —— saltMCBBS 加载完毕触发
-            -   你可以`await`位于 window 的`saltMCBBSOriginClass`控制你的脚本在`saltMCBBS`运行完成后触发。
+        -   `saltMCBBSload` —— saltMCBBS 加载完毕触发。
+            -   你可以等待 window 的`saltMCBBSOriginClass`出现，控制你的脚本在`saltMCBBS`运行完成后触发。
+            -   推荐使用`window.saltMCBBS.docReady(function(){})`。
 
 ## 制作可以用于 SaltMCBBS 的表情包！
+
+---
 
 ### 表情包名、作者、版本、许可证等信息！
 

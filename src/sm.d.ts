@@ -20,6 +20,11 @@ interface saltMCBBSOriginClassNew {
         acceptCallback?: (text: string) => void,
         cancelCallback?: (text: string) => void,
     }): void,
+    /**
+     * 将表情包对象整理为输出字符串
+     * @param m 表情包对象
+     */
+    formatMemePack(m: MemePack): string,
     /**将字符串转换为MemePack */
     resolveMemePack(s: string): MemePack,
     /**将字符串转换为Meme数组 */

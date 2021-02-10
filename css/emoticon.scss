@@ -24,6 +24,7 @@ $skinColor: var(--ThemeColor, #e91e63); // 不再兼容MCBBS Extender
     }
 }
 $padding: 8px;
+$paddingTop: $padding * 3;
 $barHeight: 40px;
 .insertEmoticonPanel {
     position: fixed;
@@ -33,7 +34,7 @@ $barHeight: 40px;
     min-width: 360px;
     height: var(--height, 30vh);
     min-height: 270px;
-    padding: $padding * 3 0 0;
+    padding: $paddingTop 0 0;
     background-color: lighten($color: $bgcolor, $amount: 1%);
     background-clip: padding-box;
     border: 8px solid rgba($color: #000000, $alpha: 0.2);
@@ -122,8 +123,8 @@ $barHeight: 40px;
         position: absolute;
         top: 0;
         right: 0;
-        width: 24px;
-        height: 24px;
+        width: $paddingTop;
+        height: $paddingTop;
         padding: 0;
         font-size: 12px;
         text-align: center;
@@ -133,6 +134,23 @@ $barHeight: 40px;
         &:hover {
             transform: scale(1.2);
         }
+    }
+    .topbar {
+        position: absolute;
+        top: 0;
+        height: $paddingTop;
+        overflow: hidden;
+        color: rgb(58, 116, 173);
+        > a {
+            &:hover {
+                color: #6cf;
+            }
+        }
+    }
+}
+.blockcode {
+    .importMemePack {
+        top: calc(15px + 1rem);
     }
 }
 // 夜间

@@ -151,6 +151,20 @@
             panel.appendChild(ta); panel.appendChild(btn)
             document.body.appendChild(panel)
         }
+        formatMemePack(m: MemePack): string {
+            let memelist = ''
+            for (let meme of m.memes) {
+                memelist += `"![${meme.name}](${meme.url})`
+                // @ts-ignore
+                if (typeof meme.width != 'undefined') memelist += `{${meme.width},${meme.height ?? meme.width}}`
+                memelist += '",\n'
+            }
+            return `/* SaltMCBBS表情包导出 “${m.name}” */
+{"名字":"${m.name}",${m.author ? '"作者":"' + m.author + '",' : ''}${m.version ? '"版本":"' + m.version + '",' : ''}${m.license ? '"许可证":"' + m.license + '",' : ''}${m.others ? '"其他":"' + m.others + '",' : ''}
+"表情":[
+${memelist.replace(/\,$/, '')}]}
+/* SaltMCBBS${myversion}导出，可能无法导入旧版的SaltMCBBS */`
+        }
         resolveMemePack(s: string): MemePack {
             let getAuthor = /[\"\'](?:表情包?|(?:meme)?packe?t?)?\s*(?:author|原?作者)[\"\']\s*[\:\,\;：，；]\s*[\"\'](.*?)[\"\']/i.exec(s)
             let getVersion = /[\"\'](?:表情包?|(?:meme)?packe?t?)?\s*(?:ver(?:sion)?|版本号?)[\"\']\s*[\:\,\;：，；]\s*(?:[\"\'](.*?)[\"\']|(\d+))/i.exec(s)
@@ -597,6 +611,7 @@
         links: HTMLElement = document.createElement('div') // 左侧栏底部的一大堆链接
         moveTopBarToLeft: boolean = this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true)
         dataBaseHandler: saltMCBBSDataBaseHandlerInstance = dbHandler // 数据库读写代理
+        rootFontSize: number = 12
         // ==========================================================
         // ========== 以下直到另一个分割线之前, 都是内部代码 ==========
         // ==========================================================
@@ -740,6 +755,8 @@
             this.updateBackground()
             // 注入CSS
             initCSSOP()
+            // 异步功能
+            setTimeout(afunc, 0);
             /**初始化的时候就要注入CSS的功能
              * 
              * 不能添加需要读取数据库的/读取DOM元素的功能
@@ -899,6 +916,14 @@ div.tip[id^="g_up"] {
 `, 'signBarHeight')
                     }
                 }
+            }
+            /**异步实现的功能 */
+            function afunc() {
+                // rem实际大小
+                let s = getComputedStyle(document.documentElement).fontSize ?? '12'
+                let fs = parseInt(s);
+                if (!isNaN(fs))
+                    obj.rootFontSize = fs
             }
         }
         /**movePageHead 移动顶栏到页面左侧*/
@@ -1268,7 +1293,7 @@ div.tip[id^="g_up"] {
             // 是否启用
             if (enable) {
                 window.saltMCBBSCSS.putStyle('', 'medal')
-                sub()
+                setTimeout(sub, 0)
             }
             // 模糊
             if (blur) {
@@ -1280,7 +1305,7 @@ div.tip[id^="g_up"] {
                     sub()
                 }
             })
-            async function sub() { // 因为只涉及部分元素的class操作，所以放在异步
+            function sub() {
                 let line = obj.readWithDefault<number>('medalLine', 2.5)
                 let style = 'p.md_ctrl,p.md_ctrl:hover{--maxHeight:calc(64px * ' + line + ');}'
                 window.saltMCBBSCSS.putStyle(style, 'medalLine')
@@ -1894,12 +1919,13 @@ div.tip[id^="g_up"] {
                     obj.nightStyle(isNight, false)
             }
             // 代码栏样式优化
-            let temp = '', tempFontSize = getRootFontSize(), maxCodeLine = getMaxCodeLine()
+            let temp = '', tempFontSize = this.rootFontSize
+            let maxCodeLine = getMaxCodeLine()
             for (let i = 10; i < maxCodeLine; i++)
                 temp += i + '.\\A '
             window.saltMCBBSCSS.setStyle(`
 /**/
-.pl .blockcode {position: relative;max-height: 60rem;scrollbar-width: thin;scrollbar-color: #eee #999;overflow-y: auto;}
+.pl .blockcode {position: relative;max-height: 48rem;scrollbar-width: thin;scrollbar-color: #eee #999;overflow-y: auto;}
 .pl .blockcode > div {position: relative;z-index: 10;}
 .pl .blockcode::-webkit-scrollbar {width: 10px;height: 10px;}
 .pl .blockcode::-webkit-scrollbar-thumb {border-radius: 10px;box-shadow: inset 0 0 4px rgba(102, 102, 102, 0.25);background: #999;}
@@ -1907,8 +1933,8 @@ div.tip[id^="g_up"] {
 .pl .blockcode > div::after {
     content: "01.\\A 02.\\A 03.\\A 04.\\A 05.\\A 06.\\A 07.\\A 08.\\A 09.\\A ${temp}";
     position: absolute;overflow: hidden;width: 31px;height: var(--lineCountXlineHeight,100%);top: 0;left: 0;font-size: 1rem;line-height: ${tempFontSize + 4}px;text-align: right;}
-.pl .blockcode > em {top: 2px;right: 2px;position: absolute;margin: 0 0 0 0;z-index: 12;}
-.pl .blockcode > em:hover {outline: 1px dashed;}
+.pl .blockcode > em {top: 2px;right: 2px;position: absolute;margin: 0 0 0 0;z-index: 12;padding: 5px;border: 1px dashed #369;border-radius:5px;font-size: 1rem;}
+.pl .blockcode > em:hover {border-color: #48c;color: #48c !important;}
 .pl .blockcode ol {overflow: auto;max-width: 750px;margin-left: 33px !important;font-size: 1rem;scrollbar-width: thin;scrollbar-color: #eee #999;list-style: none;}
 .pl .blockcode ol::-webkit-scrollbar {width: 10px;height: 10px;}
 .pl .blockcode ol::-webkit-scrollbar-thumb {border-radius: 10px;box-shadow: inset 0 0 4px rgba(102, 102, 102, 0.25);background: #999;}
@@ -1941,15 +1967,6 @@ div.tip[id^="g_up"] {
                     }
                 return max
             }
-            function getRootFontSize(): number {
-                let style = document.defaultView?.getComputedStyle(document.body, '') ?? { fontSize: '12px' }
-                let fs = parseInt(style.fontSize);
-                if (isNaN(fs))
-                    return 12
-                else
-                    return fs
-            }
-
         }
         /**其他脚本冲突修复 */
         confiectFixOP() {
