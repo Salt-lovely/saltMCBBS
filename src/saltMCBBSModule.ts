@@ -644,7 +644,7 @@ ${p.others ? '<br>\n其他信息：' + simpleAntiXSS(p.others) : ''}`
         }
         /**获取应该塞入内容的元素（焦点元素） */
         function getFocus() {
-            let TaId = ['e_textarea', 'fastpostmessage', 'postmessage', 'livereplymessage']
+            let TaId = ['e_textarea', 'fastpostmessage', 'postmessage', 'livereplymessage', 'replymessage']
             let inputId = ['vmessage']
             /**是不是编辑页面 */
             let editPage = (function () {
