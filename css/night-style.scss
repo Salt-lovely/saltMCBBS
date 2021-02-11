@@ -1158,7 +1158,14 @@ body.nightS {
         "Olive": #ffff33,
         "Sienna": #d28460,
     );
-    $backcolormap: ("#FFFFFF", "Wheat", "white", "#ffffff");
+    $backcolormap: (
+        "#FFFFFF",
+        "Wheat",
+        "white",
+        "#ffffff",
+        "rgb(251, 242, 219)",
+        "rgb(252, 252, 252)"
+    );
     .xl label,
     .xl label a {
         // 论坛页 最新求助 里面的(+??)

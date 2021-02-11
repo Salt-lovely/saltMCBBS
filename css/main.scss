@@ -66,6 +66,25 @@ $skinColor: var(--ThemeColor, #e91e63); // 兼容MCBBS Extender
         z-index: 99;
     }
 }
+@mixin range($backColor: $skinColor, $thumbColor: $skinColor) {
+    // &::-webkit-slider-runnable-track {
+    //     height: 0.5rem;
+    //     background-color: $backColor;
+    // }
+    // &::-moz-range-progress {
+    //     background-color: $backColor;
+    // }
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 0.5rem;
+        background-color: $thumbColor;
+    }
+    &::-moz-range-thumb {
+        background-color: $thumbColor;
+    }
+}
 
 body {
     background-attachment: fixed;
@@ -415,6 +434,9 @@ ul.xl.xl2.o.cl .pmwarn {
     }
 }
 // checkbox
+// input[type="range"] {
+//     @include range;
+// }
 input[type="checkbox"] {
     $label-h: 24px;
     + label.checkbox {
@@ -467,6 +489,7 @@ input[type="checkbox"] {
     &:active + label.checkbox {
         &::after {
             width: $label-h + 4px;
+            border-radius: $label-h / 2;
         }
     }
     &:checked:active + label.checkbox {

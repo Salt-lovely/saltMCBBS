@@ -35,18 +35,20 @@ interface Window {
     insertText?: (text: string, movestart?, moveend?, select?, sel?) => void,
     /**MCBBS Extender instance */
     MExt?: any,
+    /**获取cookie */
+    getcookie: (cookie: string) => string,
 }
 interface HTMLElement {
     /**
      * 批量添加class到元素
      * @param classes 要添加的class用空格隔开
      */
-    addClass(classes: string): void,
+    addClass(classes: string): HTMLElement,
     /**
      * 切换元素的class，没有switch开关
      * @param classes 
      */
-    toggleClass(classes: string): void,
+    toggleClass(classes: string): HTMLElement,
     /**
      * 检查是否包含某个元素
      * @param classes 
@@ -56,7 +58,7 @@ interface HTMLElement {
      * 批量移除元素的class
      * @param classes 
      */
-    removeClass(classes: string): void,
+    removeClass(classes: string): HTMLElement,
     /**
      * 返回元素到页面顶部和左边的距离
      * @returns top: 顶部距离; left: 左边距离
@@ -71,7 +73,7 @@ interface HTMLElement {
 }
 interface numAttrReturn {
     /**值, 整数 */
-    value: value,
+    value: number,
     /**
      * 将这个属性值设置为
      * @param num 数值

@@ -92,6 +92,7 @@ $barHeight: 40px;
             }
         }
     }
+    // 底部栏
     .bar {
         width: 100%;
         height: $barHeight;
@@ -135,22 +136,28 @@ $barHeight: 40px;
             transform: scale(1.2);
         }
     }
+    // 顶部栏
     .topbar {
         position: absolute;
         top: 0;
+        width: calc(100% - #{$paddingTop});
         height: $paddingTop;
         overflow: hidden;
         color: rgb(58, 116, 173);
         > a {
+            float: right;
+            height: $paddingTop;
+            line-height: $paddingTop;
+            color: rgb(58, 116, 173);
             &:hover {
                 color: #6cf;
             }
         }
     }
 }
-.blockcode {
-    .importMemePack {
-        top: calc(15px + 1rem);
+.pl .blockcode {
+    > em.importMemePack {
+        right: calc(18px + 4rem);
     }
 }
 // 夜间
@@ -175,6 +182,13 @@ $barHeight: 40px;
                 }
             }
         }
+        // .topbar {
+        //     > a {
+        //         &:hover {
+        //             color: #6cf;
+        //         }
+        //     }
+        // }
     }
 }
 // @media (min-width: 1200px) {

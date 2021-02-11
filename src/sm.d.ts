@@ -256,6 +256,8 @@ interface saltMCBBS extends saltMCBBSOriginClassNew {
     addSideBarLink(a: HTMLElement | string, callback?: (ev: MouseEvent) => void | string): void,
     /**更新背景 */
     updateBackground(): void,
+    /**更新主题颜色 */
+    updateThemeColor(): string,
 }
 /**saltMCBBSCSS接口 */
 interface saltMCBBScss {

@@ -25,23 +25,26 @@
 
 -   对原生 JS 的扩展
     -   `HTMLElement` 对象上的新方法
-        -   `addClass(classes: string): void` —— **批量**添加 class。
-        -   `toggleClass(classes: string): void` —— **批量**切换 class。
+        -   `addClass(classes: string): HTMLElement` —— **批量**添加 class，可以写流式代码。
+        -   `toggleClass(classes: string): HTMLElement` —— **批量**切换 class，可以写流式代码。
         -   `hasClass(OneClass: string): boolean` —— 判断是否存在**某个** class。
-        -   `removeClass(classes: string): void` —— **批量**移除 class。
+        -   `removeClass(classes: string): HTMLElement` —— **批量**移除 class，可以写流式代码。
         -   `offset(): { top: number, left: number }` —— 返回元素到页面顶部与左侧的距离。
         -   `numAttribute(key: string): numAttrReturn` —— 以类似数字的形式记录数据到元素，`.value`获取数字。
+            -   `value: number` —— 这个属性的值。
+            -   `set: (num: number) => numAttrReturn` —— 设置这个属性值。
+            -   `add: (num: number) => numAttrReturn` —— 加减这个属性值。
         -   `inViewport(): boolean` —— 元素是否部分在可视区域中。
         -   `allInViewport(): boolean` —— 元素是否**全部**出现在可视区域中。
-    -   `window`对象上创建的东西
-        -   `saltMCBBS` —— 主要代码所在的**实例**，它会在创建之后即刻运行。
-        -   `saltMCBBSCSS` —— 操作 CSS 的**实例**，它会在 `saltMCBBS` 之前创建。
-        -   `saltMCBBSOriginClass` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它。
-        -   `saltMCBBSDataBaseHandler` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它。
-    -   自定义事件
-        -   `saltMCBBSload` —— saltMCBBS 加载完毕触发。
-            -   你可以等待 window 的`saltMCBBSOriginClass`出现，控制你的脚本在`saltMCBBS`运行完成后触发。
-            -   推荐使用`window.saltMCBBS.docReady(function(){})`。
+-   `window`对象上创建的东西
+    -   `saltMCBBS` —— 主要代码所在的**实例**，它会在创建之后即刻运行。
+    -   `saltMCBBSCSS` —— 操作 CSS 的**实例**，它会在 `saltMCBBS` 之前创建。
+    -   `saltMCBBSOriginClass` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它。
+    -   `saltMCBBSDataBaseHandler` —— 这不是一个实例而是一个**类**，你可以实例化后使用，或者自己写一个类继承它。
+-   自定义事件
+    -   `saltMCBBSload` —— saltMCBBS 加载完毕触发。
+        -   你可以等待 window 的`saltMCBBSOriginClass`出现，控制你的脚本在`saltMCBBS`运行完成后触发。
+        -   推荐使用`window.saltMCBBS.docReady(function(){})`。
 
 ## 制作可以用于 SaltMCBBS 的表情包！
 

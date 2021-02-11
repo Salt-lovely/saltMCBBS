@@ -147,13 +147,11 @@
             console.log(prefix + ': ' + s)
         }
         hideConsolePanel() {
-            consolePanel.addClass('hidden')
-            consolePanel.removeClass('visible')
+            consolePanel.removeClass('visible').addClass('hidden')
             inputArea.blur()
         }
         showConsolePanel() {
-            consolePanel.addClass('visible')
-            consolePanel.removeClass('hidden')
+            consolePanel.addClass('visible').removeClass('hidden')
             inputArea.focus()
         }
         // exe(command: string) {
@@ -219,19 +217,18 @@
         a.className = 'flbc'
         a.textContent = '关闭'
         a.onclick = function () {
-            d.removeClass('visible')
-            d.addClass('hidden')
+            d.removeClass('visible').addClass('hidden')
         }
         d.querySelector('h3 span')!.appendChild(a)
-        // 打开按钮
-        let o = document.createElement('a')
-        o.href = 'javascript:void(0);'
-        o.textContent = '表情包管理'
-        o.onclick = function () {
-            d.removeClass('hidden')
-            d.addClass('visible')
-        }
-        sm.addSideBarLink(o)
+        // // 打开按钮
+        // let o = document.createElement('a')
+        // o.href = 'javascript:void(0);'
+        // o.textContent = '表情包管理'
+        // o.onclick = function () {
+        //     d.removeClass('hidden')
+        //     d.addClass('visible')
+        // }
+        // sm.addSideBarLink(o)
         // 添加到body
         document.body.appendChild(d)
         return d
@@ -251,6 +248,10 @@
         d.className = 'insertEmoticonPanel'
         d.id = 'insertEmoticonPanel'
         d.style.display = 'none'
+        // 顶栏
+        let tb = newDiv()
+        tb.className = 'topbar'
+        d.appendChild(tb)
         // 关闭按钮
         let close = newDiv()
         close.textContent = ' × '
@@ -258,10 +259,24 @@
         close.onclick = function () { d.style.display = 'none' }
         d.appendChild(close)
         document.body.appendChild(d)
+        // 打开管理面板
+        let o = document.createElement('a')
+        o.href = 'javascript:void(0);'
+        o.textContent = '表情包管理'
+        o.onclick = function () {
+            emoticonPanel.removeClass('hidden').addClass('visible')
+        }
+        tb.appendChild(o)
+        // 侧边栏添加按钮
+        let a = document.createElement('a')
+        a.href = 'javascript:void(0);'
+        a.textContent = '使用表情包'
+        a.onclick = function (this, ev) { showPanel(ev.clientX, ev.clientY) }
+        sm.addSideBarLink(a)
         // 拖动
         let mousePos = { x: 0, y: 0 }, pos = { x: 0, y: 0 }, isDrag = false
         d.addEventListener('mousedown', function (this, ev) {
-            if (ev.target != this) { isDrag = false; return }
+            if (ev.target != this && ev.target != tb) { isDrag = false; return }
             mousePos.x = ev.clientX; mousePos.y = ev.clientY
             pos.x = parseInt(this.style.getPropertyValue('--left') ?? '0'); pos.y = parseInt(this.style.getPropertyValue('--top') ?? '0')
             isDrag = true
@@ -311,7 +326,7 @@
     let busyLock: [boolean, boolean] = [false, false]
     // 添加CSS
     window.saltMCBBSCSS.putStyle(
-        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fcf4e0;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:9}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fcf4e0;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .main>div::after{content:attr(title);position:absolute;top:-100%;left:0;width:100%;padding:5px 0;background-color:rgba(255,255,255,0.5);transition:0.3s ease}.insertEmoticonPanel .main>div:hover::after{top:0}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbf2db;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbf2db;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fefaf2}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.insertEmoticonPanel .topbar{position:absolute;top:0;height:24px;overflow:hidden;color:#3a74ad}.insertEmoticonPanel .topbar>a:hover{color:#6cf}.blockcode .importMemePack{top:calc(15px + 1rem)}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .main>div::after{background-color:rgba(34,34,34,0.5)}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
+        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fcf4e0;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:9}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fcf4e0;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .main>div::after{content:attr(title);position:absolute;top:-100%;left:0;width:100%;padding:5px 0;background-color:rgba(255,255,255,0.5);transition:0.3s ease}.insertEmoticonPanel .main>div:hover::after{top:0}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbf2db;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbf2db;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fefaf2}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.insertEmoticonPanel .topbar{position:absolute;top:0;width:calc(100% - 24px);height:24px;overflow:hidden;color:#3a74ad}.insertEmoticonPanel .topbar>a{float:right;height:24px;line-height:24px;color:#3a74ad}.insertEmoticonPanel .topbar>a:hover{color:#6cf}.pl .blockcode>em.importMemePack{right:calc(18px + 4rem)}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .main>div::after{background-color:rgba(34,34,34,0.5)}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
 `, 'saltMCBBSEmoticon')
     // 等等数据库
     await db.waitForReady();
@@ -352,6 +367,7 @@
                 }
                 importMeme(x)
             }
+            el.appendChild(em)
         })
     })
     /**启用表情包 */
