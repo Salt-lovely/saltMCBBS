@@ -22,6 +22,7 @@ SaltMCBBS 的一些功能受以下项目启发：
 -   [MCBBS Extender](https://github.com/Proj-MExt)
     -   作者 Zapic
     -   回到顶部按钮动画
+    -   强制网易云音乐外链使用 H5 播放器和阻止自动播放功能
 -   绵羊的未开源脚本<del>_帖子找不到了_</del>
     -   作者绵羊
     -   控制台工具

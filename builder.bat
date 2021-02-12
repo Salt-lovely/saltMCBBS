@@ -1,13 +1,14 @@
 @ECHO OFF
 CHCP 65001
-SET "N=SaltMCBBS-0.1.8Pre2.js"
+SET "N=SaltMCBBS-0.1.8.js"
 SET "TEMPFILE=tempSSSSSSS.bin"
+SET "TEMPFILE2=tempSSSSSSS2.bin"
 :STAT
 ECHO 建立临时文件
 COPY /b saltMCBBSModule.js %TEMPFILE% > NUL
 sed -i "1,10d" %TEMPFILE%
 
-ECHO 拼接文件内容
+ECHO 拼接文件内容为 %N%
 COPY /b prefix.txt+saltMCBBS.js+%TEMPFILE% %N% > NUL
 
 ECHO 删除临时文件

@@ -5,20 +5,26 @@
     Trigger()
     async function Trigger() {
         let safe = 0
+        // if (typeof window.saltMCBBSOriginClass == 'undefined') // 方法一
+        //     window.addEventListener('saltMCBBSload', myMod)
+        // 以下是方法2
         while (!window.saltMCBBSOriginClass && safe++ < 2000)
             await new Promise((resolve) => setTimeout(resolve, 50));
-        myMod()
+        myMod() // saltMCBBS初始化完毕后启用
+        // window.saltMCBBS.docReady(myMod) // 页面加载完毕后启用
     }
     function myMod() {
         /**saltMCBBS实例 */
-        const saltMCBBS = window.saltMCBBS
+        const sm = window.saltMCBBS
         /**saltMCBBSCSS实例 */
-        const saltMCBBSCSS = window.saltMCBBSCSS
+        const smc = window.saltMCBBSCSS
         // const saltMCBBSOriginClass = window.saltMCBBSOriginClass
         console.log('这里放你的代码, 简易代码文档见下方的 Example 函数')
     }
 })()
-
+/**
+ * 简易代码文档，请勿运行
+ */
 function Example() {
     if (2 - 1 == 1) {
         console.warn('这个函数是让你看的不是让你运行的')
@@ -84,26 +90,15 @@ function Example() {
 
     // 配置项为一个大文本框
     value = saltMCBBS.readWithDefault('your-key', '默认值') // 获取用户的配置 或 '默认值'
-    saltMCBBS.addTextareaSetting('标题', value, (el, ev) => {
-        console.log(el) // 被修改的 textarea 元素
-        console.log(ev) // 事件
-        saltMCBBS.write('your-key', el.value) // 记录用户的输入
-    }, '配置项名字')
-
-    // 配置项为一个输入框
-    value = saltMCBBS.readWithDefault('your-key', '默认值') // 获取用户的配置 或 '默认值'
-    saltMCBBS.addInputSetting('标题', value, (el, ev) => {
-        console.log(el) // 被修改的 input 元素
-        console.log(ev) // 事件
-        saltMCBBS.write('your-key', el.value) // 记录用户的输入
-    }, '配置项名字')
-
-    // 配置项为一个选择框
-    value = saltMCBBS.readWithDefault('your-key', true) // 获取用户的配置 或默认值 true
-    saltMCBBS.addCheckSetting('标题', value, (ck, ev) => {
-        console.log(ck) // 用户点击后是否勾选
-        console.log(ev) // 事件
-        saltMCBBS.write('your-key', ck) // 记录用户是否勾选
+    saltMCBBS.addSetting({
+        // 其他可用类型：normal(元素内容由你自己写) textarea(多行文本框) check(复选框) range(拖动条)
+        type: 'input',              // 必填，配置项类型，
+        title: '',                  // 必填，配置项标题
+        subtitle: '',               // 可选，配置项副标题
+        text: value,                // input textarea下必填，显示的内容，除了normal外均需要一个默认值，详见misc.d.ts
+        callback: (el, ev) => { },  // 必填，回调函数
+        name: '',                   // 可选，配置名（不填的话会由title项代替）
+        priority: 123               // 可选，配置面板中显示的优先级
     })
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

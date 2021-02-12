@@ -896,6 +896,14 @@ body.nightS {
                         }
                     }
                 }
+                // 消息列表，鼠标移上去变成别的颜色
+                .pml .hover {
+                    background-color: $bodybg-l;
+                }
+                &[style*="background:#fff"] {
+                    background-color: transparent !important;
+                    @include tedt;
+                }
             }
         }
     }
