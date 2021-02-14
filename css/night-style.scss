@@ -422,6 +422,34 @@ body.nightS {
     .portal_block_summary iframe {
         filter: brightness(0.5);
     }
+    // 不同性别的信息卡片
+    .card_gender_127,
+    .card_gender_3,
+    .card_gender_2,
+    .card_gender_1,
+    .card_gender_0 {
+        background-image: none;
+        border-color: $table-border-color;
+        .o a {
+            background-color: $bodybg-l-l;
+            background-image: none;
+        }
+    }
+    .card_gender_127 {
+        background-color: #53492d;
+    }
+    .card_gender_3 {
+        background-color: #173617;
+    }
+    .card_gender_2 {
+        background-color: #50303d;
+    }
+    .card_gender_1 {
+        background-color: #204060;
+    }
+    .card_gender_0 {
+        background-color: $bodybg-l;
+    }
 }
 // 看帖页面
 body.nightS {
@@ -1173,6 +1201,8 @@ body.nightS {
         "white",
         "#ffffff",
         "rgb(251, 242, 219)",
+        "rgb(236, 227, 184)",
+        "rgb(255, 255, 255)",
         "rgb(252, 252, 252)"
     );
     .xl label,
