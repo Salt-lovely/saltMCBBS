@@ -1930,7 +1930,7 @@ div.tip[id^="g_up"] {
     content: "01.\\A 02.\\A 03.\\A 04.\\A 05.\\A 06.\\A 07.\\A 08.\\A 09.\\A ";
     position: absolute;overflow: hidden;width: 31px;height: var(--lineCountXlineHeight,100%);top: 0;left: 0;font-size: 1rem;line-height: ${tempFontSize + 4}px;text-align: right;}
 */
-.pl .blockcode > div > .codeline {display:block !important;position: absolute;top: 10px;left: 0;background-color:#ededed;overflow: hidden;width: 36px;height: var(--lineCountXlineHeight,100%);user-select: none;}
+.pl .blockcode > div > .codeline {display:block !important;position: absolute;top: 0;left: -10px;background-color:#ededed;overflow: hidden;width: 36px;height: var(--lineCountXlineHeight,100%);user-select: none;}
 .pl .blockcode > div > .codeline > div {font-size: 1rem;line-height: ${tempFontSize + 4}px;height: ${tempFontSize + 4}px;text-align: right;}
 body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
 .pl .blockcode > em {top: 2px;right: 2px;position: absolute;margin: 0 0 0 0;z-index: 12;padding: 5px;border: 1px dashed #369;border-radius:5px;opacity:.3;font-size: 1rem;transition: .3s ease;}
@@ -2090,6 +2090,10 @@ div.tip.tip_4[id*=md_] p{position:relative;top:0;transform:none;}
     height: var(--lineCountXlineHeight,calc(100% - 15px));
     margin-top: 10px;
 }
+.pl .blockcode > div > .codeline {
+    top: 10px;
+    left: 0;
+}
 /*.pl .blockcode div[id]{
     max-height: 999rem;
 }*/
@@ -2113,15 +2117,19 @@ body.nightS .pl .blockcode div[id]{
                 // 通用修复
                 if (this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true)) {
                     sub()
-                    setTimeout(() => { sub() }, 500)
+                    setTimeout(() => { sub() }, 2500)
+                    setTimeout(() => { sub() }, 2500)
                     window.addEventListener('load', () => { sub() })
                 }
                 // MCBBS Extender冲突修复
-                setTimeout(() => {
+                obj.docReady(() => {
                     if (typeof window.MExt != 'undefined') {
                         MExtFix()
+                        setTimeout(() => { MExtFix() }, 2500)
+                        setTimeout(() => { MExtFix() }, 10000)
+                        window.addEventListener('load', () => { MExtFix() })
                     }
-                }, 500)
+                })
             }
 
         }
