@@ -153,13 +153,13 @@ ul.xl.xl2.o.cl .pmwarn {
     background-size: 16px !important;
 }
 // 警告的帖子
-.warned {
-    opacity: 0.2;
-    transition: 0.3s ease;
-    &:hover {
-        opacity: 0.9;
-    }
-}
+// .warned {
+//     opacity: 0.2;
+//     transition: 0.3s ease;
+//     &:hover {
+//         opacity: 0.9;
+//     }
+// }
 .reported {
     position: relative;
     &::after {
