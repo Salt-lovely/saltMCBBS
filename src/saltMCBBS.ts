@@ -39,6 +39,7 @@
 主体部分的透明度 212
 主体部分的基础透明度 213
 
+左侧用户信息显示控制 216
 自定义水帖匹配正则 220 数据库
 */
 // console.time('SaltMCBBS同步过程'); // 测试整个脚本的同步过程耗时
@@ -653,42 +654,28 @@ ${memelist.replace(/\,$/, '')}]}
             console.timeEnd(myprefix + '初始化耗时')
             // 以下部分需要在文档加载完毕后执行
             this.docNearlyReady(() => {
-                // 统计用时
-                console.time(myprefix + '主模块耗时')
-                // 移动顶部栏到左侧
-                this.movePageHead()
-                // 检查警告记录
-                this.warnOP()
-                // 添加自定义评分/举报理由
-                this.reasonListOP()
-                // 勋章相关
-                this.medalOP()
-                // 论坛特性修复
-                this.bugFixOP()
-                // 动画效果
-                this.animationOP()
-                // MCBBS Extender冲突修复
-                this.confiectFixOP()
-                // 安全功能
-                this.antiSniff()
-                // 举报记忆功能
-                this.reportRememberOP()
-                // 图片懒加载
-                this.lazyLoadImgOP()
-                // 图片代理
-                this.imgProxyOP()
-                // 帖子分类
-                this.threadClassifyOP()
-                // 反水帖
-                this.antiWaterOP()
-                // 关闭安全锁
-                autoRunLock = false
-                // 整理配置项
-                this.sortSetting()
-                // 触发事件
-                window.dispatchEvent(ev)
-                // 统计用时
-                console.timeEnd(myprefix + '主模块耗时')
+                console.time(myprefix + '主模块耗时')// 统计用时
+
+                this.movePageHead()     // 移动顶部栏到左侧
+                this.warnOP()           // 检查警告记录
+                this.reasonListOP()     // 添加自定义评分/举报理由
+                this.medalOP()          // 勋章相关
+                this.animationOP()      // 动画效果
+                this.leftPosterInfoOP() // 看帖页面左侧层主信息管理
+                this.antiSniff()        // 安全功能
+                this.reportRememberOP() // 举报记忆功能
+                this.lazyLoadImgOP()    // 图片懒加载
+                this.imgProxyOP()       // 图片代理
+                this.threadClassifyOP() // 帖子分类
+                this.antiWaterOP()      // 反水帖
+                this.bugFixOP()         // 论坛特性修复
+                this.confiectFixOP()    // 其他脚本冲突修复
+
+                autoRunLock = false         // 关闭安全锁
+                this.sortSetting()          // 整理配置项
+                window.dispatchEvent(ev)    // 触发事件
+
+                console.timeEnd(myprefix + '主模块耗时')// 统计用时
             })
         }
         /**初始化 */
@@ -1073,6 +1060,12 @@ div.tip[id^="g_up"] {
         }
         /**获取新消息的数量并显示 */
         messageOp(notice: BBSAPIResponceDataVariablesNotice) {
+            const urlList = [
+                'https://www.mcbbs.net/home.php?mod=space&do=notice&view=mypost',
+                'https://www.mcbbs.net/home.php?mod=space&do=pm',
+                'https://www.mcbbs.net/home.php?mod=space&do=notice&view=system',
+                'https://www.mcbbs.net/home.php?mod=space&do=notice&view=mypost',
+            ]
             let xx = document.querySelector('#saltNewPageHead .addons a.saltmessage')
             if (!xx) { return }
             let msg: number[] = [
@@ -1081,7 +1074,11 @@ div.tip[id^="g_up"] {
                 parseInt(notice.newprompt), // 新通知
                 parseInt(notice.newpush),   // 新推送
             ], sum = 0
-            for (var i in msg) { sum += msg[i] }
+            for (var i in msg) {
+                let temp = msg[i]
+                sum += temp
+                if (temp > 0) xx.setAttribute('href', urlList[i])
+            }
             if (sum > 6) { sum = 6 }
             if (sum > 0) {
                 xx.setAttribute('title', `新回复: ${msg[0]} | 新私信: ${msg[1]} | 新通知: ${msg[2]} | 新推送: ${msg[3]}`)
@@ -1098,7 +1095,7 @@ div.tip[id^="g_up"] {
             this.addSetting({
                 type: 'check',
                 title: '透明显示被警告的帖子',
-                subtitle: '关闭后不影响其他功能检测被制裁的帖子',
+                subtitle: '关闭并不影响其他功能检测被制裁的帖子',
                 checked: warnPostOpacity,
                 callback: (ck) => {
                     warnPostOpacity = ck
@@ -1265,21 +1262,6 @@ div.tip[id^="g_up"] {
             this.addTextareaSetting('自定义举报理由<small> 举报时可供选择的理由，一行一个，开头添加“//”暂时禁用</small>', reportReasonList.join('\n'), (el: HTMLTextAreaElement, e: Event) => {
                 this.write('reportReasonList', this.formatToStringArray(el.value))
             }, '自定义举报理由', 102)
-        }
-        /**论坛特性修复 */
-        bugFixOP() {
-            this.assert(autoRunLock, '不在页面初始运行状态')
-            // 版块页面帖子列表的错位问题
-            // let threadList = document.querySelector('#moderate table tbody')
-            // if (threadList) {
-            //     // 有公告存在时，作者栏向上错位1px
-            //     let threadListBy = threadList?.querySelector('td.by')
-            //     if (threadListBy && threadListBy.innerHTML.length < 2) { threadListBy.innerHTML = '&nbsp;' }
-            // }
-            window.saltMCBBSCSS.putStyle(
-                `#threadlist table{border-collapse:collapse}#threadlist table td,#threadlist table th{border-bottom:0px;}#threadlist table tr{border-bottom:1px solid #CFB78E;}`
-                , 'threadListBugFix')
-
         }
         /**勋章相关 */
         medalOP() {
@@ -1930,6 +1912,82 @@ div.tip[id^="g_up"] {
                 return r
             }
         }
+        /**看帖页面左侧层主信息管理 */
+        leftPosterInfoOP() {
+            this.assert(autoRunLock, '不在页面初始运行状态')
+            let obj = this
+            // 左侧栏显示层主的哪些信息
+            /**缓存每个楼层的层主信息 */
+            let pidInfo: {
+                pid: string,
+                info: { dt: HTMLElement, dd: HTMLElement }[]
+            }[] = []
+            let handler = this.readWithDefault('leftPosterInfoShow', '//积分,帖子,主题,精华,金粒,宝石,贡献,爱心,钻石,人气,下界之星,最后登录,注册时间\n金粒\n宝石\n贡献\n爱心')
+            reflash(this.cleanStringArray(this.formatToStringArray(handler)))
+            this.addSetting({
+                type: 'textarea',
+                title: '左侧用户信息显示控制',
+                subtitle: '显示层主的信息（积分、发帖情况等），一行一个，开头添加“//”暂时禁用',
+                text: handler,
+                callback: (el) => {
+                    let v = el.value
+                    reflash(this.cleanStringArray(this.formatToStringArray(v)))
+                    this.write('leftPosterInfoShow', v)
+                },
+                priority: 216
+            })
+            function reflash(handler: string[]) {
+                obj.saltQuery('.plhin', (i, el) => {
+                    if (!(el instanceof HTMLElement)) return
+                    /**直接显示层主信息的元素 */
+                    let outInfo = el.querySelector('.favatar > dl')
+                    if (!(outInfo instanceof HTMLElement)) return
+                    let pid = ((el.getAttribute('id') ?? '0').match(/\d+/) ?? ['0'])[0]
+                    let info = getInfo(el, pid).info
+                    let html = ''
+                    for (let h of handler)
+                        for (let i of info)
+                            if ((i.dt.textContent ?? '').indexOf(h) != -1) {
+                                html += `<dt>${i.dt.innerHTML}</dt><dd>${i.dd.innerHTML}</dd>`
+                                break
+                            }
+                    outInfo.innerHTML = html
+                })
+            }
+            /**获取并缓存每层的层主信息 */
+            function getInfo(el: HTMLElement, pid: string) {
+                // 查询已有
+                for (let pf of pidInfo)
+                    if (pf.pid == pid)
+                        return pf
+                // 否则新增
+                let info: {
+                    dt: HTMLElement,
+                    dd: HTMLElement
+                }[] = []
+                /**从用户卡片获取信息 */
+                let card = el.querySelector('.bui[id]')
+                if (card instanceof HTMLElement) {
+                    let dl = card.querySelector('dl')
+                    if (dl) {
+                        let dd = dl.querySelectorAll('dd'), dt = dl.querySelectorAll('dt')
+                        for (let i = 0; i < Math.min(dd.length, dt.length); i++) {
+                            info.push({ dt: dt[i], dd: dd[i] })
+                        }
+                    }
+                }
+                /**主要是获取金粒和绿宝石信息 */
+                let outInfo = el.querySelector('.favatar > dl')
+                if (outInfo instanceof HTMLElement) {
+                    let dd = outInfo.querySelectorAll('dd'), dt = outInfo.querySelectorAll('dt')
+                    for (let i = 0; i < Math.min(dd.length, dt.length); i++) {
+                        info.push({ dt: dt[i], dd: dd[i] })
+                    }
+                }
+                pidInfo.push({ pid: pid, info: info })
+                return { pid: pid, info: info }
+            }
+        }
         /**动画效果 */
         animationOP() {
             this.assert(autoRunLock, '不在页面初始运行状态')
@@ -2050,7 +2108,6 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
                         let src = el.getAttribute('src') ?? ''
                         if (src.indexOf('music.163') == -1 || src.indexOf('?') == -1) return
                         src = src.slice(src.indexOf('?')).replace('sid', 'id')
-                        obj.log(src)
                         el.setAttribute('src', 'https://music.163.com/outchain/player' + src)
                         if (/height\=66/i.test(src))
                             el.setAttribute('height', '86')
@@ -2071,8 +2128,8 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
                     obj.saltQuery('embed,iframe', (i, el) => {
                         if (!(el instanceof HTMLElement)) return
                         let src = el.getAttribute('src') ?? ''
-                        if (src.indexOf('music.163') == -1 || src.indexOf('auto=0') != -1) return
-                        src.replace(/auto\=\d+/, 'auto=0')
+                        if (src.indexOf('music.163') == -1) return
+                        src = src.replace(/auto\=\d+/, 'auto=0')
                         el.setAttribute('src', src)
                     })
             }
@@ -2163,6 +2220,39 @@ body.nightS .pl .blockcode div[id]{
                 })
             }
 
+        }
+        /**论坛特性修复 */
+        bugFixOP() {
+            this.assert(autoRunLock, '不在页面初始运行状态')
+            // 版块页面帖子列表的错位问题
+            // let threadList = document.querySelector('#moderate table tbody')
+            // if (threadList) {
+            //     // 有公告存在时，作者栏向上错位1px
+            //     let threadListBy = threadList?.querySelector('td.by')
+            //     if (threadListBy && threadListBy.innerHTML.length < 2) { threadListBy.innerHTML = '&nbsp;' }
+            // }
+            window.saltMCBBSCSS.putStyle(
+                `#threadlist table{border-collapse:collapse}#threadlist table td,#threadlist table th{border-bottom:0px;}#threadlist table tr{border-bottom:1px solid #CFB78E;}`
+                , 'threadListBugFix')
+            // @ts-ignore
+            window.copycode = copycode // copycode不兼容SaltMCBBS
+            function copycode(el: HTMLElement) {
+                let i = document.createElement('textarea'), s = []
+                let li = Array.from(el.querySelectorAll('ol li')) // 需要复制的文字
+                console.log(li)
+                for (let l of li)
+                    s.push((l.textContent ?? '').replace(/^\n|\n$/, ''))
+                i.value = s.join('\n') // 拼接文字
+                i.readOnly = true
+                i.setAttribute('style', 'opacity:0;position:absolute')
+                console.log(i.value)
+                document.body.appendChild(i) // 显示出来
+                i.select()
+                i.setSelectionRange(0, i.value.length) // 全部选中
+                let b = document.execCommand('copy') // IE也能用的复制
+                if (!b) alert('复制失败')
+                i.remove()
+            }
         }
         // ==========================================================
         // ========== 以上直到另一个分割线之前, 都是内部代码 ==========
