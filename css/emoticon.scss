@@ -157,7 +157,7 @@ $barHeight: 40px;
 }
 .pl .blockcode {
     > em.importMemePack {
-        right: calc(18px + 4rem);
+        right: 18px + 4 * 14px;
     }
 }
 // 夜间

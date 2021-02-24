@@ -42,9 +42,14 @@ body.nightS {
     }
 }
 // 隐藏顶栏
-#toptb {
+#toptb,
+#p-navSticky {
     display: none;
 }
+.uix_sidebarNav {
+    margin-top: -30px;
+}
+//
 #saltNewPageHead {
     position: fixed;
     width: 310px;
@@ -57,6 +62,7 @@ body.nightS {
     transition: 0.4s ease;
     transition-delay: 0.4s;
     overflow-x: hidden;
+    box-sizing: content-box;
     // overflow-y: auto;
     opacity: 0.35;
     z-index: 999999;
@@ -80,15 +86,15 @@ body.nightS {
     .addons {
         width: 100%;
         margin: 0;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.75 * 14px;
         overflow: hidden; // 触发BFC
         // border-bottom: #ccc;
-        font-size: 1rem;
+        font-size: 1 * 14px;
     }
     // 移动过来的搜索框
     .y_search {
-        // margin-top: -1.25rem;
-        // margin-bottom: 0.1rem;
+        // margin-top: -1.25 * 14px;
+        // margin-bottom: 0.1 * 14px;
         background-color: transparent;
         outline: 1px solid #ccc;
         overflow-y: hidden;
@@ -122,7 +128,7 @@ body.nightS {
         overflow-x: hidden;
         > div,
         > span {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.5 * 14px;
         }
         .username {
             width: 100%;
@@ -133,10 +139,10 @@ body.nightS {
             a {
                 top: 2px;
                 position: absolute;
-                font-size: 1.75rem;
+                font-size: 1.75 * 14px;
             }
             div {
-                top: calc(8px + 2rem);
+                top: 8 + 2 * 14px;
                 width: 10.2em; // 自定义签名的默认长度
                 // display: block;
                 position: absolute;
@@ -156,21 +162,21 @@ body.nightS {
             //     content: attr(grouptitle);
             //     position: absolute;
             //     bottom: 2px;
-            //     right: 1.5rem;
-            //     font-size: 1rem;
+            //     right: 1.5 * 14px;
+            //     font-size: 1 * 14px;
             //     color: #666;
             //     opacity: 0.75;
             //     transition: 0.3s ease;
             // }
             // &:hover::after {
-            //     right: 0.5rem;
+            //     right: 0.5 * 14px;
             //     color: #222;
             // }
         }
         .thread {
             width: 100%;
             display: flex;
-            font-size: 0.875rem;
+            font-size: 0.875 * 14px;
             text-align: center;
             span,
             a {
@@ -181,7 +187,7 @@ body.nightS {
         .progress {
             // 升级进度条
             width: 95%;
-            height: 0.75rem;
+            height: 0.75 * 14px;
             margin-left: auto;
             margin-right: auto;
             border: 1px solid #999;
@@ -201,31 +207,31 @@ body.nightS {
                 left: -20%;
                 top: 0;
                 position: absolute;
-                font-size: 0.7rem;
+                font-size: 0.7 * 14px;
                 color: transparent;
                 text-align: center;
                 transition: 0.3s ease;
             }
             &:hover {
-                // margin-top: 0.75rem;
-                // margin-bottom: 0.25rem;
-                transform: translateY(0.5rem);
+                // margin-top: 0.75 * 14px;
+                // margin-bottom: 0.25 * 14px;
+                transform: translateY(0.5 * 14px);
             }
             &:hover::after {
-                top: -1rem;
+                top: -1 * 14px;
                 color: inherit;
             }
         }
         .credit {
             position: relative;
             margin-bottom: 0;
-            font-size: 0.875rem;
+            font-size: 0.875 * 14px;
             span {
                 width: calc(50% - 4px);
                 display: inline-block;
-                height: 1.2rem;
-                line-height: 1.2rem;
-                padding-left: 1rem;
+                height: 1.2 * 14px;
+                line-height: 1.2 * 14px;
+                padding-left: 1 * 14px;
                 position: relative;
                 box-sizing: border-box;
                 img {
@@ -239,12 +245,12 @@ body.nightS {
     .links {
         a {
             width: 100%;
-            height: 1.75rem;
-            line-height: 1.75rem;
+            height: 1.75 * 14px;
+            line-height: 1.75 * 14px;
             display: inline-block;
             background-color: #fff0;
             text-align: center;
-            font-size: 1rem;
+            font-size: 1 * 14px;
             border-bottom: 1px solid #eee;
             &:hover {
                 background-color: var(--saltNewPageHeadbgcolor, $bgcolor);
@@ -263,10 +269,10 @@ body.nightS {
         a {
             width: calc(50% - 4px);
             display: inline-block;
-            height: 1.6rem;
-            line-height: 1.6rem;
+            height: 1.6 * 14px;
+            line-height: 1.6 * 14px;
             text-align: center;
-            font-size: 1rem;
+            font-size: 1 * 14px;
             background-color: #fff0;
             border: 1px solid transparent;
             &:hover {
@@ -277,9 +283,9 @@ body.nightS {
             img {
                 display: inline-block;
                 vertical-align: middle;
-                max-width: 1.5rem;
-                max-height: 1.5rem;
-                margin-right: 0.5rem;
+                max-width: 1.5 * 14px;
+                max-height: 1.5 * 14px;
+                margin-right: 0.5 * 14px;
             }
         }
     }

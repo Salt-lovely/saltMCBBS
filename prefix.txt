@@ -1,0 +1,13 @@
+// ==UserScript==
+// @name         saltMCBBS
+// @namespace    http://salt.is.lovely/
+// @description  salt's MCBBS 拓展
+// @author       salt
+// @match        https://*.mcbbs.net/*
+// @grant        none
+// @icon         https://s3.ax1x.com/2021/02/06/yYstBQ.png
+// @version      0.1.9Pre1
+// @license      CC BY-NC-SA 4.0
+// @run-at       document-body
+// ==/UserScript==
+// LOGO使用U钙网（uugai.com）工具制作，有二次加工且字体为非商用字体
