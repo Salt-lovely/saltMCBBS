@@ -1,4 +1,4 @@
-$bgcolor: #fbf2db;
+$bgcolor: #fbfbfb;
 $skinColor: var(--ThemeColor, #e91e63); // 兼容MCBBS Extender
 
 @mixin scroll($width: 4px, $bgcolor: #eee, $thumbcolor: #999) {
@@ -97,42 +97,48 @@ body {
     > div[style]:not([id]):not([class]) {
         float: left;
     }
-    > .mc_map_wp {
-        padding-top: 0;
-        margin-top: 0;
-        overflow: visible;
-        // float: unset;
-        display: inline-block;
-        margin-left: calc(50% - 565px);
+    // > .mc_map_wp {
+    //     padding-top: 0;
+    //     margin-top: 0;
+    //     overflow: visible;
+    //     // float: unset;
+    //     display: inline-block;
+    //     margin-left: calc(50% - 565px);
+    //     transition: 0.3s ease;
+    //     transition-delay: 0.5s;
+    //     &:hover {
+    //         transition-delay: 0s;
+    //     }
+    //     > .new_wp {
+    //         padding-top: 0 !important;
+    //         padding-bottom: 0 !important;
+    //         h2 img {
+    //             max-height: 74px;
+    //         }
+    //     }
+    // }
+    #top {
         transition: 0.3s ease;
         transition-delay: 0.5s;
         &:hover {
             transition-delay: 0s;
         }
-        > .new_wp {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            h2 img {
-                max-height: 74px;
-            }
-        }
     }
     &:hover {
-        > .mc_map_wp {
+        #top {
             transition-delay: 0s;
         }
     }
     // 有背景图时使用特殊的透明度
     &.hasBackgroundImage {
-        .mc_map_wp,
-        #scrolltop,
-        #toptb {
+        // .mc_map_wp,
+        #top,
+        #footer {
             opacity: var(--mcmapwpOpacity, 1);
         }
         &:hover {
-            .mc_map_wp,
-            #scrolltop,
-            #toptb {
+            #top,
+            #footer {
                 opacity: var(--mcmapwpCommonOpacity, 1);
             }
         }

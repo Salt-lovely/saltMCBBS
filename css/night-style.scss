@@ -100,6 +100,9 @@ body.nightS {
         border-color: $table-border-color;
         color: $fontcolor;
     }
+    button.pn {
+        background-color: $bodybg-l-l;
+    }
     // 新版左侧
     .uix_sidebarNav {
         background-color: $bodybg-l;
@@ -640,6 +643,9 @@ body.nightS {
                 color: $fontcolor;
                 text-shadow: none;
             }
+        }
+        .pls {
+            border-radius: 0;
         }
         // 受到警告
         &.warned {
@@ -1223,7 +1229,7 @@ body.nightS {
     li,
     #end,
     #footer {
-        > div,
+        > div:not(.uix_fabBar),
         > div > div:not(.uix_fabBar) {
             background-color: $bodybg-l;
         }
