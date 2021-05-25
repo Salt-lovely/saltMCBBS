@@ -14,12 +14,9 @@ p.md_ctrl {
     overflow: visible;
     margin-left: 5px;
     padding-left: 10px;
-    transition: 0.3s ease;
-    &:not(.salt-expand) {
-        &,
-        &:hover {
-            max-height: var(--maxHeight, 96px) !important;
-        }
+    &,
+    &:hover {
+        max-height: var(--maxHeight, 96px);
     }
     &.salt-expand,
     &.salt-expand:hover {
@@ -29,10 +26,6 @@ p.md_ctrl {
         // 如果有点击展开按钮的话
         padding-bottom: 32px;
         overflow: hidden;
-        // MCBBS自带的展开按钮
-        .md_collapse_btn {
-            display: none;
-        }
     }
     .saltExpandHandler {
         position: absolute;
@@ -40,17 +33,16 @@ p.md_ctrl {
         left: 0;
         width: 100%;
         height: 32px;
-        // color: rgb(56, 130, 167);
-        color: #222;
+        color: rgb(56, 130, 167);
         background-image: linear-gradient(
             0deg,
-            #fcfcfc,
-            #fcfcfc,
-            rgba($color: #fcfcfc, $alpha: 0)
+            #e3c99e,
+            #e3c99e,
+            rgba($color: #e3c99e, $alpha: 0)
         );
         cursor: pointer;
         &:after {
-            content: '点击展开';
+            content: "点击展开";
             display: block;
             width: 100%;
             height: 32px;
@@ -60,7 +52,7 @@ p.md_ctrl {
     }
     &.salt-expand {
         .saltExpandHandler:after {
-            content: '点击收起';
+            content: "点击收起";
         }
     }
     &:not(.expandable) {
@@ -158,7 +150,7 @@ body {
         padding: 5px !important;
         background-image: none !important;
     }
-    .tip_4[id*='attach'] .tip_c {
+    .tip_4[id*="attach"] .tip_c {
         padding: 5px !important;
         background-image: none !important;
     }
@@ -188,7 +180,7 @@ body {
         box-shadow: 0px 10px 25px -4px #000;
         image-rendering: pixelated; /*用临近插值法放大图像*/
         &::before {
-            content: '';
+            content: "";
             position: absolute;
             z-index: -1;
             top: -7px;
@@ -223,7 +215,7 @@ body {
             }
         }
         // 勋章栏
-        &[id$='_menu'][id^='m'] {
+        &[id$="_menu"][id^="m"] {
             display: flex;
             .tip_c {
                 height: auto;
@@ -239,7 +231,7 @@ body {
             }
         }
         &::after {
-            content: '';
+            content: "";
             position: absolute;
             height: 100%;
             width: 100%;
@@ -266,202 +258,202 @@ body {
 // CSS是有极限的
 body {
     $medalmap: (
-        101: 'm_a2.png',
-        102: 'm_a3.png',
-        103: 'm_a6.png',
-        11: 'm_d1.png',
-        12: 'm_d2.png',
-        104: 'm_b1.png',
-        105: 'm_b3.png',
-        106: 'm_b4.png',
-        234: 'm_b5.gif',
-        107: 'm_rc1.png',
-        108: 'm_rc3.png',
-        109: 'm_rc5.png',
-        250: 'm_c_10years.png',
-        76: 'm_g5.png',
-        58: 'm_g3.png',
-        59: 'm_g4.png',
-        21: 'm_noob.png',
-        9: 'm_c2.png',
-        2: 'm_c3.png',
-        38: 'm_c1.png',
-        112: 'm_c4.png',
-        251: 'm_c_piglin.png',
-        155: 'm_cape_mc2011.png',
-        156: 'm_cape_mc2012.png',
-        157: 'm_cape_mc2013.png',
-        158: 'm_cape_mc2015.png',
-        159: 'm_cape_Tr.png',
-        180: 'm_cape_cobalt.png',
-        181: 'm_cape_maper.png',
-        196: 'm_cape_mc2016.png',
-        247: 'm_cape_Mojira.png',
-        45: 'm_s1.png',
-        127: 'm_s2.png',
-        78: 'm_p_pc.png',
-        113: 'm_p_and.png',
-        114: 'm_p_ios.png',
-        141: 'm_p_wp.png',
-        160: 'm_p_w10.png',
-        115: 'm_p_box360.png',
-        116: 'm_p_boxone.png',
-        117: 'm_p_ps3.png',
-        118: 'm_p_ps4.png',
-        119: 'm_p_psv.png',
-        170: 'm_p_wiiu.png',
-        209: 'm_p_switch.png',
-        227: 'm_p_3ds.png',
-        56: 'm_g1.png',
-        57: 'm_g2.png',
-        61: 'm_p1.png',
-        62: 'm_p2.png',
-        63: 'm_p3.png',
-        46: 'm_p4.png',
-        64: 'm_p5.png',
-        65: 'm_p6.png',
-        66: 'm_p7.png',
-        75: 'm_p8.png',
-        85: 'm_p9.png',
-        86: 'm_p10.png',
-        100: 'm_p11.png',
-        175: 'm_p12.png',
-        182: 'm_p13.png',
-        91: 'm_h1.png',
-        93: 'm_h2.png',
-        92: 'm_h3.png',
-        94: 'm_h4.png',
-        95: 'm_h5.png',
-        96: 'm_h6.png',
-        152: 'm_h7.png',
-        183: 'm_h8.png',
-        200: 'm_h9.png',
-        210: 'm_h10.png',
-        70: 'm_arena_v1.png',
-        72: 'm_arena_v2.png',
-        88: 'm_arena_v3.png',
-        111: 'm_arena_v4.png',
-        69: 'm_arena_w1.png',
-        68: 'm_arena_w2.png',
-        73: 'm_arena_w3.png',
-        74: 'm_arena_w4.png',
-        89: 'm_arena_w5.png',
-        90: 'm_arena_w6.png',
-        98: 'm_arena_w8.png',
-        99: 'm_arena_w7.png',
-        120: 'm_arena_v5.png',
-        121: 'm_arena_w9.png',
-        122: 'm_arena_w10.png',
-        123: 'm_arena_i1.png',
-        129: 'm_arena_v6.png',
-        130: 'm_arena_w11.png',
-        131: 'm_arena_w12.png',
-        132: 'm_arena_i2.png',
-        143: 'm_arena_v7.png',
-        144: 'm_arena_v7f.png',
-        145: 'm_arena_w13.png',
-        146: 'm_arena_w14.png',
-        164: 'm_arena_v8.png',
-        165: 'm_arena_w15.png',
-        166: 'm_arena_w16.png',
-        176: 'm_arena_v9.png',
-        177: 'm_arena_w17.png',
-        178: 'm_arena_w18.png',
-        184: 'm_arena_v10.png',
-        185: 'm_arena_w19.png',
-        186: 'm_arena_w20.png',
-        204: 'm_arena_v11.png',
-        205: 'm_arena_w21.png',
-        206: 'm_arena_w22.png',
-        211: 'm_arena_v12.png',
-        212: 'm_arena_w23.png',
-        213: 'm_arena_w24.png',
-        224: 'm_arena_v13.png',
-        225: 'm_arena_w25.png',
-        226: 'm_arena_w26.png',
-        237: 'm_arena14_1.png',
-        238: 'm_arena14_2.png',
-        239: 'm_arena14_3.png',
-        136: 'm_s_v1.png',
-        167: 'm_s_bili.png',
-        174: 'm_s_v2.png',
-        195: 'm_s_v3.png',
-        218: 'm_s_bili2.png',
-        240: 'm_s_v4.png',
-        253: 'm_s_wiki.png',
-        254: 'm_s_mcwiki.png',
-        124: 'm_pearena_v1.png',
-        125: 'm_pearena_w2.png',
-        126: 'm_pearena_w1.png',
-        133: 'm_pearena_v2.png',
-        134: 'm_pearena_w4.png',
-        135: 'm_pearena_w3.png',
-        147: 'm_pearena_v3.png',
-        148: 'm_pearena_w6.png',
-        149: 'm_pearena_w5.png',
-        161: 'm_pearena_v4.png',
-        162: 'm_pearena_w8.png',
-        163: 'm_pearena_w7.png',
-        171: 'm_pearena_v5.png',
-        172: 'm_pearena_w10.png',
-        173: 'm_pearena_w9.png',
-        190: 'm_pearena_w13.png',
-        192: 'm_pearena_v6.png',
-        193: 'm_pearena_w11.png',
-        194: 'm_pearena_w12.png',
-        201: 'm_pearena_v7.png',
-        202: 'm_pearena_w16.png',
-        203: 'm_pearena_w15.png',
-        214: 'm_pearena_v8.png',
-        215: 'm_pearena_w18.png',
-        216: 'm_pearena_w17.png',
-        221: 'm_pearena_v9.png',
-        222: 'm_pearena_w20.png',
-        223: 'm_pearena_w19.png',
-        229: 'm_pearena_v10.png',
-        230: 'm_pearena_w22.png',
-        231: 'm_pearena_w21.png',
-        241: 'm_pearena_v11.png',
-        242: 'm_pearena_w24.png',
-        243: 'm_pearena_w23.png',
-        197: 'm_pofg_v1.png',
-        198: 'm_pofg_v2.png',
-        199: 'm_pofg_v3.png',
-        137: 'm_g_cw.png',
-        138: 'm_g_trp.png',
-        139: 'm_g_tas.png',
-        140: 'm_g_sc.png',
-        142: 'm_g_sl.png',
-        150: 'm_g_hayo.png',
-        151: 'm_g_aa.png',
-        153: 'm_g_is.png',
-        154: 'm_g_cbl.png',
-        168: 'm_g_ntl.png',
-        169: 'm_g_tcp.png',
-        179: 'm_g_mpw.png',
-        207: 'm_g_ud.png',
-        217: 'm_g_bs.png',
-        219: 'm_g_pcd.png',
-        220: 'm_g_gwnw.png',
-        228: 'm_g_lw.png',
-        232: 'm_g_uel.png',
-        233: 'm_g_tgc.png',
-        235: 'm_g_nf.png',
-        236: 'm_g_mcbk.png',
-        244: 'm_g_pos.png',
-        245: 'm_g_stc.png',
-        246: 'm_g_cps.png',
-        248: 'm_g_wiki.png',
-        249: 'm_g_rmg.png',
-        252: 'm_g_tml.png',
+        101: "m_a2.png",
+        102: "m_a3.png",
+        103: "m_a6.png",
+        11: "m_d1.png",
+        12: "m_d2.png",
+        104: "m_b1.png",
+        105: "m_b3.png",
+        106: "m_b4.png",
+        234: "m_b5.gif",
+        107: "m_rc1.png",
+        108: "m_rc3.png",
+        109: "m_rc5.png",
+        250: "m_c_10years.png",
+        76: "m_g5.png",
+        58: "m_g3.png",
+        59: "m_g4.png",
+        21: "m_noob.png",
+        9: "m_c2.png",
+        2: "m_c3.png",
+        38: "m_c1.png",
+        112: "m_c4.png",
+        251: "m_c_piglin.png",
+        155: "m_cape_mc2011.png",
+        156: "m_cape_mc2012.png",
+        157: "m_cape_mc2013.png",
+        158: "m_cape_mc2015.png",
+        159: "m_cape_Tr.png",
+        180: "m_cape_cobalt.png",
+        181: "m_cape_maper.png",
+        196: "m_cape_mc2016.png",
+        247: "m_cape_Mojira.png",
+        45: "m_s1.png",
+        127: "m_s2.png",
+        78: "m_p_pc.png",
+        113: "m_p_and.png",
+        114: "m_p_ios.png",
+        141: "m_p_wp.png",
+        160: "m_p_w10.png",
+        115: "m_p_box360.png",
+        116: "m_p_boxone.png",
+        117: "m_p_ps3.png",
+        118: "m_p_ps4.png",
+        119: "m_p_psv.png",
+        170: "m_p_wiiu.png",
+        209: "m_p_switch.png",
+        227: "m_p_3ds.png",
+        56: "m_g1.png",
+        57: "m_g2.png",
+        61: "m_p1.png",
+        62: "m_p2.png",
+        63: "m_p3.png",
+        46: "m_p4.png",
+        64: "m_p5.png",
+        65: "m_p6.png",
+        66: "m_p7.png",
+        75: "m_p8.png",
+        85: "m_p9.png",
+        86: "m_p10.png",
+        100: "m_p11.png",
+        175: "m_p12.png",
+        182: "m_p13.png",
+        91: "m_h1.png",
+        93: "m_h2.png",
+        92: "m_h3.png",
+        94: "m_h4.png",
+        95: "m_h5.png",
+        96: "m_h6.png",
+        152: "m_h7.png",
+        183: "m_h8.png",
+        200: "m_h9.png",
+        210: "m_h10.png",
+        70: "m_arena_v1.png",
+        72: "m_arena_v2.png",
+        88: "m_arena_v3.png",
+        111: "m_arena_v4.png",
+        69: "m_arena_w1.png",
+        68: "m_arena_w2.png",
+        73: "m_arena_w3.png",
+        74: "m_arena_w4.png",
+        89: "m_arena_w5.png",
+        90: "m_arena_w6.png",
+        98: "m_arena_w8.png",
+        99: "m_arena_w7.png",
+        120: "m_arena_v5.png",
+        121: "m_arena_w9.png",
+        122: "m_arena_w10.png",
+        123: "m_arena_i1.png",
+        129: "m_arena_v6.png",
+        130: "m_arena_w11.png",
+        131: "m_arena_w12.png",
+        132: "m_arena_i2.png",
+        143: "m_arena_v7.png",
+        144: "m_arena_v7f.png",
+        145: "m_arena_w13.png",
+        146: "m_arena_w14.png",
+        164: "m_arena_v8.png",
+        165: "m_arena_w15.png",
+        166: "m_arena_w16.png",
+        176: "m_arena_v9.png",
+        177: "m_arena_w17.png",
+        178: "m_arena_w18.png",
+        184: "m_arena_v10.png",
+        185: "m_arena_w19.png",
+        186: "m_arena_w20.png",
+        204: "m_arena_v11.png",
+        205: "m_arena_w21.png",
+        206: "m_arena_w22.png",
+        211: "m_arena_v12.png",
+        212: "m_arena_w23.png",
+        213: "m_arena_w24.png",
+        224: "m_arena_v13.png",
+        225: "m_arena_w25.png",
+        226: "m_arena_w26.png",
+        237: "m_arena14_1.png",
+        238: "m_arena14_2.png",
+        239: "m_arena14_3.png",
+        136: "m_s_v1.png",
+        167: "m_s_bili.png",
+        174: "m_s_v2.png",
+        195: "m_s_v3.png",
+        218: "m_s_bili2.png",
+        240: "m_s_v4.png",
+        253: "m_s_wiki.png",
+        254: "m_s_mcwiki.png",
+        124: "m_pearena_v1.png",
+        125: "m_pearena_w2.png",
+        126: "m_pearena_w1.png",
+        133: "m_pearena_v2.png",
+        134: "m_pearena_w4.png",
+        135: "m_pearena_w3.png",
+        147: "m_pearena_v3.png",
+        148: "m_pearena_w6.png",
+        149: "m_pearena_w5.png",
+        161: "m_pearena_v4.png",
+        162: "m_pearena_w8.png",
+        163: "m_pearena_w7.png",
+        171: "m_pearena_v5.png",
+        172: "m_pearena_w10.png",
+        173: "m_pearena_w9.png",
+        190: "m_pearena_w13.png",
+        192: "m_pearena_v6.png",
+        193: "m_pearena_w11.png",
+        194: "m_pearena_w12.png",
+        201: "m_pearena_v7.png",
+        202: "m_pearena_w16.png",
+        203: "m_pearena_w15.png",
+        214: "m_pearena_v8.png",
+        215: "m_pearena_w18.png",
+        216: "m_pearena_w17.png",
+        221: "m_pearena_v9.png",
+        222: "m_pearena_w20.png",
+        223: "m_pearena_w19.png",
+        229: "m_pearena_v10.png",
+        230: "m_pearena_w22.png",
+        231: "m_pearena_w21.png",
+        241: "m_pearena_v11.png",
+        242: "m_pearena_w24.png",
+        243: "m_pearena_w23.png",
+        197: "m_pofg_v1.png",
+        198: "m_pofg_v2.png",
+        199: "m_pofg_v3.png",
+        137: "m_g_cw.png",
+        138: "m_g_trp.png",
+        139: "m_g_tas.png",
+        140: "m_g_sc.png",
+        142: "m_g_sl.png",
+        150: "m_g_hayo.png",
+        151: "m_g_aa.png",
+        153: "m_g_is.png",
+        154: "m_g_cbl.png",
+        168: "m_g_ntl.png",
+        169: "m_g_tcp.png",
+        179: "m_g_mpw.png",
+        207: "m_g_ud.png",
+        217: "m_g_bs.png",
+        219: "m_g_pcd.png",
+        220: "m_g_gwnw.png",
+        228: "m_g_lw.png",
+        232: "m_g_uel.png",
+        233: "m_g_tgc.png",
+        235: "m_g_nf.png",
+        236: "m_g_mcbk.png",
+        244: "m_g_pos.png",
+        245: "m_g_stc.png",
+        246: "m_g_cps.png",
+        248: "m_g_wiki.png",
+        249: "m_g_rmg.png",
+        252: "m_g_tml.png",
     );
-    div[id$='_menu']:before {
+    div[id$="_menu"]:before {
         background-repeat: no-repeat;
         background: var(--bgimg, transparent);
         z-index: -1;
     }
     @each $key, $name in $medalmap {
-        div[id$='_#{$key}_menu']:before {
+        div[id$="_#{$key}_menu"]:before {
             --bgimg: url(static/image/common/#{$name});
         }
     }
