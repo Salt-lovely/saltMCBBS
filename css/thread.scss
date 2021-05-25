@@ -17,7 +17,7 @@ $punitive-publicity: crimson;
     --backcolor-t3: rgba($color: $mycolor, $alpha: 0);
 }
 
-#threadlisttableid > tbody[classified] {
+#threadlist div.structItem[classified] {
     --backcolor: transparent;
     --backcolor-t1: transparent;
     --backcolor-t2: transparent;

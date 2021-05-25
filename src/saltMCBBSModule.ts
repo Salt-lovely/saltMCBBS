@@ -13,10 +13,12 @@
     const consolePanel = sm.consolePanel
     const logArea = document.createElement('div')
     const inputArea = document.createElement('textarea')
-    const newWindow = window.open
+    const newWindow = (url: string) => { window.open(url); return '打开网址: ' + url }
     const Trim = sm.Trim
     const token = sm.randomID()
-    const commandMap = {
+    const commandMap: {
+        [index: string]: (command: string, codeToken: string) => string
+    } = {
         gid: gid, fid: fid,
         tid: tid, pid: pid,
         uid: uid, uname: uname, username: uname,
@@ -25,9 +27,12 @@
         togglenight: togglenightstyle, togglenightstyle: togglenightstyle, nightstyle: togglenightstyle,
         cls: cls, cleanscreen: cls,
         test: echo, echo: echo,
+        editlog: editlog, posteditlog: editlog,
         help: helpMe, "?": helpMe, "？": helpMe
     }
-    const helpMap = {
+    const helpMap: {
+        [index: string]: string
+    } = {
         gid: '前往对应大区，用法：<b>gid &lt;数字ID></b>', fid: '前往对应版块，用法：<b>fid &lt;数字ID|英文ID></b>',
         tid: '前往对应主题，用法：<b>tid &lt;数字ID></b>', pid: '前往对应帖子，用法：<b>pid &lt;数字ID></b>',
         uid: '前往对应用户主页，用法：<b>uid &lt;数字ID></b>', uname: '前往对应用户主页，用法：<b>uname &lt;用户名></b>', username: '前往对应用户主页，用法：<b>username &lt;用户名></b>',
@@ -35,14 +40,14 @@
         runjs: '执行指令，用法：<b>runjs &lt;指令(可以是多行的)></b>', eval: '执行指令，用法：<b>eval &lt;指令(可以是多行的)></b>',
         togglenight: '切换夜间模式，用法：<b>togglenight</b>', togglenightstyle: '切换夜间模式，用法：<b>togglenightstyle</b>', nightstyle: '切换夜间模式，用法：<b>nightstyle</b>',
         cls: '清屏，用法：<b>cls</b>', cleanscreen: '清屏，用法：<b>cleanscreen</b>',
+        editlog: '查看指定帖子的编辑记录<b>editlog &lt;pid></b>', posteditlog: '查看指定帖子的编辑记录<b>posteditlog &lt;pid></b>',
         test: '返回输入的参数，用法：<b>test &lt;任意内容></b>', echo: '返回输入的参数，用法：<b>echo &lt;任意内容></b>',
         help: '显示帮助，用法：<b>help &lt;指令名或留空></b>', "?": '显示帮助，用法：<b>? &lt;指令名或留空></b>', "？": '显示帮助，用法：<b>？ &lt;指令名或留空></b>'
     }
     // 执行指令
     function runCommand(command: string, codeToken: string): string {
         let cmd = CmdResolve(command)
-        //@ts-ignore
-        if (commandMap[cmd.mainCmd]) return commandMap[cmd.mainCmd](cmd.cmdBody, codeToken)
+        if (commandMap[cmd.mainCmd]) return commandMap[cmd.mainCmd].call(null, cmd.cmdBody, codeToken)
         else return '请检查指令拼写: ' + cmd.mainCmd
     }
     /**分解指令 */
@@ -133,6 +138,12 @@
         }
         ans += '使用<b> help &lt;指令名> </b>来获取详细说明'
         return ans
+    }
+    function editlog(cmdBody: string) {
+        if (cmdBody.length < 1)
+            return '错误的pid'
+        newWindow(`https://www.mcbbs.net/plugin.php?id=mcbbs_editlog&doing=viewthreadlogs&pid=${cmdBody}`)
+        return `访问pid为${cmdBody}的帖子的编辑记录`
     }
     // function reload()
     class saltMCBBSConsole {
@@ -326,7 +337,7 @@
     let busyLock: [boolean, boolean] = [false, false]
     // 添加CSS
     window.saltMCBBSCSS.putStyle(
-        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fcf4e0;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:14}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fcf4e0;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .main>div::after{content:attr(title);position:absolute;top:-100%;left:0;width:100%;padding:5px 0;background-color:rgba(255,255,255,0.5);transition:0.3s ease}.insertEmoticonPanel .main>div:hover::after{top:0}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbf2db;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbf2db;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fefaf2}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.insertEmoticonPanel .topbar{position:absolute;top:0;width:calc(100% - 24px);height:24px;overflow:hidden;color:#3a74ad}.insertEmoticonPanel .topbar>a{float:right;height:24px;line-height:24px;color:#3a74ad}.insertEmoticonPanel .topbar>a:hover{color:#6cf}.pl .blockcode>em.importMemePack{right:74px}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .main>div::after{background-color:rgba(34,34,34,0.5)}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
+        `.insertEmoticonPanel{position:fixed;top:var(--top, 10vh);left:var(--left, 10vw);width:var(--width, 30vw);min-width:360px;height:var(--height, 30vh);min-height:270px;padding:24px 0 0;background-color:#fefefe;background-clip:padding-box;border:8px solid rgba(0,0,0,0.2);border-radius:8px;user-select:none;z-index:15}.insertEmoticonPanel .main{width:100%;height:calc(100% - 40px);display:grid;grid-template-columns:repeat(auto-fill, minmax(60px, 1fr));grid-template-rows:repeat(auto-fill, minmax(60px, 1fr));overflow-y:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .main::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .main::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .main::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .main>div{height:0;padding:50% 0;text-align:center;position:relative;background-color:#fefefe;outline:1px solid #999;overflow:hidden;cursor:pointer}.insertEmoticonPanel .main>div>div{position:absolute;top:0;left:0;width:100%;text-align:center}.insertEmoticonPanel .main>div img{max-width:100%;margin-top:50%;transform:translateY(-50%);transform-origin:50% 50%}.insertEmoticonPanel .main>div::after{content:attr(title);position:absolute;top:-100%;left:0;width:100%;padding:5px 0;background-color:rgba(255,255,255,0.5);transition:0.3s ease}.insertEmoticonPanel .main>div:hover::after{top:0}.insertEmoticonPanel .bar{width:100%;height:40px;white-space:nowrap;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#999 #eee}.insertEmoticonPanel .bar::-webkit-scrollbar{width:4px;height:4px}.insertEmoticonPanel .bar::-webkit-scrollbar-thumb{border-radius:2px;box-shadow:inset 0 0 4px rgba(102,102,102,0.25);background:#999}.insertEmoticonPanel .bar::-webkit-scrollbar-track{box-shadow:inset 0 0 4px rgba(187,187,187,0.25);border-radius:1px;background:#eee}.insertEmoticonPanel .bar>div{display:inline-block;padding:8px;line-height:20px;text-align:center;background-color:#fbfbfb;border-left:1px solid #999;border-bottom:1px solid #999;border-top:1px solid #999;background-color:#fbfbfb;cursor:pointer}.insertEmoticonPanel .bar>div.select{border-top-color:transparent;background-color:#fff}.insertEmoticonPanel .bar>div:last-child{border-right:1px solid #999}.insertEmoticonPanel .close{position:absolute;top:0;right:0;width:24px;height:24px;padding:0;font-size:12px;text-align:center;cursor:pointer;transform-origin:50% 50%;transition:0.3s ease}.insertEmoticonPanel .close:hover{transform:scale(1.2)}.insertEmoticonPanel .topbar{position:absolute;top:0;width:calc(100% - 24px);height:24px;overflow:hidden;color:#3a74ad}.insertEmoticonPanel .topbar>a{float:right;height:24px;line-height:24px;color:#3a74ad}.insertEmoticonPanel .topbar>a:hover{color:#6cf}.pl .blockcode>em.importMemePack{right:74px}.nightS .insertEmoticonPanel{background-color:#444;color:#f0f0f0;border-color:rgba(153,153,153,0.2)}.nightS .insertEmoticonPanel .main>div{background-color:#444}.nightS .insertEmoticonPanel .main>div::after{background-color:rgba(34,34,34,0.5)}.nightS .insertEmoticonPanel .bar>div{background-color:#353535}.nightS .insertEmoticonPanel .bar>div.select{background-color:#555}
 `, 'saltMCBBSEmoticon')
     // 等等数据库
     await db.waitForReady();
@@ -596,7 +607,7 @@ ${p.others ? '<br>\n其他信息：' + simpleAntiXSS(p.others) : ''}`
     /**更换插入表情面板的表情栏 */
     function changePack(pack: MemePack) {
         insertEmoticonPanelMain.innerHTML = ''
-        let lazyload = 0
+        let lazyload = 0, tempList: HTMLElement[] = []
         for (let meme of pack.memes) {
             let a = newDiv(), b = newDiv(), img = document.createElement('img')
             // 方格
@@ -612,8 +623,9 @@ ${p.others ? '<br>\n其他信息：' + simpleAntiXSS(p.others) : ''}`
             // 显示
             b.appendChild(img)
             a.appendChild(b)
-            insertEmoticonPanelMain.appendChild(a)
+            tempList.push(a)
         }
+        sm.addChildren(insertEmoticonPanelMain, tempList)
     }
     /**插入表情包到指定位置 */
     function insertMeme(meme: Meme) {
