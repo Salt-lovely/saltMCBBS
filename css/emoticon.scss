@@ -1,4 +1,4 @@
-$bgcolor: #fbf2db;
+$bgcolor: #fbfbfb;
 $skinColor: var(--ThemeColor, #e91e63); // 不再兼容MCBBS Extender
 @mixin scroll($width: 4px, $bgcolor: #eee, $thumbcolor: #999) {
     scrollbar-width: thin;
@@ -157,7 +157,7 @@ $barHeight: 40px;
 }
 .pl .blockcode {
     > em.importMemePack {
-        right: calc(18px + 4rem);
+        right: 18px + 4 * 14px;
     }
 }
 // 夜间
