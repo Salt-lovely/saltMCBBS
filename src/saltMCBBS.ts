@@ -85,19 +85,15 @@
     ];
     const randomStringGen = [
         'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'.split(''),
-        'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789'.split(
-            ''
-        ),
+        'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789'.split(''),
     ];
     const newDiv = () => {
         return document.createElement('div');
     };
     /**原始类，包含各种基础方法*/
     class saltMCBBSOriginClass implements saltMCBBSOriginClass {
-        messagePanel: HTMLElement =
-            document.querySelector('#messagePanel') ?? newDiv(); // 右侧消息框
-        consolePanel: HTMLElement =
-            document.querySelector('#consolePanel') ?? newDiv(); // 右侧消息框
+        messagePanel: HTMLElement = document.querySelector('#messagePanel') ?? newDiv(); // 右侧消息框
+        consolePanel: HTMLElement = document.querySelector('#consolePanel') ?? newDiv(); // 右侧消息框
         constructor() {
             // 初始化消息框和控制台
             let mg = this.messagePanel;
@@ -121,10 +117,7 @@
                     /\<(\s*\/?\s*(?:s[cet]|tag|meta|title|input|label|body|h[^\d]|iframe|t[abrd]|link|fie|but|opt|lay|base|emb|bgs|\!))/gi,
                     '&lt;$1'
                 ) // 破坏而非删除
-                .replace(
-                    /autofocus|\%[23][ec]|\\(74|x3c|u0?0?3c)|\&\#x?\d+|on\S+\s*\=/gi,
-                    '咕咕咕'
-                ) // 破坏而非删除
+                .replace(/autofocus|\%[23][ec]|\\(74|x3c|u0?0?3c)|\&\#x?\d+|on\S+\s*\=/gi, '咕咕咕') // 破坏而非删除
                 .replace(
                     /((src|size|doc|tion|cent|href)\s*\=\s*[\'\"]?|(expression|url)\s*\(\s*)\s*((\S+script|behaviour)\s*[\:\;]|[^\>]+text\/html)[^\>]/gi,
                     '咕咕咕>'
@@ -172,16 +165,13 @@
             let memelist = '';
             for (let meme of m.memes) {
                 memelist += `"![${meme.name}](${meme.url})`;
-                if (typeof meme.width === 'string')
-                    memelist += `{${meme.width},${meme.height ?? meme.width}}`;
+                if (typeof meme.width === 'string') memelist += `{${meme.width},${meme.height ?? meme.width}}`;
                 memelist += '",\n';
             }
             return `/* SaltMCBBS表情包导出 “${m.name}” */
-{"名字":"${m.name}",${m.author ? '"作者":"' + m.author + '",' : ''}${
-                m.version ? '"版本":"' + m.version + '",' : ''
-            }${m.license ? '"许可证":"' + m.license + '",' : ''}${
-                m.others ? '"其他":"' + m.others + '",' : ''
-            }
+{"名字":"${m.name}",${m.author ? '"作者":"' + m.author + '",' : ''}${m.version ? '"版本":"' + m.version + '",' : ''}${
+                m.license ? '"许可证":"' + m.license + '",' : ''
+            }${m.others ? '"其他":"' + m.others + '",' : ''}
 "表情":[
 ${memelist.replace(/\,$/, '')}]}
 /* SaltMCBBS${myversion}导出，可能无法导入旧版的SaltMCBBS */`;
@@ -253,8 +243,7 @@ ${memelist.replace(/\,$/, '')}]}
         /**随机生成字母数字组合, 可以用于id */
         randomID(len = 16): string {
             let s = this.randomChoice(randomStringGen[0])!;
-            for (let i = 1; i < len; i++)
-                s += this.randomChoice(randomStringGen[1])!;
+            for (let i = 1; i < len; i++) s += this.randomChoice(randomStringGen[1])!;
             if (document.getElementById(s))
                 // 不与现成的id冲突
                 return this.randomID(len);
@@ -319,9 +308,7 @@ ${memelist.replace(/\,$/, '')}]}
             // 滚动文档
             let safe = 0; // 安全锁
             let timer = setInterval(() => {
-                var diff = Math.abs(
-                    targetY - document.documentElement.scrollTop
-                );
+                var diff = Math.abs(targetY - document.documentElement.scrollTop);
                 if (diff > Math.abs(step)) {
                     document.documentElement.scrollTop += step;
                     safe += 1;
@@ -372,10 +359,7 @@ ${memelist.replace(/\,$/, '')}]}
          * @param selector 字符串，选择器
          * @param callback 回调函数(index: number, el: Element): void
          */
-        saltQuery(
-            selector: string,
-            callback: (index: number, el: Element) => void
-        ) {
+        saltQuery(selector: string, callback: (index: number, el: Element) => void) {
             let elems = document.querySelectorAll(selector);
             for (let i = 0; i < elems.length; i++) {
                 callback(i, elems[i]);
@@ -444,10 +428,7 @@ ${memelist.replace(/\,$/, '')}]}
             let value: string | null = localStorage.getItem(techprefix + key);
             if (value && value != 'undefined' && value != 'null') {
                 let temp = <T>JSON.parse(value);
-                if (
-                    typeof defaultValue == 'boolean' &&
-                    typeof temp == 'string'
-                ) {
+                if (typeof defaultValue == 'boolean' && typeof temp == 'string') {
                     // 防坑措施
                     if (temp == 'true') {
                         // @ts-ignore
@@ -503,10 +484,7 @@ ${memelist.replace(/\,$/, '')}]}
         /**将格式正确的obj变成a元素 */
         obj2a(obj: AnchorObj[], targetDefault = '_self'): HTMLAnchorElement[] {
             let as: HTMLAnchorElement[] = [];
-            if (
-                ['_self', '_parent', '_blank', '_top'].indexOf(targetDefault) !=
-                -1
-            ) {
+            if (['_self', '_parent', '_blank', '_top'].indexOf(targetDefault) != -1) {
                 targetDefault = '_self';
             }
             for (let x of obj) {
@@ -516,11 +494,7 @@ ${memelist.replace(/\,$/, '')}]}
                     a.innerHTML = `<img src="${x.img}">`;
                 }
                 a.innerHTML += x.text;
-                if (
-                    typeof x.target == 'string' &&
-                    ['_self', '_parent', '_blank', '_top'].indexOf(x.target) !=
-                        -1
-                ) {
+                if (typeof x.target == 'string' && ['_self', '_parent', '_blank', '_top'].indexOf(x.target) != -1) {
                     a.target = x.target;
                 } else {
                     a.target = targetDefault;
@@ -536,10 +510,7 @@ ${memelist.replace(/\,$/, '')}]}
             return as;
         }
         /**批量添加子节点 */
-        addChildren(
-            parent: Element,
-            children: NodeListOf<Element> | Element[]
-        ) {
+        addChildren(parent: Element, children: NodeListOf<Element> | Element[]) {
             let frag = document.createDocumentFragment();
             for (let i = 0; i < children.length; i++) {
                 frag.appendChild(children[i]);
@@ -553,12 +524,7 @@ ${memelist.replace(/\,$/, '')}]}
          * @param retry 失败后重试次数
          * @param retryTime 重试时间间隔
          */
-        fetchUID(
-            uid: number | string,
-            callback: fetchUIDcallback,
-            retry = 2,
-            retryTime = 1500
-        ) {
+        fetchUID(uid: number | string, callback: fetchUIDcallback, retry = 2, retryTime = 1500) {
             // this.log(uid)
             if (typeof uid == 'string') {
                 uid = parseInt(uid);
@@ -567,10 +533,7 @@ ${memelist.replace(/\,$/, '')}]}
                 return;
             } // 为零则说明没有登录
             let obj = this;
-            fetch(
-                'https://www.mcbbs.net/api/mobile/index.php?module=profile&uid=' +
-                    uid
-            )
+            fetch('https://www.mcbbs.net/api/mobile/index.php?module=profile&uid=' + uid)
                 .then((response) => {
                     if (response.ok) {
                         return response.json();
@@ -603,13 +566,7 @@ ${memelist.replace(/\,$/, '')}]}
          * @param retry 重试次数
          * @param retryTime 重试时间间隔
          */
-        fetchTID(
-            tid: number | string,
-            callback: fetchTIDcallback,
-            page = 1,
-            retry = 2,
-            retryTime = 1500
-        ) {
+        fetchTID(tid: number | string, callback: fetchTIDcallback, page = 1, retry = 2, retryTime = 1500) {
             if (typeof tid == 'string') {
                 tid = parseInt(tid);
             }
@@ -617,12 +574,7 @@ ${memelist.replace(/\,$/, '')}]}
                 return;
             } // 为零则说明没有帖子
             let obj = this;
-            fetch(
-                'https://www.mcbbs.net/api/mobile/index.php?version=4&module=viewthread&tid=' +
-                    tid +
-                    '&page=' +
-                    page
-            )
+            fetch('https://www.mcbbs.net/api/mobile/index.php?version=4&module=viewthread&tid=' + tid + '&page=' + page)
                 .then((response) => {
                     if (response.ok) {
                         return response.json();
@@ -641,13 +593,7 @@ ${memelist.replace(/\,$/, '')}]}
                 .catch((error) => {
                     if (retry > 0) {
                         setTimeout(() => {
-                            obj.fetchTID(
-                                tid,
-                                callback,
-                                page,
-                                retry - 1,
-                                retryTime
-                            );
+                            obj.fetchTID(tid, callback, page, retry - 1, retryTime);
                         }, retryTime);
                     }
                 });
@@ -661,10 +607,7 @@ ${memelist.replace(/\,$/, '')}]}
             return parseInt(
                 (window.tid ? window.tid + '' : null) ??
                     (window.location.href.match(/thread-([\d]+)/) ??
-                        window.location.href.match(/tid\=([\d]+)/) ?? [
-                            '0',
-                            '0',
-                        ])[1]
+                        window.location.href.match(/tid\=([\d]+)/) ?? ['0', '0'])[1]
             );
         }
         /**
@@ -673,11 +616,7 @@ ${memelist.replace(/\,$/, '')}]}
          * @param callback 点击后的回调函数, 如果用户点击关闭则不会触发, 回调函数可以接受一个销毁这个消息的函数作为参数
          * @param type 类型 0-默认 1-信息(其实就是默认) 2-成功 3-警告 4-出错 默认为0
          */
-        message(
-            html: string,
-            callback?: (() => void) | ((removeDiv: () => void) => void),
-            type: number = 0
-        ) {
+        message(html: string, callback?: (() => void) | ((removeDiv: () => void) => void), type: number = 0) {
             let div = document.createElement('div');
             div.innerHTML = html;
             div.className = switchType(type);
@@ -750,11 +689,7 @@ ${memelist.replace(/\,$/, '')}]}
             if (navigator.userAgent.indexOf('Firefox') == -1)
                 // 不为火狐则输出LOGO
                 console.log(
-                    '%c ' +
-                        myprefix +
-                        ' %c ' +
-                        myversion +
-                        ' 开源地址: https://github.com/Salt-lovely/saltMCBBS ',
+                    '%c ' + myprefix + ' %c ' + myversion + ' 开源地址: https://github.com/Salt-lovely/saltMCBBS ',
                     'background: #fbf2db url(' +
                         logo +
                         ') no-repeat center;background-size:contain;padding-left:75px;line-height:75px;color:transparent',
@@ -764,11 +699,7 @@ ${memelist.replace(/\,$/, '')}]}
             // 火狐的控制台没有任何可以搞事的功能
             else
                 console.log(
-                    '%c ' +
-                        myprefix +
-                        ' %c ' +
-                        myversion +
-                        ' 开源地址: https://github.com/Salt-lovely/saltMCBBS ',
+                    '%c ' + myprefix + ' %c ' + myversion + ' 开源地址: https://github.com/Salt-lovely/saltMCBBS ',
                     'background-color:#fbf2db;color:Sienna;font-weight:bold;',
                     ''
                 );
@@ -785,10 +716,7 @@ ${memelist.replace(/\,$/, '')}]}
     class saltMCBBS extends saltMCBBSOriginClass implements saltMCBBS {
         settingPanel: HTMLElement = document.createElement('div'); // 配置框
         links: HTMLElement = document.createElement('div'); // 左侧栏底部的一大堆链接
-        moveTopBarToLeft: boolean = this.readWithDefault<boolean>(
-            'SaltMoveTopBarToLeft',
-            true
-        );
+        moveTopBarToLeft: boolean = this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true);
         dataBaseHandler: saltMCBBSDataBaseHandlerInstance = dbHandler; // 数据库读写代理
         rootFontSize: number = 12;
         // ==========================================================
@@ -826,10 +754,7 @@ ${memelist.replace(/\,$/, '')}]}
                 'threadClassify'
             );
             // 防止篡改
-            this.moveTopBarToLeft = this.readWithDefault<boolean>(
-                'SaltMoveTopBarToLeft',
-                true
-            );
+            this.moveTopBarToLeft = this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true);
             // 显示版本 // 与更新历史
             this.version(); // this.history()
             // 创建事件
@@ -890,24 +815,16 @@ ${memelist.replace(/\,$/, '')}]}
             <a href="https://github.com/Salt-lovely/saltMCBBS/releases" target="_blank" title="前往GitHub下载最新版">更新SaltMCBBS</a>
             <a href="javascript:;" class="flbc" onclick="saltMCBBS.hideSettingPanel()" title="关闭">关闭</a>
             </span></h3>`;
-            this.addSetting(
-                settingPanelTitle,
-                techprefix + 'settingPanelTitle'
-            );
+            this.addSetting(settingPanelTitle, techprefix + 'settingPanelTitle');
             // 添加到body上
             this.hideSettingPanel();
             document.body.prepend(sp);
             // 添加背景设置
             this.addTextareaSetting(
                 '昼间模式下的背景图片 <small>一行一个, 填写超链接(URL)，随机选择，开头添加“//”暂时禁用这个图片</small>',
-                this.readWithDefault<string[]>('dayBackgroundImage', []).join(
-                    '\n'
-                ),
+                this.readWithDefault<string[]>('dayBackgroundImage', []).join('\n'),
                 (el) => {
-                    obj.write(
-                        'dayBackgroundImage',
-                        obj.formatToStringArray(el.value)
-                    );
+                    obj.write('dayBackgroundImage', obj.formatToStringArray(el.value));
                     obj.updateBackground();
                 },
                 '昼间模式下的背景图片',
@@ -915,29 +832,18 @@ ${memelist.replace(/\,$/, '')}]}
             );
             this.addTextareaSetting(
                 '夜间模式下的背景图片 <small>一行一个, 填写超链接(URL)，随机选择，开头添加“//”暂时禁用这个图片</small>',
-                this.readWithDefault<string[]>('nightBackgroundImage', []).join(
-                    '\n'
-                ),
+                this.readWithDefault<string[]>('nightBackgroundImage', []).join('\n'),
                 (el) => {
-                    obj.write(
-                        'nightBackgroundImage',
-                        obj.formatToStringArray(el.value)
-                    );
+                    obj.write('nightBackgroundImage', obj.formatToStringArray(el.value));
                     obj.updateBackground();
                 },
                 '夜间模式下的背景图片',
                 211
             );
             let opacity = this.readWithDefault<number>('mcmapwpOpacity', 0.5);
-            let commonOpacity = this.readWithDefault<number>(
-                'mcmapwpCommonOpacity',
-                0.9
-            ); //主体部分的基础透明度
+            let commonOpacity = this.readWithDefault<number>('mcmapwpCommonOpacity', 0.9); //主体部分的基础透明度
             document.body.style.setProperty('--mcmapwpOpacity', opacity + '');
-            document.body.style.setProperty(
-                '--mcmapwpCommonOpacity',
-                commonOpacity + ''
-            );
+            document.body.style.setProperty('--mcmapwpCommonOpacity', commonOpacity + '');
             this.addRangeSetting(
                 '主体部分的透明度<small> 有自定义背景图片、鼠标在页面外时，主体部分的透明度，当前不透明度: ' +
                     opacity +
@@ -952,10 +858,7 @@ ${memelist.replace(/\,$/, '')}]}
                             vl +
                             '</small>'
                     );
-                    document.body.style.setProperty(
-                        '--mcmapwpOpacity',
-                        vl + ''
-                    );
+                    document.body.style.setProperty('--mcmapwpOpacity', vl + '');
                 },
                 '主体部分的透明度',
                 212
@@ -964,9 +867,7 @@ ${memelist.replace(/\,$/, '')}]}
                 // 主体部分一般情况下的透明度
                 type: 'range',
                 title: '主体部分的基础透明度',
-                subtitle:
-                    '有自定义背景图片、鼠标在页面内时，主体部分的透明度，当前不透明度: ' +
-                    commonOpacity,
+                subtitle: '有自定义背景图片、鼠标在页面内时，主体部分的透明度，当前不透明度: ' + commonOpacity,
                 range: [0, 1, 0.05],
                 value: commonOpacity,
                 callback: (vl, ev) => {
@@ -977,10 +878,7 @@ ${memelist.replace(/\,$/, '')}]}
                             vl +
                             '</small>'
                     );
-                    document.body.style.setProperty(
-                        '--mcmapwpCommonOpacity',
-                        vl + ''
-                    );
+                    document.body.style.setProperty('--mcmapwpCommonOpacity', vl + '');
                 },
                 name: '主体部分的基础透明度',
                 priority: 213,
@@ -1004,10 +902,7 @@ ${memelist.replace(/\,$/, '')}]}
                     );
                 }
                 // 帖子页面左侧层主信息跟随页面滚动
-                let isUserInfoSticky = obj.readWithDefault(
-                    'userInfoSticky',
-                    true
-                );
+                let isUserInfoSticky = obj.readWithDefault('userInfoSticky', true);
                 window.saltMCBBSCSS.setStyle(
                     `
 .plhin td.pls{
@@ -1041,14 +936,8 @@ div.tip[id^="g_up"] {
                     else window.saltMCBBSCSS.delStyle('userInfoSticky');
                 }
                 // 显示MCBBS的LOGO 与 右上角广告栏
-                let showLOGO = obj.readWithDefault<boolean>(
-                        'showMCBBSLogo',
-                        true
-                    ),
-                    showRightTopAd = obj.readWithDefault<boolean>(
-                        'showRightTopAd',
-                        true
-                    );
+                let showLOGO = obj.readWithDefault<boolean>('showMCBBSLogo', true),
+                    showRightTopAd = obj.readWithDefault<boolean>('showRightTopAd', true);
                 let showTopObjectsCSSKey = 'showTopObjectsCSSKey';
                 showTopObjects(showLOGO, showRightTopAd);
                 obj.addSetting({
@@ -1087,10 +976,7 @@ div.tip[id^="g_up"] {
                     window.saltMCBBSCSS.putStyle(css, showTopObjectsCSSKey);
                 }
                 // 回到顶部按钮动画
-                let enableScrollTopAnime = obj.readWithDefault(
-                    'scrollTopAnime',
-                    true
-                );
+                let enableScrollTopAnime = obj.readWithDefault('scrollTopAnime', true);
                 window.saltMCBBSCSS.setStyle(
                     `
 /**/
@@ -1175,8 +1061,7 @@ div.tip[id^="g_up"] {
             /**异步实现的功能 */
             function afunc() {
                 // rem实际大小
-                let s =
-                    getComputedStyle(document.documentElement).fontSize ?? '12';
+                let s = getComputedStyle(document.documentElement).fontSize ?? '12';
                 let fs = parseInt(s);
                 if (!isNaN(fs)) obj.rootFontSize = fs;
             }
@@ -1205,9 +1090,7 @@ div.tip[id^="g_up"] {
             );
             if (!enableSaltMoveTopBarToLeft) {
                 window.saltMCBBSCSS.delStyle('pagehead');
-                document
-                    .querySelector('#user_info_menu')
-                    ?.appendChild(this.links);
+                document.querySelector('#user_info_menu')?.appendChild(this.links);
                 this.addSideBarLink('切换夜间模式', () => {
                     obj.toggleNightStyle();
                 });
@@ -1316,11 +1199,7 @@ div.tip[id^="g_up"] {
                 leftdiv.appendChild(searchtype);
                 if (searchbox instanceof HTMLElement) {
                     // 控制高度, 适应各个比例的浏览器窗口
-                    searchtype.style.setProperty(
-                        '--top',
-                        Math.floor(Math.max(searchbox.offsetTop, 200) + 25) +
-                            'px'
-                    );
+                    searchtype.style.setProperty('--top', Math.floor(Math.max(searchbox.offsetTop, 200) + 25) + 'px');
                 }
             }
             // 继续添加节点
@@ -1343,10 +1222,8 @@ div.tip[id^="g_up"] {
                 obj.fetchUID(uid, (data: BBSAPIResponceData) => {
                     // console.log(data)
                     let variable: BBSAPIResponceDataVariables = data.Variables;
-                    let space: BBSAPIResponceDataVariablesSpace =
-                        variable.space;
-                    let creaitex: BBSAPIResponceDataVariablesExtcredits =
-                        variable.extcredits;
+                    let space: BBSAPIResponceDataVariablesSpace = variable.space;
+                    let creaitex: BBSAPIResponceDataVariablesExtcredits = variable.extcredits;
                     obj.messageOp(variable.notice); //处理新消息相关
                     let credits = space.credits; //总积分
                     let post = space.posts; //回帖
@@ -1369,20 +1246,9 @@ div.tip[id^="g_up"] {
                     let lowc = parseInt(group.creditslower),
                         highc = parseInt(group.creditshigher);
                     let grouptitle = space.group.grouptitle ?? ''; //用户组
-                    let progress =
-                        Math.round(
-                            ((parseInt(credits) - highc) / (lowc - highc)) *
-                                10000
-                        ) / 100;
+                    let progress = Math.round(((parseInt(credits) - highc) / (lowc - highc)) * 10000) / 100;
                     let progresstitle =
-                        highc +
-                        ' -> ' +
-                        lowc +
-                        ' | 还需: ' +
-                        (lowc - parseInt(credits)) +
-                        ' | 进度: ' +
-                        progress +
-                        '%';
+                        highc + ' -> ' + lowc + ' | 还需: ' + (lowc - parseInt(credits)) + ' | 进度: ' + progress + '%';
                     el.innerHTML = `
 <div class="username">
 <a href="https://www.mcbbs.net/?${uid}">${uname}</a>
@@ -1400,44 +1266,20 @@ div.tip[id^="g_up"] {
 <div class="credit">
 <span><a href="https://www.mcbbs.net/home.php?mod=spacecp&ac=credit" target="_self">总积分: ${credits}</a></span>
 <span><a href="https://www.mcbbs.net/home.php?mod=spacecp&ac=usergroup" target="_self">${grouptitle}</a></span>
-<span>${creaitex[1].img}${creaitex[1].title}: ${
-                        extcredits[1] + creaitex[1].unit
-                    }</span>
-<span>${creaitex[2].img}${creaitex[2].title}: ${
-                        extcredits[2] + creaitex[2].unit
-                    }</span>
-<span>${creaitex[3].img}${creaitex[3].title}: ${
-                        extcredits[3] + creaitex[3].unit
-                    }</span>
-<span>${creaitex[4].img}${creaitex[4].title}: ${
-                        extcredits[4] + creaitex[4].unit
-                    }</span>
-<span>${creaitex[5].img}${creaitex[5].title}: ${
-                        extcredits[5] + creaitex[5].unit
-                    }</span>
-<span>${creaitex[6].img}${creaitex[6].title}: ${
-                        extcredits[6] + creaitex[6].unit
-                    }</span>
-<span>${creaitex[7].img}${creaitex[7].title}: ${
-                        extcredits[7] + creaitex[7].unit
-                    }</span>
-<span>${creaitex[8].img}${creaitex[8].title}: ${
-                        extcredits[8] + creaitex[8].unit
-                    }</span>
+<span>${creaitex[1].img}${creaitex[1].title}: ${extcredits[1] + creaitex[1].unit}</span>
+<span>${creaitex[2].img}${creaitex[2].title}: ${extcredits[2] + creaitex[2].unit}</span>
+<span>${creaitex[3].img}${creaitex[3].title}: ${extcredits[3] + creaitex[3].unit}</span>
+<span>${creaitex[4].img}${creaitex[4].title}: ${extcredits[4] + creaitex[4].unit}</span>
+<span>${creaitex[5].img}${creaitex[5].title}: ${extcredits[5] + creaitex[5].unit}</span>
+<span>${creaitex[6].img}${creaitex[6].title}: ${extcredits[6] + creaitex[6].unit}</span>
+<span>${creaitex[7].img}${creaitex[7].title}: ${extcredits[7] + creaitex[7].unit}</span>
+<span>${creaitex[8].img}${creaitex[8].title}: ${extcredits[8] + creaitex[8].unit}</span>
 </div>
 `;
                     function uidFormat(uid: string | number) {
                         let u = uid + '';
                         while (u.length < 9) u = '0' + u;
-                        return (
-                            u.slice(0, 3) +
-                            '/' +
-                            u.slice(3, 5) +
-                            '/' +
-                            u.slice(5, 7) +
-                            '/' +
-                            u.slice(7, 9)
-                        );
+                        return u.slice(0, 3) + '/' + u.slice(3, 5) + '/' + u.slice(5, 7) + '/' + u.slice(7, 9);
                     }
                 });
             }
@@ -1450,9 +1292,7 @@ div.tip[id^="g_up"] {
                 'https://www.mcbbs.net/home.php?mod=space&do=notice&view=system',
                 'https://www.mcbbs.net/home.php?mod=space&do=notice&view=mypost',
             ];
-            let xx = document.querySelector(
-                '#saltNewPageHead .addons a.saltmessage'
-            );
+            let xx = document.querySelector('#saltNewPageHead .addons a.saltmessage');
             if (!xx) {
                 return;
             }
@@ -1477,9 +1317,7 @@ div.tip[id^="g_up"] {
                     `新回复: ${msg[0]} | 新私信: ${msg[1]} | 新通知: ${msg[2]} | 新推送: ${msg[3]}`
                 );
             }
-            let img = document.querySelector(
-                '#saltNewPageHead .addons a.saltmessage img'
-            );
+            let img = document.querySelector('#saltNewPageHead .addons a.saltmessage img');
             if (img) {
                 img.setAttribute('src', noticimgurl[sum]);
             }
@@ -1488,10 +1326,7 @@ div.tip[id^="g_up"] {
         warnOP() {
             this.assert(autoRunLock, '不在页面初始运行状态');
             // 是否半透明被警告的帖子
-            let warnPostOpacity = this.readWithDefault(
-                'warnedPostOpacity',
-                true
-            );
+            let warnPostOpacity = this.readWithDefault('warnedPostOpacity', true);
             warnedPostOpacity();
             this.addSetting({
                 type: 'check',
@@ -1517,9 +1352,7 @@ div.tip[id^="g_up"] {
                     }
                 } else {
                     // 有的帖子只是被扣分了
-                    for (let td of Array.from(
-                        el.querySelectorAll('.rate td.xg1,.rate td.xw1')
-                    )) {
+                    for (let td of Array.from(el.querySelectorAll('.rate td.xg1,.rate td.xw1'))) {
                         if (
                             td.textContent?.indexOf('人气 -') == 0 || // 总计人气为负数或一次被扣了5点积分
                             td.textContent == '-10' ||
@@ -1540,9 +1373,7 @@ div.tip[id^="g_up"] {
                 let uid: string = '0';
                 let uname = el.querySelector('.authi .xw1');
                 if (uname) {
-                    uid = (/uid=(\d+)/.exec(
-                        uname.getAttribute('href') ?? ''
-                    ) ?? ['', '0'])[1];
+                    uid = (/uid=(\d+)/.exec(uname.getAttribute('href') ?? '') ?? ['', '0'])[1];
                 }
                 if (uid != '0') {
                     // 添加按钮
@@ -1571,9 +1402,7 @@ div.tip[id^="g_up"] {
                 let uname = el.querySelector('.h .avt a');
                 if (uname) {
                     console.log(uname);
-                    uid = (/uid=(\d+)/.exec(
-                        uname.getAttribute('href') ?? ''
-                    ) ?? ['', '0'])[1];
+                    uid = (/uid=(\d+)/.exec(uname.getAttribute('href') ?? '') ?? ['', '0'])[1];
                 }
                 // 添加按钮
                 let a = el.querySelector('.mn ul');
@@ -1593,20 +1422,13 @@ div.tip[id^="g_up"] {
                 // 标记元素
                 el.setAttribute('warnOP', '');
             });
-            function addWarnBtn(
-                uid: number | string,
-                text: string = '查看警告记录'
-            ) {
+            function addWarnBtn(uid: number | string, text: string = '查看警告记录') {
                 let a = document.createElement('a');
-                a.href =
-                    'forum.php?mod=misc&action=viewwarning&tid=19&uid=' + uid;
+                a.href = 'forum.php?mod=misc&action=viewwarning&tid=19&uid=' + uid;
                 a.title = text;
                 a.textContent = text;
                 a.className = 'xi2';
-                a.setAttribute(
-                    'onclick',
-                    "showWindow('viewwarning', this.href)"
-                );
+                a.setAttribute('onclick', "showWindow('viewwarning', this.href)");
                 return a;
             }
             function warnedPostOpacity() {
@@ -1630,15 +1452,11 @@ div.tip[id^="g_up"] {
             /**监听评分与举报理由列表 */
             this.saltObserver('append_parent', () => {
                 // 添加评分理由
-                let rateUl = document.querySelector(
-                    '.reasonselect:not([done])'
-                );
+                let rateUl = document.querySelector('.reasonselect:not([done])');
                 // console.log(rateUl);
                 if (rateUl) {
                     /**评分理由列表 */
-                    let rateReasonList = this.cleanStringArray(
-                        this.readWithDefault<string[]>('rateReasonList', [])
-                    );
+                    let rateReasonList = this.cleanStringArray(this.readWithDefault<string[]>('rateReasonList', []));
                     rateUl.setAttribute('done', '');
                     for (let rea of rateReasonList) {
                         let li = document.createElement('li');
@@ -1650,8 +1468,7 @@ div.tip[id^="g_up"] {
                             li.className = '';
                         };
                         li.onclick = function () {
-                            let r: HTMLElement | null =
-                                document.getElementById('reason');
+                            let r: HTMLElement | null = document.getElementById('reason');
                             if (r instanceof HTMLInputElement) {
                                 r.value = li.textContent ?? '';
                             }
@@ -1660,9 +1477,7 @@ div.tip[id^="g_up"] {
                     }
                 }
                 // 添加举报理由
-                let reportUl = document.querySelector(
-                    '#report_reasons:not([done])'
-                );
+                let reportUl = document.querySelector('#report_reasons:not([done])');
                 // console.log(reportUl);
                 if (reportUl) {
                     /**举报理由列表 */
@@ -1701,36 +1516,24 @@ div.tip[id^="g_up"] {
             });
             // 评分理由设置项
             /**评分理由列表 */
-            let rateReasonList = this.readWithDefault<string[]>(
-                'rateReasonList',
-                []
-            );
+            let rateReasonList = this.readWithDefault<string[]>('rateReasonList', []);
             this.addTextareaSetting(
                 '自定义评分理由<small> 评分时可供选择的理由，一行一个，开头添加“//”暂时禁用</small>',
                 rateReasonList.join('\n'),
                 (el: HTMLTextAreaElement, e: Event) => {
-                    this.write(
-                        'rateReasonList',
-                        this.formatToStringArray(el.value)
-                    );
+                    this.write('rateReasonList', this.formatToStringArray(el.value));
                 },
                 '自定义评分理由',
                 101
             );
             // 举报理由设置项
             /**举报理由列表 */
-            let reportReasonList = this.readWithDefault<string[]>(
-                'reportReasonList',
-                []
-            );
+            let reportReasonList = this.readWithDefault<string[]>('reportReasonList', []);
             this.addTextareaSetting(
                 '自定义举报理由<small> 举报时可供选择的理由，一行一个，开头添加“//”暂时禁用</small>',
                 reportReasonList.join('\n'),
                 (el: HTMLTextAreaElement, e: Event) => {
-                    this.write(
-                        'reportReasonList',
-                        this.formatToStringArray(el.value)
-                    );
+                    this.write('reportReasonList', this.formatToStringArray(el.value));
                 },
                 '自定义举报理由',
                 102
@@ -1818,20 +1621,13 @@ div.tip[id^="g_up"] {
             }
             // 监听页面出现新的勋章栏
             this.saltObserver('postlist', () => {
-                if (
-                    document.querySelector(
-                        'p.md_ctrl:not([saltMedalFunction-checked])'
-                    )
-                ) {
+                if (document.querySelector('p.md_ctrl:not([saltMedalFunction-checked])')) {
                     sub();
                 }
             });
             function sub() {
                 let line = obj.readWithDefault<number>('medalLine', 2.5);
-                let style =
-                    'p.md_ctrl,p.md_ctrl:hover{--maxHeight:calc(64px * ' +
-                    line +
-                    ');}';
+                let style = 'p.md_ctrl,p.md_ctrl:hover{--maxHeight:calc(64px * ' + line + ');}';
                 window.saltMCBBSCSS.putStyle(style, 'medalLine');
                 addBtn();
                 heightCheck();
@@ -1855,45 +1651,36 @@ div.tip[id^="g_up"] {
                 }
                 function addBtn() {
                     // 添加展开/关闭按钮
-                    obj.saltQuery(
-                        'p.md_ctrl:not([saltMedalFunction-checked])',
-                        (i, el) => {
-                            if (!(el instanceof HTMLElement)) {
-                                return;
-                            }
-                            el.setAttribute('saltMedalFunction-checked', '');
-                            let img = el.querySelectorAll('a img');
-                            if (img.length < 1) {
-                                return;
-                            }
-                            // 通过a确定实际高度
-                            let a = el.querySelector('a');
-                            if (!a) {
-                                return;
-                            }
-                            // 点击后展开
-                            el.style.setProperty(
-                                '--expandHeight',
-                                a.offsetHeight + 96 + 'px'
-                            );
-                            let div = document.createElement('div');
-                            div.addClass('saltExpandHandler');
-                            div.addEventListener('click', () => {
-                                el.toggleClass('salt-expand');
-                            });
-                            el.appendChild(div);
+                    obj.saltQuery('p.md_ctrl:not([saltMedalFunction-checked])', (i, el) => {
+                        if (!(el instanceof HTMLElement)) {
+                            return;
                         }
-                    );
+                        el.setAttribute('saltMedalFunction-checked', '');
+                        let img = el.querySelectorAll('a img');
+                        if (img.length < 1) {
+                            return;
+                        }
+                        // 通过a确定实际高度
+                        let a = el.querySelector('a');
+                        if (!a) {
+                            return;
+                        }
+                        // 点击后展开
+                        el.style.setProperty('--expandHeight', a.offsetHeight + 96 + 'px');
+                        let div = document.createElement('div');
+                        div.addClass('saltExpandHandler');
+                        div.addEventListener('click', () => {
+                            el.toggleClass('salt-expand');
+                        });
+                        el.appendChild(div);
+                    });
                 }
             }
         }
         /**反嗅探 */
         antiSniff() {
             let enable = this.readWithDefault<boolean>('saltAntiSniff', true),
-                tellme = this.readWithDefault<boolean>(
-                    'saltAntiSniffRecat',
-                    true
-                );
+                tellme = this.readWithDefault<boolean>('saltAntiSniffRecat', true);
             let obj = this;
             /**使用Set来确保页面中的个人空间探针重复时不会全部复读一遍 */
             let pages = new Set<string>();
@@ -1919,90 +1706,62 @@ div.tip[id^="g_up"] {
             );
             if (enable) sub();
             async function sub() {
-                obj.saltQuery(
-                    'img:not([saltAntiSniff-check-done])',
-                    (i, el) => {
-                        if (el instanceof HTMLImageElement) {
-                            el.setAttribute('saltAntiSniff-check-done', ''); // 标记为已处理
-                            if (el.hasAttribute('src')) {
-                                if (
-                                    el.src.indexOf('home.php?') != -1 &&
-                                    !/(\&additional\=removevlog|mod\=task\&do\=apply)(\&|$)/.test(
-                                        el.src
-                                    )
-                                ) {
-                                    if (tellme)
-                                        obj.message(
-                                            '侦测到<img>探针: <br>' +
-                                                el.src +
-                                                '<br>类型: Discuz!访客探针',
-                                            (f) => {
-                                                f();
-                                            }
-                                        );
-                                    console.log(el);
-                                    if (!pages.has(el.src)) {
-                                        pages.add(el.src);
-                                        setTimeout(() => {
-                                            el.src += '&additional=removevlog';
-                                        }, 50);
-                                    }
-                                    // else {
-                                    //     obj.message('重复' + el.src)
-                                    // }
-                                    // obj.log('已处理<img>探针')
+                obj.saltQuery('img:not([saltAntiSniff-check-done])', (i, el) => {
+                    if (el instanceof HTMLImageElement) {
+                        el.setAttribute('saltAntiSniff-check-done', ''); // 标记为已处理
+                        if (el.hasAttribute('src')) {
+                            if (
+                                el.src.indexOf('home.php?') != -1 &&
+                                !/(\&additional\=removevlog|mod\=task\&do\=apply)(\&|$)/.test(el.src)
+                            ) {
+                                if (tellme)
+                                    obj.message('侦测到<img>探针: <br>' + el.src + '<br>类型: Discuz!访客探针', (f) => {
+                                        f();
+                                    });
+                                console.log(el);
+                                if (!pages.has(el.src)) {
+                                    pages.add(el.src);
+                                    setTimeout(() => {
+                                        el.src += '&additional=removevlog';
+                                    }, 50);
                                 }
+                                // else {
+                                //     obj.message('重复' + el.src)
+                                // }
+                                // obj.log('已处理<img>探针')
                             }
-                            if (el.hasAttribute('file')) {
-                                if (
-                                    (el.getAttribute('file') ?? '').indexOf(
-                                        'home.php?'
-                                    ) != -1 &&
-                                    !/\&additional\=removevlog(\&|$)/.test(
-                                        el.getAttribute('file') ?? ''
-                                    )
-                                ) {
-                                    if (tellme)
-                                        obj.message(
-                                            '侦测到<img>探针: <br>' +
-                                                (el.getAttribute('file') ??
-                                                    '') +
-                                                '<br>类型: Discuz!访客探针',
-                                            (f) => {
-                                                f();
-                                            }
-                                        );
-                                    console.log(el);
-                                    el.setAttribute(
-                                        'file',
-                                        (el.getAttribute('file') ?? '') +
-                                            '&additional=removevlog'
+                        }
+                        if (el.hasAttribute('file')) {
+                            if (
+                                (el.getAttribute('file') ?? '').indexOf('home.php?') != -1 &&
+                                !/\&additional\=removevlog(\&|$)/.test(el.getAttribute('file') ?? '')
+                            ) {
+                                if (tellme)
+                                    obj.message(
+                                        '侦测到<img>探针: <br>' +
+                                            (el.getAttribute('file') ?? '') +
+                                            '<br>类型: Discuz!访客探针',
+                                        (f) => {
+                                            f();
+                                        }
                                     );
-                                    // obj.log('已处理<img>探针')
-                                }
+                                console.log(el);
+                                el.setAttribute('file', (el.getAttribute('file') ?? '') + '&additional=removevlog');
+                                // obj.log('已处理<img>探针')
                             }
                         }
                     }
-                );
+                });
                 // 鼠标滑过显示个人信息框的那种锚点
-                obj.saltQuery(
-                    'a.notabs:not([saltAntiSniff-check-done])',
-                    (i, el) => {
-                        if (
-                            el instanceof HTMLAnchorElement &&
-                            el.hasAttribute('href')
-                        ) {
-                            el.setAttribute('saltAntiSniff-check-done', ''); // 标记为已处理
-                            el.addEventListener('mouseout', () => {
-                                obj.log('已处理访客探针: ' + el.href);
-                                fetch(
-                                    el.href +
-                                        '&view=admin&additional=removevlog'
-                                );
-                            });
-                        }
+                obj.saltQuery('a.notabs:not([saltAntiSniff-check-done])', (i, el) => {
+                    if (el instanceof HTMLAnchorElement && el.hasAttribute('href')) {
+                        el.setAttribute('saltAntiSniff-check-done', ''); // 标记为已处理
+                        el.addEventListener('mouseout', () => {
+                            obj.log('已处理访客探针: ' + el.href);
+                            fetch(el.href + '&view=admin&additional=removevlog');
+                        });
                     }
-                );
+                });
             }
         }
         /**记忆用户举报过的帖子 */
@@ -2032,15 +1791,6 @@ div.tip[id^="g_up"] {
                 // 检测帖子
                 check();
                 // 添加配置项
-                // obj.addInputSetting('帖子举报历史记录长度<br><small>建议在4w以内, 设为 0 关闭此功能</small>',
-                //     '' + obj.readWithDefault<number>(numSaveKey, 1024),
-                //     (el, ev) => {
-                //         let len = parseInt(el.value)
-                //         if (isNaN(len)) { return }
-                //         if (len < 0) { len = 0 }
-                //         if (len > 1048576) { len = 1048576 }
-                //         obj.write(numSaveKey, len)
-                //     }, '举报记录功能', 61)
                 obj.addSetting({
                     type: 'input',
                     title: '帖子举报历史记录长度',
@@ -2065,17 +1815,13 @@ div.tip[id^="g_up"] {
                 // 监听用户点击举报
                 let obs = obj.saltObserver('append_parent', () => {
                     // 获取举报按钮
-                    let reportBtn = document.querySelector(
-                        '#report_submit[fwin]:not([done])'
-                    );
+                    let reportBtn = document.querySelector('#report_submit[fwin]:not([done])');
                     // console.log(reportUl);
                     if (reportBtn) {
                         /**举报理由列表 */
                         reportBtn.setAttribute('done', '');
                         /**提取PID, 没提取到则为0 */
-                        let pid = ((
-                            reportBtn.getAttribute('fwin') ?? '0'
-                        ).match(/\d+/) ?? ['0'])[0];
+                        let pid = ((reportBtn.getAttribute('fwin') ?? '0').match(/\d+/) ?? ['0'])[0];
                         if (pid != '0') {
                             reportBtn.addEventListener('click', () => {
                                 obj.log('检测到举报: pid-' + pid);
@@ -2103,10 +1849,7 @@ div.tip[id^="g_up"] {
                     }
                 }
                 // 获取PID列表
-                let pidList = await obj.dataBaseHandler.read<number[]>(
-                    saveKey,
-                    []
-                );
+                let pidList = await obj.dataBaseHandler.read<number[]>(saveKey, []);
                 pidList.push(pid);
                 // 记录
                 await obj.dataBaseHandler.write(saveKey, pidList);
@@ -2149,33 +1892,21 @@ div.tip[id^="g_up"] {
                 );
                 // console.log(pidList)
                 // 检查是不是有帖子被错误打上了标记
-                for (let div of Array.from(
-                    document.querySelectorAll('#postlist > div.reported')
-                )) {
+                for (let div of Array.from(document.querySelectorAll('#postlist > div.reported'))) {
                     if (!(div instanceof HTMLElement)) {
                         continue;
                     }
-                    let pid = parseInt(
-                        ((div.getAttribute('id') ?? '0').match(/\d+/) ?? [
-                            '0',
-                        ])[0]
-                    );
+                    let pid = parseInt(((div.getAttribute('id') ?? '0').match(/\d+/) ?? ['0'])[0]);
                     if (pidList.indexOf(pid) == -1) {
                         div.removeClass('reported');
                     }
                 }
                 // 检查是不是有帖子没有打上标记
-                for (let div of Array.from(
-                    document.querySelectorAll('#postlist > div:not(.reported)')
-                )) {
+                for (let div of Array.from(document.querySelectorAll('#postlist > div:not(.reported)'))) {
                     if (!(div instanceof HTMLElement)) {
                         continue;
                     }
-                    let pid = parseInt(
-                        ((div.getAttribute('id') ?? '0').match(/\d+/) ?? [
-                            '0',
-                        ])[0]
-                    );
+                    let pid = parseInt(((div.getAttribute('id') ?? '0').match(/\d+/) ?? ['0'])[0]);
                     if (pidList.indexOf(pid) != -1) {
                         div.addClass('reported');
                     }
@@ -2195,10 +1926,7 @@ div.tip[id^="g_up"] {
             async function update() {
                 let oldData = obj.read<number[]>(saveKey);
                 if (!oldData || oldData.length == 0) return;
-                let newData = obj.unique([
-                    ...oldData,
-                    ...(await obj.dataBaseHandler.read<number[]>(saveKey, [])),
-                ]);
+                let newData = obj.unique([...oldData, ...(await obj.dataBaseHandler.read<number[]>(saveKey, []))]);
                 // obj.log(oldData)
                 // obj.log(newData)
                 // localStorage.removeItem(techprefix + saveKey)
@@ -2208,10 +1936,7 @@ div.tip[id^="g_up"] {
         /**替代Discuz的图片懒加载 */
         lazyLoadImgOP() {
             this.assert(autoRunLock, '不在页面初始运行状态');
-            let enable = this.readWithDefault<boolean>(
-                    'lazyLoadImgEnable',
-                    true
-                ),
+            let enable = this.readWithDefault<boolean>('lazyLoadImgEnable', true),
                 obj = this;
             this.addCheckSetting(
                 '另一种图片懒加载<br><small>一种更友好的图片懒加载方式</small>',
@@ -2242,11 +1967,7 @@ div.tip[id^="g_up"] {
                 window.lazyload.imgs = []; // 劫持
             } else {
                 imgs = HTMLImgFliter([
-                    ...Array.from(
-                        document.querySelectorAll(
-                            '.t_fsz .t_f img:not([src]):not([lazyloaded])'
-                        )
-                    ),
+                    ...Array.from(document.querySelectorAll('.t_fsz .t_f img:not([src]):not([lazyloaded])')),
                     ...Array.from(
                         document.querySelectorAll(
                             '.t_fsz .t_f img[src*="static/image/common/none.gif"]:not([lazyloaded])'
@@ -2270,35 +1991,23 @@ div.tip[id^="g_up"] {
                 obj.log('加载图片: ' + (img.getAttribute('file') ?? ''));
                 // 控制图片大小
                 setTimeout(() => {
-                    if (
-                        !img.hasAttribute('loaded') &&
-                        img.hasAttribute('lazyloadthumb')
-                    ) {
+                    if (!img.hasAttribute('loaded') && img.hasAttribute('lazyloadthumb')) {
                         window.thumbImg(img);
                     }
                 }, 500);
                 // 不放心, 所以1.5s、5s、10s后再处理一次
                 setTimeout(() => {
-                    if (
-                        !img.hasAttribute('loaded') &&
-                        img.hasAttribute('lazyloadthumb')
-                    ) {
+                    if (!img.hasAttribute('loaded') && img.hasAttribute('lazyloadthumb')) {
                         window.thumbImg(img);
                     }
                 }, 1500);
                 setTimeout(() => {
-                    if (
-                        !img.hasAttribute('loaded') &&
-                        img.hasAttribute('lazyloadthumb')
-                    ) {
+                    if (!img.hasAttribute('loaded') && img.hasAttribute('lazyloadthumb')) {
                         window.thumbImg(img);
                     }
                 }, 5000);
                 setTimeout(() => {
-                    if (
-                        !img.hasAttribute('loaded') &&
-                        img.hasAttribute('lazyloadthumb')
-                    ) {
+                    if (!img.hasAttribute('loaded') && img.hasAttribute('lazyloadthumb')) {
                         window.thumbImg(img);
                     }
                 }, 10000);
@@ -2316,24 +2025,17 @@ div.tip[id^="g_up"] {
                 });
                 // 失败提示
                 img.addEventListener('error', () => {
-                    if (img.hasAttribute('waitRetry'))
-                        img.alt = '加载失败, 点击重试或等待自动重载......';
+                    if (img.hasAttribute('waitRetry')) img.alt = '加载失败, 点击重试或等待自动重载......';
                     img.setAttribute('waitRetry', ''); // 标记为等待重新加载
                 });
                 // 点击重试
                 img.addEventListener('click', () => {
-                    if (
-                        !img.hasAttribute('loaded') &&
-                        img.hasAttribute('waitRetry')
-                    ) {
+                    if (!img.hasAttribute('loaded') && img.hasAttribute('waitRetry')) {
                         img.alt = '图片重新加载中......';
                         img.removeAttribute('waitRetry'); // 去除等待重新加载的标记
                         img.numAttribute('retry').add(1);
                         // 重新加载
-                        img.src =
-                            img.getAttribute('file') ??
-                            img.getAttribute('src') ??
-                            '';
+                        img.src = img.getAttribute('file') ?? img.getAttribute('src') ?? '';
                     }
                 });
                 // 监听
@@ -2343,35 +2045,22 @@ div.tip[id^="g_up"] {
             /**过滤一个元素数组, 返回一个图片元素数组 */
             function HTMLImgFliter(elems: Element[]): HTMLImageElement[] {
                 let imgs: HTMLImageElement[] = [];
-                for (let el of elems)
-                    if (el instanceof HTMLImageElement) imgs.push(el);
+                for (let el of elems) if (el instanceof HTMLImageElement) imgs.push(el);
                 return imgs;
             }
         }
         /**给图片添加代理、反防盗链 */
         imgProxyOP() {
-            let enableProxy = this.readWithDefault<boolean>(
-                    'LoadImgProxyEnable',
-                    true
-                ),
-                enableAntiASL = this.readWithDefault<boolean>(
-                    'antiAntiStealingLinkEnable',
-                    true
-                ),
+            let enableProxy = this.readWithDefault<boolean>('LoadImgProxyEnable', true),
+                enableAntiASL = this.readWithDefault<boolean>('antiAntiStealingLinkEnable', true),
                 obj = this;
             /**选择器 */
             let cssSelector =
                 window.location.href.indexOf('action=printable') == -1
                     ? '.t_fsz .t_f img, .img img'
                     : 'body > img, body > * > img';
-            cssSelector +=
-                window.location.href.indexOf('/forum.php') != -1
-                    ? ', .common p > img'
-                    : ''; // 带预览图的格式浏览版块
-            cssSelector +=
-                window.location.href.indexOf('thread') != -1
-                    ? ', .plhin .sign img'
-                    : ''; // 浏览帖子时检查一下签名框
+            cssSelector += window.location.href.indexOf('/forum.php') != -1 ? ', .common p > img' : ''; // 带预览图的格式浏览版块
+            cssSelector += window.location.href.indexOf('thread') != -1 ? ', .plhin .sign img' : ''; // 浏览帖子时检查一下签名框
             this.addCheckSetting(
                 '启用代理加载图片<br><small>访问imgur等现在访问困难的图床</small>',
                 enableProxy,
@@ -2436,18 +2125,13 @@ div.tip[id^="g_up"] {
                 /**需要代理的网站列表 */
                 let needProxyWebSite = ['imgur.com/', 'upload.cc/'];
                 src = img.getAttribute(attr) ?? '';
-                if (
-                    src.indexOf('static/image/common/none.gif') != -1 ||
-                    src.length < 4
-                ) {
+                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
                     attr = 'file';
                     src = img.getAttribute(attr) ?? '';
                 }
                 for (let s of needProxyWebSite) {
                     if (src.indexOf(s) != -1) {
-                        obj.log(
-                            '检查到需要代理的图床: ' + s + '\n - 链接: ' + src
-                        );
+                        obj.log('检查到需要代理的图床: ' + s + '\n - 链接: ' + src);
                         src = proxy + src;
                         img.setAttribute(attr, src);
                         img.setAttribute('proxyed', '');
@@ -2471,15 +2155,9 @@ div.tip[id^="g_up"] {
                     'hdslb.com' /*'bvimg.com',*/,
                 ];
                 /**需要特殊反反盗链的图床网址 */
-                let advancedAntiStealingLinkWebSite = [
-                    'hiphotos.bdimg.com',
-                    'minecraftxz.com',
-                ];
+                let advancedAntiStealingLinkWebSite = ['hiphotos.bdimg.com', 'minecraftxz.com'];
                 src = img.getAttribute(attr) ?? '';
-                if (
-                    src.indexOf('static/image/common/none.gif') != -1 ||
-                    src.length < 4
-                ) {
+                if (src.indexOf('static/image/common/none.gif') != -1 || src.length < 4) {
                     attr = 'file';
                     src = img.getAttribute(attr) ?? '';
                 }
@@ -2499,26 +2177,12 @@ div.tip[id^="g_up"] {
                 function noRefSet(img: HTMLImageElement, tuChuang: string) {
                     img.setAttribute('referrerpolicy', 'no-referrer');
                     // img.setAttribute('referrerPolicy', 'no-referrer')
-                    obj.log(
-                        '检查到需要反反盗链的图床: ' +
-                            tuChuang +
-                            '\n - 链接: ' +
-                            src
-                    );
+                    obj.log('检查到需要反反盗链的图床: ' + tuChuang + '\n - 链接: ' + src);
                 }
                 /**使用iframe加载来绕过反盗链 */
-                function iframeSet(
-                    img: HTMLImageElement,
-                    tuChuang: string,
-                    src: string
-                ) {
+                function iframeSet(img: HTMLImageElement, tuChuang: string, src: string) {
                     img.setAttribute('referrerpolicy', 'no-referrer');
-                    obj.log(
-                        '检查到需要代理以反反盗链的图床: ' +
-                            tuChuang +
-                            '\n - 链接: ' +
-                            src
-                    );
+                    obj.log('检查到需要代理以反反盗链的图床: ' + tuChuang + '\n - 链接: ' + src);
                     src = 'https://images.weserv.nl/?url=' + src; // 转发代理
                     img.src = src;
                     //                     // let id = 'iframeimg' + Math.floor(Math.random() * 1e16)
@@ -2548,10 +2212,7 @@ div.tip[id^="g_up"] {
         }
         /**帖子分类 */
         threadClassifyOP() {
-            let enable = this.readWithDefault<boolean>(
-                    'threadClassifyEnable',
-                    true
-                ),
+            let enable = this.readWithDefault<boolean>('threadClassifyEnable', true),
                 obj = this;
             this.addCheckSetting(
                 '帖子分类高亮<br><small>按照帖子的类型进行高亮</small>',
@@ -2576,8 +2237,7 @@ div.tip[id^="g_up"] {
                 window.saltMCBBSCSS.putStyle('', 'threadClassify');
             }
             // 监听帖子列表
-            let threadlisttableid =
-                document.querySelector('#threadlisttableid');
+            let threadlisttableid = document.querySelector('#threadlisttableid');
             if (threadlisttableid) {
                 this.saltObserver(threadlisttableid, () => {
                     if (enable) {
@@ -2602,157 +2262,127 @@ div.tip[id^="g_up"] {
             */
             /**启用 */
             async function fullCheck() {
-                obj.saltQuery(
-                    '#threadlisttableid > tbody:not([classified])',
-                    (i, el) => {
-                        if (!(el instanceof HTMLElement)) {
-                            return;
+                obj.saltQuery('#threadlisttableid > tbody:not([classified])', (i, el) => {
+                    if (!(el instanceof HTMLElement)) {
+                        return;
+                    }
+                    el.setAttribute('classified', ''); // 添加标记
+                    el.setAttribute('type', el.querySelector('th > em a')?.textContent ?? ''); // 主题分类
+                    el.setAttribute(
+                        'author',
+                        (el.querySelector('.by cite')?.textContent ?? '').replace(/^\s|\s$/g, '')
+                    ); // 作者昵称
+                    /**帖子图标的title */
+                    let title = el.querySelector('.icn a')?.getAttribute('title') ?? '';
+                    let thread = el.querySelector('th a.s.xst')?.textContent ?? '';
+                    // 判断置顶
+                    if (title.indexOf('全局置顶') != -1) {
+                        el.addClass('top-3');
+                    } else if (title.indexOf('分类置顶') != -1) {
+                        el.addClass('top-2');
+                    } else if (title.indexOf('本版置顶') != -1) {
+                        el.addClass('top-1');
+                    }
+                    // 辩论 新人帖
+                    if (title.indexOf('辩论') != -1) {
+                        el.addClass('debate');
+                    }
+                    if (el.querySelector('img[alt="新人帖"]')) {
+                        el.addClass('newbie');
+                    }
+                    // 悬赏
+                    if (title.indexOf('悬赏') != -1) {
+                        el.addClass('reward');
+                        let pirce = parseInt(
+                            ((el.querySelector('a[title="只看进行中的"]')?.textContent ?? '').match(/\d+/) ?? ['30'])[0]
+                        );
+                        if (pirce >= 100) {
+                            el.addClass('big-reward');
                         }
-                        el.setAttribute('classified', ''); // 添加标记
-                        el.setAttribute(
-                            'type',
-                            el.querySelector('th > em a')?.textContent ?? ''
-                        ); // 主题分类
-                        el.setAttribute(
-                            'author',
-                            (
-                                el.querySelector('.by cite')?.textContent ?? ''
-                            ).replace(/^\s|\s$/g, '')
-                        ); // 作者昵称
-                        /**帖子图标的title */
-                        let title =
-                            el.querySelector('.icn a')?.getAttribute('title') ??
-                            '';
-                        let thread =
-                            el.querySelector('th a.s.xst')?.textContent ?? '';
-                        // 判断置顶
-                        if (title.indexOf('全局置顶') != -1) {
-                            el.addClass('top-3');
-                        } else if (title.indexOf('分类置顶') != -1) {
-                            el.addClass('top-2');
-                        } else if (title.indexOf('本版置顶') != -1) {
-                            el.addClass('top-1');
-                        }
-                        // 辩论 新人帖
-                        if (title.indexOf('辩论') != -1) {
-                            el.addClass('debate');
-                        }
-                        if (el.querySelector('img[alt="新人帖"]')) {
-                            el.addClass('newbie');
-                        }
-                        // 悬赏
-                        if (title.indexOf('悬赏') != -1) {
-                            el.addClass('reward');
-                            let pirce = parseInt(
-                                ((
-                                    el.querySelector('a[title="只看进行中的"]')
-                                        ?.textContent ?? ''
-                                ).match(/\d+/) ?? ['30'])[0]
-                            );
-                            if (pirce >= 100) {
-                                el.addClass('big-reward');
-                            }
-                            if (pirce >= 500) {
-                                el.addClass('great-reward');
-                            }
-                        }
-                        // 已解决
-                        if (el.querySelector('th a[title="只看已解决的"]')) {
-                            el.addClass('solved');
-                        }
-                        // 锁帖
-                        if (title.indexOf('关闭的主题') != -1) {
-                            el.addClass('locked');
-                        }
-                        // 热帖
-                        if (el.querySelector('th img[src$="hot_3.gif"]')) {
-                            el.addClass('hot-3');
-                        }
-                        if (el.querySelector('th img[src$="hot_2.gif"]')) {
-                            el.addClass('hot-2');
-                        }
-                        if (el.querySelector('th img[src$="hot_1.gif"]')) {
-                            el.addClass('hot-1');
-                        }
-                        // 推荐帖
-                        if (
-                            el.querySelector('th img[src$="recommend_3.gif"]')
-                        ) {
-                            el.addClass('rec-3');
-                        }
-                        if (
-                            el.querySelector('th img[src$="recommend_2.gif"]')
-                        ) {
-                            el.addClass('rec-2');
-                        }
-                        if (
-                            el.querySelector('th img[src$="recommend_1.gif"]')
-                        ) {
-                            el.addClass('rec-1');
-                        }
-                        // 推荐 版主推荐 优秀 精华
-                        if (el.querySelector('th img[alt="推荐"]')) {
-                            el.addClass('recommend');
-                        }
-                        if (el.querySelector('th img[alt="版主推荐"]')) {
-                            el.addClass('moderator-recommend');
-                        }
-                        if (el.querySelector('th img[alt="优秀"]')) {
-                            el.addClass('excellent');
-                        }
-                        if (el.querySelector('th img[alt="digest"]')) {
-                            el.addClass('digestpost');
-                        }
-                        // 有附件 有图片 被加分 被扣分
-                        if (el.querySelector('th img[alt="attach_img"]')) {
-                            el.addClass('pic');
-                        }
-                        if (el.querySelector('th img[alt="attachment"]')) {
-                            el.addClass('file');
-                        }
-                        if (el.querySelector('th img[alt="agree"]')) {
-                            el.addClass('good');
-                        }
-                        if (el.querySelector('th img[alt="disagree"]')) {
-                            el.addClass('bad');
-                        }
-                        // 晒尸
-                        if (
-                            /[\[【]\s?.*晒尸\s?[】\]]|^(剽窃|转账)晒尸/.test(
-                                thread
-                            )
-                        ) {
-                            el.addClass('punitive-publicity');
+                        if (pirce >= 500) {
+                            el.addClass('great-reward');
                         }
                     }
-                );
+                    // 已解决
+                    if (el.querySelector('th a[title="只看已解决的"]')) {
+                        el.addClass('solved');
+                    }
+                    // 锁帖
+                    if (title.indexOf('关闭的主题') != -1) {
+                        el.addClass('locked');
+                    }
+                    // 热帖
+                    if (el.querySelector('th img[src$="hot_3.gif"]')) {
+                        el.addClass('hot-3');
+                    }
+                    if (el.querySelector('th img[src$="hot_2.gif"]')) {
+                        el.addClass('hot-2');
+                    }
+                    if (el.querySelector('th img[src$="hot_1.gif"]')) {
+                        el.addClass('hot-1');
+                    }
+                    // 推荐帖
+                    if (el.querySelector('th img[src$="recommend_3.gif"]')) {
+                        el.addClass('rec-3');
+                    }
+                    if (el.querySelector('th img[src$="recommend_2.gif"]')) {
+                        el.addClass('rec-2');
+                    }
+                    if (el.querySelector('th img[src$="recommend_1.gif"]')) {
+                        el.addClass('rec-1');
+                    }
+                    // 推荐 版主推荐 优秀 精华
+                    if (el.querySelector('th img[alt="推荐"]')) {
+                        el.addClass('recommend');
+                    }
+                    if (el.querySelector('th img[alt="版主推荐"]')) {
+                        el.addClass('moderator-recommend');
+                    }
+                    if (el.querySelector('th img[alt="优秀"]')) {
+                        el.addClass('excellent');
+                    }
+                    if (el.querySelector('th img[alt="digest"]')) {
+                        el.addClass('digestpost');
+                    }
+                    // 有附件 有图片 被加分 被扣分
+                    if (el.querySelector('th img[alt="attach_img"]')) {
+                        el.addClass('pic');
+                    }
+                    if (el.querySelector('th img[alt="attachment"]')) {
+                        el.addClass('file');
+                    }
+                    if (el.querySelector('th img[alt="agree"]')) {
+                        el.addClass('good');
+                    }
+                    if (el.querySelector('th img[alt="disagree"]')) {
+                        el.addClass('bad');
+                    }
+                    // 晒尸
+                    if (/[\[【]\s?.*晒尸\s?[】\]]|^(剽窃|转账)晒尸/.test(thread)) {
+                        el.addClass('punitive-publicity');
+                    }
+                });
             }
             /**禁用 */
             async function disable() {
-                obj.saltQuery(
-                    '#threadlisttableid > tbody[classified]',
-                    (i, el) => {
-                        if (!(el instanceof HTMLElement)) {
-                            return;
-                        }
-                        el.removeAttribute('classified');
-                        el.removeAttribute('type');
-                        el.removeAttribute('author');
-                        el.removeClass(
-                            'top-1 top-2 top-3 debate newbie reward big-reward great-reward solved locked hot-1 hot-2 hot-3 rec-1 rec-2 rec-3 recommend moderator-recommend excellent digestpost file pic good bad punitive-publicity'
-                        );
+                obj.saltQuery('#threadlisttableid > tbody[classified]', (i, el) => {
+                    if (!(el instanceof HTMLElement)) {
+                        return;
                     }
-                );
+                    el.removeAttribute('classified');
+                    el.removeAttribute('type');
+                    el.removeAttribute('author');
+                    el.removeClass(
+                        'top-1 top-2 top-3 debate newbie reward big-reward great-reward solved locked hot-1 hot-2 hot-3 rec-1 rec-2 rec-3 recommend moderator-recommend excellent digestpost file pic good bad punitive-publicity'
+                    );
+                });
             }
         }
         /**内置反水帖 */
         antiWaterOP() {
             this.assert(autoRunLock, '不在页面初始运行状态');
             let obj = this;
-            let enableAntiWater = this.readWithDefault<boolean>(
-                'SaltAntiWater',
-                false
-            );
+            let enableAntiWater = this.readWithDefault<boolean>('SaltAntiWater', false);
             this.addCheckSetting(
                 '水帖检测机制<br><small>只会检测页面中的漏网水帖</small>',
                 enableAntiWater,
@@ -2782,24 +2412,13 @@ div.tip[id^="g_up"] {
                         /^[\s\S]{0,3}(请?让?我是?来?|可以)?.{0,3}([水氵]{3}|[水氵][一二两亿]?[帖贴下]+|完成每?日?一?水?帖?贴?的?任务)[\s\S]{0,3}$/
                 );
                 /**整理成正则表达式数组 */
-                let antiWaterRegExp = string2RegExp(
-                    obj.cleanStringArray(
-                        obj.formatToStringArray(antiWaterRegExpRaw)
-                    )
-                );
+                let antiWaterRegExp = string2RegExp(obj.cleanStringArray(obj.formatToStringArray(antiWaterRegExpRaw)));
                 obj.addTextareaSetting(
                     '自定义水帖匹配正则<small> 匹配水帖，一行一个，开头添加“//”暂时禁用</small>',
                     antiWaterRegExpRaw,
                     (el, ev) => {
-                        obj.dataBaseHandler.write(
-                            'SaltAntiWaterRegExp',
-                            el.value
-                        );
-                        antiWaterRegExp = string2RegExp(
-                            obj.cleanStringArray(
-                                obj.formatToStringArray(el.value)
-                            )
-                        );
+                        obj.dataBaseHandler.write('SaltAntiWaterRegExp', el.value);
+                        antiWaterRegExp = string2RegExp(obj.cleanStringArray(obj.formatToStringArray(el.value)));
                         if (enableAntiWater) {
                             obj.antiWater(antiWaterRegExp);
                         }
@@ -2849,8 +2468,7 @@ div.tip[id^="g_up"] {
             this.addSetting({
                 type: 'textarea',
                 title: '左侧用户信息显示控制',
-                subtitle:
-                    '显示层主的信息（积分、发帖情况等），一行一个，开头添加“//”暂时禁用',
+                subtitle: '显示层主的信息（积分、发帖情况等），一行一个，开头添加“//”暂时禁用',
                 text: handler,
                 callback: (el) => {
                     let v = el.value;
@@ -2865,9 +2483,7 @@ div.tip[id^="g_up"] {
                     /**直接显示层主信息的元素 */
                     let outInfo = el.querySelector('.favatar > dl');
                     if (!(outInfo instanceof HTMLElement)) return;
-                    let pid = ((el.getAttribute('id') ?? '0').match(/\d+/) ?? [
-                        '0',
-                    ])[0];
+                    let pid = ((el.getAttribute('id') ?? '0').match(/\d+/) ?? ['0'])[0];
                     let info = getInfo(el, pid).info;
                     let html = '';
                     for (let h of handler)
@@ -2895,11 +2511,7 @@ div.tip[id^="g_up"] {
                     if (dl) {
                         let dd = dl.querySelectorAll('dd'),
                             dt = dl.querySelectorAll('dt');
-                        for (
-                            let i = 0;
-                            i < Math.min(dd.length, dt.length);
-                            i++
-                        ) {
+                        for (let i = 0; i < Math.min(dd.length, dt.length); i++) {
                             info.push({ dt: dt[i], dd: dd[i] });
                         }
                     }
@@ -2926,10 +2538,7 @@ div.tip[id^="g_up"] {
             function updateNightStyle() {
                 if (document.hidden) return;
                 /**配置中是不是夜间模式 */
-                let isNight = obj.readWithDefault<boolean>(
-                    'isNightStyle',
-                    false
-                );
+                let isNight = obj.readWithDefault<boolean>('isNightStyle', false);
                 /**页面是否处于夜间模式 */
                 let isReallyNight = document.body.hasClass('nightS');
                 if (isNight != isReallyNight) obj.nightStyle(isNight, false);
@@ -2953,9 +2562,9 @@ div.tip[id^="g_up"] {
     }px;text-align: right;}
 */
 .pl .blockcode > div > .codeline {display:block !important;position: absolute;top: 0;left: -10px;background-color:#ededed;overflow: hidden;width: 36px;height: var(--lineCountXlineHeight,100%);user-select: none;}
-.pl .blockcode > div > .codeline > div {font-size: 1rem;line-height: ${
+.pl .blockcode > div > .codeline > div {font-size: 1rem;line-height: ${tempFontSize + 4}px;height: ${
                     tempFontSize + 4
-                }px;height: ${tempFontSize + 4}px;text-align: right;}
+                }px;text-align: right;}
 body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
 .pl .blockcode > em {top: 2px;right: 2px;position: absolute;margin: 0 0 0 0;z-index: 12;padding: 5px;border: 1px dashed #369;border-radius:5px;opacity:.3;font-size: 1rem;transition: .3s ease;}
 .pl .blockcode > em:hover {border-color: #48c;color: #48c !important;opacity:1;}
@@ -2964,9 +2573,7 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
 .pl .blockcode ol::-webkit-scrollbar-thumb {border-radius: 10px;box-shadow: inset 0 0 4px rgba(102, 102, 102, 0.25);background: #999;}
 .pl .blockcode ol::-webkit-scrollbar-track {box-shadow: inset 0 0 4px rgba(187, 187, 187, 0.25);border-radius: 10px;background: #eee;}*/
 .pl .blockcode ol li {
-    color: #333;height: ${
-        tempFontSize + 4
-    }px;padding-left: 1rem;margin-left: 0;font-size: 1rem;line-height: ${
+    color: #333;height: ${tempFontSize + 4}px;padding-left: 1rem;margin-left: 0;font-size: 1rem;line-height: ${
                     tempFontSize + 4
                 }px;
     list-style: none;white-space: pre;float: left;clear: both;min-width: calc(100% - 16px);}
@@ -2996,10 +2603,7 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
                     let l = el.querySelectorAll('ol li').length,
                         div = newDiv(),
                         html = '';
-                    el.style.setProperty(
-                        '--lineCountXlineHeight',
-                        l * (tempFontSize + 4) + 'px'
-                    );
+                    el.style.setProperty('--lineCountXlineHeight', l * (tempFontSize + 4) + 'px');
                     for (let i = 1; i < l + 1; i++) {
                         html += '<div>' + i + '.</div>';
                     }
@@ -3010,10 +2614,7 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
                     let preLeft = 0;
                     el.addEventListener('scroll', function (this, ev) {
                         if (preLeft == el.scrollLeft) return;
-                        div.style.left =
-                            (MExtConfiectFix[1]
-                                ? el.scrollLeft
-                                : el.scrollLeft - 10) + 'px';
+                        div.style.left = (MExtConfiectFix[1] ? el.scrollLeft : el.scrollLeft - 10) + 'px';
                         preLeft = el.scrollLeft;
                     });
                     el.appendChild(div);
@@ -3030,10 +2631,7 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
             });
             // 网易云音乐播放器
             let forceH5Player = this.readWithDefault('forceH5Player', false),
-                allowAutoPlayMusic = this.readWithDefault(
-                    'allowAutoPlayMusic',
-                    false
-                );
+                allowAutoPlayMusic = this.readWithDefault('allowAutoPlayMusic', false);
             allowAuto(allowAutoPlayMusic);
             forceH5(forceH5Player);
             this.addSetting({
@@ -3077,18 +2675,10 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
                     obj.saltQuery('embed,iframe', (i, el) => {
                         if (!(el instanceof HTMLElement)) return;
                         let src = el.getAttribute('src') ?? '';
-                        if (
-                            src.indexOf('music.163') == -1 ||
-                            src.indexOf('?') == -1
-                        )
-                            return;
+                        if (src.indexOf('music.163') == -1 || src.indexOf('?') == -1) return;
                         src = src.slice(src.indexOf('?')).replace('sid', 'id');
-                        el.setAttribute(
-                            'src',
-                            'https://music.163.com/outchain/player' + src
-                        );
-                        if (/height\=66/i.test(src))
-                            el.setAttribute('height', '86');
+                        el.setAttribute('src', 'https://music.163.com/outchain/player' + src);
+                        if (/height\=66/i.test(src)) el.setAttribute('height', '86');
                         if (el.tagName.toUpperCase() == 'EMBED') {
                             let iframe = document.createElement('iframe');
                             iframe.width = el.getAttribute('width') ?? '320';
@@ -3116,10 +2706,7 @@ body.nightS .pl .blockcode > div > .codeline {background-color:#1a1a1a}
         confiectFixOP() {
             this.assert(autoRunLock, '不在页面初始运行状态');
             let obj = this;
-            let enabled = this.readWithDefault<boolean>(
-                'saltMCBBSconfiectFix',
-                true
-            );
+            let enabled = this.readWithDefault<boolean>('saltMCBBSconfiectFix', true);
             this.addCheckSetting(
                 '冲突修复功能<br><small>尝试修复与其他脚本的冲突</small>',
                 enabled,
@@ -3203,9 +2790,7 @@ body.nightS .pl .blockcode div[id]{
             }
             if (enabled) {
                 // 通用修复
-                if (
-                    this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true)
-                ) {
+                if (this.readWithDefault<boolean>('SaltMoveTopBarToLeft', true)) {
                     sub();
                     setTimeout(() => {
                         sub();
@@ -3255,8 +2840,7 @@ body.nightS .pl .blockcode div[id]{
                     s = [];
                 let li = Array.from(el.querySelectorAll('ol li')); // 需要复制的文字
                 console.log(li);
-                for (let l of li)
-                    s.push((l.textContent ?? '').replace(/^\n|\n$/, ''));
+                for (let l of li) s.push((l.textContent ?? '').replace(/^\n|\n$/, ''));
                 i.value = s.join('\n'); // 拼接文字
                 i.readOnly = true;
                 i.setAttribute('style', 'opacity:0;position:absolute');
@@ -3285,9 +2869,7 @@ body.nightS .pl .blockcode div[id]{
         ) {
             let obj = this;
             // 默认忽略那些已经被制裁的帖子
-            let queryStr = ignoreWarned
-                ? '#postlist > div:not(.warned)'
-                : '#postlist > div';
+            let queryStr = ignoreWarned ? '#postlist > div:not(.warned)' : '#postlist > div';
             // console.log(queryStr)
             this.saltQuery(queryStr, (i, el) => {
                 if (!(el instanceof HTMLElement)) {
@@ -3302,14 +2884,9 @@ body.nightS .pl .blockcode div[id]{
                 /**复制了td的HTML, 实现隔离 */
                 let tempEl: Element | null = document.createElement('div');
                 tempEl.innerHTML = td.innerHTML;
-                for (let img of Array.from(
-                    tempEl.querySelectorAll('img[smilieid]')
-                ))
-                    if (img instanceof HTMLImageElement)
-                        img.replaceWith('/meme/'); // 表情包会被处理成'/meme/'的文字形式
-                for (let font0 of Array.from(
-                    tempEl.querySelectorAll('font[style*="font-size:0px"]')
-                ))
+                for (let img of Array.from(tempEl.querySelectorAll('img[smilieid]')))
+                    if (img instanceof HTMLImageElement) img.replaceWith('/meme/'); // 表情包会被处理成'/meme/'的文字形式
+                for (let font0 of Array.from(tempEl.querySelectorAll('font[style*="font-size:0px"]')))
                     if (font0 instanceof HTMLImageElement) font0.remove(); // 不可见的节点将被忽略
                 /**引用框 */
                 let quote = tempEl.querySelector('div.quote');
@@ -3323,8 +2900,7 @@ body.nightS .pl .blockcode div[id]{
                 }
                 /**最后编辑时间 */
                 let pstatus = tempEl.querySelector('i.pstatus');
-                if (pstatus)
-                    if (/./.test(pstatus.textContent ?? '')) pstatus.remove(); // 忽略最后编辑时间
+                if (pstatus) if (/./.test(pstatus.textContent ?? '')) pstatus.remove(); // 忽略最后编辑时间
                 let t = tempEl.textContent ?? '';
                 for (let aw of RegExps) {
                     if (aw.test(t)) {
@@ -3332,9 +2908,7 @@ body.nightS .pl .blockcode div[id]{
                             callback(el, td, t);
                         } else {
                             obj.message(
-                                (el.hasClass('reported')
-                                    ? '该疑似水帖已被您举报'
-                                    : '发现未制裁的疑似水帖') +
+                                (el.hasClass('reported') ? '该疑似水帖已被您举报' : '发现未制裁的疑似水帖') +
                                     ':<br><span>' +
                                     tempEl.innerHTML +
                                     '</span>',
@@ -3354,17 +2928,11 @@ body.nightS .pl .blockcode div[id]{
             let isReallyNight = document.body.hasClass('nightS');
             if (isReallyNight) {
                 // 夜间
-                let nbg = this.readWithDefault<string[]>(
-                    'nightBackgroundImage',
-                    []
-                );
+                let nbg = this.readWithDefault<string[]>('nightBackgroundImage', []);
                 putNightImg(this.randomChoice(this.cleanStringArray(nbg)));
             } else {
                 // 昼间
-                let dbg = this.readWithDefault<string[]>(
-                    'dayBackgroundImage',
-                    []
-                );
+                let dbg = this.readWithDefault<string[]>('dayBackgroundImage', []);
                 putDayImg(this.randomChoice(this.cleanStringArray(dbg)));
             }
             // 封装一下操作
@@ -3413,11 +2981,7 @@ body.nightS .pl .blockcode div[id]{
          */
         addSetting(div: settingOptions): void;
         addSetting(div: Element, id?: string, priority?: number): void;
-        addSetting(
-            div: settingOptions | Element,
-            id?: string,
-            priority?: number
-        ) {
+        addSetting(div: settingOptions | Element, id?: string, priority?: number) {
             if (div instanceof Element) {
                 if (typeof id == 'string' && id.length > 0) {
                     div.setAttribute('name', id);
@@ -3432,10 +2996,7 @@ body.nightS .pl .blockcode div[id]{
                 switch (div.type) {
                     case 'check':
                         this.addCheckSetting(
-                            div.title +
-                                (div.subtitle
-                                    ? '<br><small> ' + div.subtitle + '</small>'
-                                    : ''),
+                            div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
                             div.checked,
                             div.callback,
                             div.name ?? div.title,
@@ -3447,10 +3008,7 @@ body.nightS .pl .blockcode div[id]{
                         return;
                     case 'input':
                         this.addInputSetting(
-                            div.title +
-                                (div.subtitle
-                                    ? '<br><small> ' + div.subtitle + '</small>'
-                                    : ''),
+                            div.title + (div.subtitle ? '<br><small> ' + div.subtitle + '</small>' : ''),
                             div.text,
                             div.callback,
                             div.name ?? div.title,
@@ -3462,10 +3020,7 @@ body.nightS .pl .blockcode div[id]{
                         return;
                     case 'textarea':
                         this.addTextareaSetting(
-                            div.title +
-                                (div.subtitle
-                                    ? '<small> ' + div.subtitle + '</small>'
-                                    : ''),
+                            div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
                             div.text,
                             div.callback,
                             div.name ?? div.title,
@@ -3477,10 +3032,7 @@ body.nightS .pl .blockcode div[id]{
                         return;
                     case 'range':
                         this.addRangeSetting(
-                            div.title +
-                                (div.subtitle
-                                    ? '<small> ' + div.subtitle + '</small>'
-                                    : ''),
+                            div.title + (div.subtitle ? '<small> ' + div.subtitle + '</small>' : ''),
                             div.value,
                             div.range,
                             div.callback,
@@ -3499,10 +3051,10 @@ body.nightS .pl .blockcode div[id]{
                         return;
                     default:
                         this.assert(false, '配置项类型错误: 未知的类型' + div);
-                        if (!autoRunLock) {
-                            this.sortSetting();
-                        }
-                        return;
+                    // if (!autoRunLock) {
+                    //     this.sortSetting();
+                    // }
+                    // return;
                 }
             } else {
                 return this.assert(false, '参数错误: ' + div);
@@ -3526,12 +3078,9 @@ body.nightS .pl .blockcode div[id]{
             newsetting.innerHTML = '<h3>' + h3 + '</h3>';
             let textareaEl = document.createElement('textarea');
             textareaEl.value = textarea;
-            textareaEl.addEventListener(
-                'change',
-                function (this: HTMLTextAreaElement, e: Event) {
-                    callback(this, e);
-                }
-            );
+            textareaEl.addEventListener('change', function (this: HTMLTextAreaElement, e: Event) {
+                callback(this, e);
+            });
             newsetting.appendChild(textareaEl);
             this.addSetting(newsetting, id ?? h3, priority);
         }
@@ -3553,12 +3102,9 @@ body.nightS .pl .blockcode div[id]{
             newsetting.innerHTML = '<h3 class="half-h3">' + h3 + '</h3>';
             let inputEl = document.createElement('input');
             inputEl.value = text;
-            inputEl.addEventListener(
-                'change',
-                function (this: HTMLInputElement, e: Event) {
-                    callback(this, e);
-                }
-            );
+            inputEl.addEventListener('change', function (this: HTMLInputElement, e: Event) {
+                callback(this, e);
+            });
             newsetting.appendChild(inputEl);
             this.addSetting(newsetting, id ?? h3, priority);
         }
@@ -3584,12 +3130,9 @@ body.nightS .pl .blockcode div[id]{
             inputEl.id = inputId;
             inputEl.type = 'checkbox';
             inputEl.checked = checked;
-            inputEl.addEventListener(
-                'click',
-                function (this: HTMLInputElement, e: Event) {
-                    callback(this.checked, e);
-                }
-            );
+            inputEl.addEventListener('click', function (this: HTMLInputElement, e: Event) {
+                callback(this.checked, e);
+            });
             newsetting.appendChild(inputEl);
             let label = document.createElement('label');
             label.className = 'checkbox';
@@ -3608,9 +3151,7 @@ body.nightS .pl .blockcode div[id]{
         addRangeSetting(
             h3: string,
             value: number,
-            range:
-                | [number, number, number]
-                | { max: number; min: number; step: number },
+            range: [number, number, number] | { max: number; min: number; step: number },
             callback: (vl: number, ev: Event) => void,
             id?: string,
             priority?: number
@@ -3668,23 +3209,16 @@ body.nightS .pl .blockcode div[id]{
         }
         /**根据优先级整理配置项 */
         sortSetting() {
-            let divs = Array.from(
-                document.querySelectorAll('#saltMCBBS-settingPanel > *')
-            );
+            let divs = Array.from(document.querySelectorAll('#saltMCBBS-settingPanel > *')) as HTMLElement[];
             for (let div of divs) {
                 if (!div.hasAttribute('priority')) {
                     div.setAttribute('priority', '99999999');
-                } else if (
-                    isNaN(parseInt(div.getAttribute('priority') ?? ''))
-                ) {
+                } else if (isNaN(parseInt(div.getAttribute('priority') ?? ''))) {
                     div.setAttribute('priority', '99999998');
                 }
             }
             divs.sort((a, b) => {
-                return (
-                    parseInt(a.getAttribute('priority') ?? '') -
-                    parseInt(b.getAttribute('priority') ?? '')
-                );
+                return a.numAttribute('priority').value - b.numAttribute('priority').value; // parseInt(a.getAttribute('priority') ?? '') - parseInt(b.getAttribute('priority') ?? '');
             });
             this.addChildren(this.settingPanel, divs);
         }
@@ -3713,10 +3247,7 @@ body.nightS .pl .blockcode div[id]{
          * @param a 一个HTMLElement，或者一段文字（如果是一段文字，那么callback参数生效）
          * @param callback 点击后执行的回调函数或点击前往的链接
          */
-        addSideBarLink(
-            a: HTMLElement | string,
-            callback?: (ev: MouseEvent) => void | string
-        ) {
+        addSideBarLink(a: HTMLElement | string, callback?: (ev: MouseEvent) => void | string) {
             let links = this.links;
             if (typeof a == 'string') {
                 let anchor = document.createElement('a');
@@ -3762,8 +3293,7 @@ body.nightS .pl .blockcode div[id]{
             let themeColor = ['#66a6ff', '#c2290a', '#3dc322'];
             let theme = window.getcookie('extstyle');
             let i: number, s: string;
-            for (i = 0; i < themeFinder.length; i++)
-                if (theme.indexOf(themeFinder[i]) != -1) break;
+            for (i = 0; i < themeFinder.length; i++) if (theme.indexOf(themeFinder[i]) != -1) break;
             s = themeColor[i];
             document.body.style.setProperty('--ThemeColor', s);
             return s;
@@ -3916,24 +3446,14 @@ body.nightS .pl .blockcode div[id]{
         readable: boolean = false;
         prefix: string;
         getStore: () => IDBObjectStore;
-        constructor(
-            database: string,
-            mainStoreName = 'mainStore',
-            prefix = '[saltMCBBSDataBaseHandler]'
-        ) {
+        constructor(database: string, mainStoreName = 'mainStore', prefix = '[saltMCBBSDataBaseHandler]') {
             this.prefix = prefix;
             let obj = this;
             let dbRequest = indexedDB.open(database, 1); // 1 是版本号，别改
             dbRequest.onupgradeneeded = function (this: IDBRequest, ev: Event) {
-                console.log(
-                    `%c${obj.prefix}: 创建数据库 ${database}`,
-                    'font-size:1rem;'
-                );
+                console.log(`%c${obj.prefix}: 创建数据库 ${database}`, 'font-size:1rem;');
                 obj.db = this.result;
-                console.log(
-                    `%c${obj.prefix}: 创建仓库 ${database}`,
-                    'font-size:1rem;'
-                );
+                console.log(`%c${obj.prefix}: 创建仓库 ${database}`, 'font-size:1rem;');
                 let s = obj.db.createObjectStore(mainStoreName, {
                     keyPath: 'mainKey', // 主键一律命名为 mainKey
                 });
@@ -3946,9 +3466,7 @@ body.nightS .pl .blockcode div[id]{
                 obj.db = dbRequest.result;
             };
             this.getStore = function () {
-                return this.db
-                    .transaction(mainStoreName, 'readwrite')
-                    .objectStore(mainStoreName);
+                return this.db.transaction(mainStoreName, 'readwrite').objectStore(mainStoreName);
             };
         }
         has(key: string): Promise<boolean> {
@@ -3957,10 +3475,7 @@ body.nightS .pl .blockcode div[id]{
             return new Promise<boolean>(function (resolve, reject) {
                 let request = obj.getStore().get(key);
                 request.onsuccess = function () {
-                    if (
-                        typeof request.result != 'undefined' &&
-                        typeof request.result.value != 'undefined'
-                    )
+                    if (typeof request.result != 'undefined' && typeof request.result.value != 'undefined')
                         resolve(true);
                     else resolve(false);
                 };
@@ -3975,10 +3490,7 @@ body.nightS .pl .blockcode div[id]{
             return new Promise<T>(function (resolve, reject) {
                 let request = obj.getStore().get(key);
                 request.onsuccess = function () {
-                    if (
-                        typeof request.result != 'undefined' &&
-                        typeof request.result.value != 'undefined'
-                    )
+                    if (typeof request.result != 'undefined' && typeof request.result.value != 'undefined')
                         resolve(request.result.value);
                     else {
                         obj.write(key, defaultValue);
@@ -3996,9 +3508,7 @@ body.nightS .pl .blockcode div[id]{
             this.assertReadable();
             let obj = this;
             return new Promise<void>(function (resolve, reject) {
-                let request = obj
-                    .getStore()
-                    .put({ mainKey: key, value: value });
+                let request = obj.getStore().put({ mainKey: key, value: value });
                 request.onsuccess = function () {
                     resolve();
                 };
@@ -4052,10 +3562,7 @@ body.nightS .pl .blockcode div[id]{
             // let obj = this
             let store = this.getStore();
             let keys: { mainKey: string; value: T }[] = [];
-            return new Promise<{ mainKey: string; value: T }[]>(function (
-                resolve,
-                reject
-            ) {
+            return new Promise<{ mainKey: string; value: T }[]>(function (resolve, reject) {
                 store.openCursor().onsuccess = function (this, ev) {
                     let cur = this.result;
                     if (cur) {
@@ -4074,25 +3581,20 @@ body.nightS .pl .blockcode div[id]{
         }
         async waitForReady() {
             // console.log(this.readable)
-            while (!this.readable)
-                await new Promise((resolve) => setTimeout(resolve, 5));
+            while (!this.readable) await new Promise((resolve) => setTimeout(resolve, 5));
             // console.log(this.readable)
         }
         /**断言数据库已经准备完毕 */
         assertReadable() {
             if (!this.readable || !this.db) {
-                throw new Error(
-                    this.prefix + ': 你不能访问一个尚未准备完毕的数据库'
-                );
+                throw new Error(this.prefix + ': 你不能访问一个尚未准备完毕的数据库');
             }
         }
     }
     // 开始给HTMLElement添加奇怪的方法
     (function () {
         if (!HTMLElement.prototype.addClass) {
-            HTMLElement.prototype.addClass = function (
-                classes: string
-            ): HTMLElement {
+            HTMLElement.prototype.addClass = function (classes: string): HTMLElement {
                 let cls = String(classes).replace(/\s+/gm, ',').split(',');
                 for (let c of cls) {
                     this.classList.add(c);
@@ -4101,9 +3603,7 @@ body.nightS .pl .blockcode div[id]{
             };
         }
         if (!HTMLElement.prototype.toggleClass) {
-            HTMLElement.prototype.toggleClass = function (
-                classes: string
-            ): HTMLElement {
+            HTMLElement.prototype.toggleClass = function (classes: string): HTMLElement {
                 var cls = String(classes).replace(/\s+/gm, ',').split(',');
                 for (var c of cls) {
                     if (this.classList.contains(c)) this.classList.remove(c);
@@ -4113,16 +3613,12 @@ body.nightS .pl .blockcode div[id]{
             };
         }
         if (!HTMLElement.prototype.hasClass) {
-            HTMLElement.prototype.hasClass = function (
-                OneClass: string
-            ): boolean {
+            HTMLElement.prototype.hasClass = function (OneClass: string): boolean {
                 return this.classList.contains(OneClass);
             };
         }
         if (!HTMLElement.prototype.removeClass) {
-            HTMLElement.prototype.removeClass = function (
-                classes: string
-            ): HTMLElement {
+            HTMLElement.prototype.removeClass = function (classes: string): HTMLElement {
                 var cls = String(classes).replace(/\s+/gm, ',').split(',');
                 for (var c of cls) {
                     this.classList.remove(c);
@@ -4173,17 +3669,11 @@ body.nightS .pl .blockcode div[id]{
         if (!HTMLElement.prototype.inViewport) {
             HTMLElement.prototype.inViewport = function () {
                 let r = this.getBoundingClientRect(),
-                    h =
-                        window.innerHeight ??
-                        document.documentElement.clientHeight,
-                    w =
-                        window.innerWidth ??
-                        document.documentElement.clientWidth;
+                    h = window.innerHeight ?? document.documentElement.clientHeight,
+                    w = window.innerWidth ?? document.documentElement.clientWidth;
                 return (
-                    ((r.top >= 0 && r.top < h) ||
-                        (r.bottom > 0 && r.bottom <= h)) &&
-                    ((r.left >= 0 && r.left < w) ||
-                        (r.right > 0 && r.right <= w))
+                    ((r.top >= 0 && r.top < h) || (r.bottom > 0 && r.bottom <= h)) &&
+                    ((r.left >= 0 && r.left < w) || (r.right > 0 && r.right <= w))
                 );
             };
         }
@@ -4192,13 +3682,9 @@ body.nightS .pl .blockcode div[id]{
                 let r = this.getBoundingClientRect();
                 return (
                     r.top >= 0 &&
-                    r.bottom <=
-                        (window.innerHeight ??
-                            document.documentElement.clientHeight) &&
+                    r.bottom <= (window.innerHeight ?? document.documentElement.clientHeight) &&
                     r.left >= 0 &&
-                    r.right <=
-                        (window.innerWidth ??
-                            document.documentElement.clientWidth)
+                    r.right <= (window.innerWidth ?? document.documentElement.clientWidth)
                 );
             };
         }
